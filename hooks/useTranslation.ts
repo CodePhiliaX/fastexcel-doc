@@ -1,12 +1,14 @@
-import { useRouter } from 'next/router';
-import zhCN from '../locales/zh-CN';
-import en from '../locales/en';
-import zhTW from '../locales/zh-TW';
+  import { useRouter } from "nextra/hooks";
+import zhCN from "../locales/zh-CN";
+import en from "../locales/en";
+import zhTW from "../locales/zh-TW";
+import ja from "../locales/ja";
 
 const translations = {
-  'zh-CN': zhCN,
-  'en': en,
-  'zh-TW': zhTW,
+  "zh-CN": zhCN,
+  en: en,
+  "zh-TW": zhTW,
+  ja: ja,
 };
 
 export const useTranslation = () => {

@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './index.module.css';
+import { useTranslation } from '../../hooks/useTranslation';
 
 interface Contributor {
   name: string;
@@ -28,11 +29,12 @@ const contributors: Contributor[] = [
 ];
 
 export const Contributors: React.FC = () => {
+  const { t } = useTranslation();
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>产品贡献</h2>
+      <h2 className={styles.title}>{t("contributors.title")}</h2>
       <p className={styles.subtitle}>
-        Easyexcel Plus能走到今天，万分感谢以下同学的贡献和付出😊
+        {t("contributors.subtitle")}
       </p>
       
       <div className={styles.contributorGrid}>
@@ -54,7 +56,7 @@ export const Contributors: React.FC = () => {
         rel="noopener noreferrer" 
         className={styles.githubButton}
       >
-        欢迎大家加入Github，一起共建产品→
+        {t("contributors.githubButton")} →
       </a>
     </div>
   );

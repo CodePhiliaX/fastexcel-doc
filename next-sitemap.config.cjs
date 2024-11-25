@@ -1,5 +1,5 @@
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-  siteUrl: "https://easyexcel-plus.vercel.app",
+  siteUrl: "https://chat2db.ai",
   generateRobotsTxt: true,
 };

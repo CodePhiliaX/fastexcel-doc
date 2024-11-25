@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './index.module.css';
+import { useTranslation } from '../../hooks/useTranslation';
 
 interface Testimonial {
   author: string;
@@ -41,11 +42,12 @@ const testimonials: Testimonial[] = [
 const extendedTestimonials = [...testimonials, ...testimonials, ...testimonials];
 
 export const Testimonials: React.FC = () => {
+  const { t } = useTranslation();
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>精选用户评论</h2>
+      <h2 className={styles.title}>{t("testimonials.title")}</h2>
       <p className={styles.subtitle}>
-        感谢大家对于Easyexcel plus的支持，正是因为有你们的鼓励，我们才会越来越好❤️
+        {t("testimonials.subtitle")}
       </p>
 
       <div className={styles.scrollContainer}>

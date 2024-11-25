@@ -3,8 +3,10 @@ import Image from "next/image";
 import Link from "next/link";
 import styles from "./index.module.css";
 import { LanguageSelector } from "../language-switch";
+import { useTranslation } from '../../hooks/useTranslation';
 
 const Footer: React.FC = () => {
+  const { t } = useTranslation();
   return (
     <footer className={styles.footer}>
       <div className={styles.footerContent}>
@@ -19,7 +21,7 @@ const Footer: React.FC = () => {
             />
           </Link>
           <p className={styles.copyright}>
-            @2024 EasyExcel Plus. All rights reserved.
+            @2024 EasyExcel Plus. {t("footer.copyright")}
           </p>
         </div>
 
@@ -27,11 +29,11 @@ const Footer: React.FC = () => {
           <LanguageSelector />
 
           <Link href="/docs" className={styles.footerLink}>
-            使用文档
+            {t("footer.documentation")}
           </Link>
 
           <Link href="/contact" className={styles.footerLink}>
-            联系我们
+            {t("footer.contact")}
           </Link>
 
           <a

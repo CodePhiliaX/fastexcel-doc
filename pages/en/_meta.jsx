@@ -1,7 +1,7 @@
 export default {
   index: {
     title: "Home",
-    description: "EasyExcel Plus 让Excel处理更简单",
+    description: "EasyExcel Plus makes Excel processing easier",
     type: "page",
     theme: {
       layout: "raw",

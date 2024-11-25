@@ -9,15 +9,16 @@
   gap: 8px;
   padding: 6px 12px;
   background: transparent;
-  border: 1px solid var(--border-color);
+  border: 1px solid #333;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
+  color: #fff;
 }
 
 .languageButton:hover,
 .languageButton.active {
-  background: var(--hover-bg);
+  background: #333;
 }
 
 .flag {
@@ -32,14 +33,15 @@
   position: absolute;
   bottom: calc(100% + 4px);
   right: 0;
-  background: var(--bg-color);
-  border: 1px solid var(--border-color);
+  background: #1a1a1a;
+  border: 1px solid #333;
   border-radius: 6px;
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
   z-index: 1000;
   min-width: 160px;
   max-height: calc(100vh - 100px);
   overflow-y: auto;
+  color: #fff;
 }
 
 .dropdownItem {
@@ -55,11 +57,11 @@
 }
 
 .dropdownItem:hover {
-  background: var(--hover-bg);
+  background: #333;
 }
 
 .dropdownItem.active {
-  background: var(--active-bg);
+  background: #404040;
   font-weight: 500;
 }
 

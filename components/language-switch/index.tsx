@@ -42,7 +42,7 @@ export const LanguageSelector: React.FC = () => {
       case "zh":
         return "🇨🇳";
       case "zh-TW":
-        return "🇹🇼";
+        return "🇨🇳";
       case "en":
         return "🇺🇸";
       case "ja":

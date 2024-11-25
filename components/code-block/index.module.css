@@ -1,0 +1,110 @@
+.wrapper {
+  position: relative;
+}
+.codeBlock {
+  position: relative;
+  background: #1d282e;
+  border-radius: 20px;
+  padding: 15px 18px;
+  padding-bottom: 9rem;
+  margin: 0 1.5rem;
+  height: 100%;
+}
+
+.codeHeader {
+  margin-bottom: 14px;
+
+  .windowButtons {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .closeButton,
+  .minimizeButton,
+  .maximizeButton {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .closeButton {
+    background: #fe5f56;
+  }
+
+  .minimizeButton {
+    background: #edad29;
+  }
+
+  .maximizeButton {
+    background: #26c940;
+  }
+}
+
+.code {
+  color: #22c55e;
+  font-family: monospace;
+  white-space: pre-wrap;
+  margin: 0;
+  /* background: #2d2d2d; */
+
+  border-radius: 0.25rem;
+
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  font-family: Consolas, monospace;
+
+}
+
+.copyButton {
+  display: inline-flex;
+  padding: 8px 16px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50px;
+  border: 2px solid #000;
+  background: #6eea29;
+  color: #000;
+  font-weight: 700;
+  font-size: 14px;
+  filter: drop-shadow(2px 3px 0px #000);
+  cursor: pointer;
+  position: absolute;
+  left: 50%;
+  bottom: 5rem;
+  transform: translateX(-50%);
+}
+.copyButton:hover {
+  background: #5ed220;
+}
+
+.description {
+  width: 100%;
+  border-radius: 16px;
+  border: 2px solid #000;
+  background: #4a44ee;
+
+  position: absolute;
+  bottom: 0;
+  height: 72px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+}
+.lineCode {
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: 3px 4px 0px 0px #000;
+
+  color: #000;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  margin: 0 4px;
+  padding: 2px 4px;
+}

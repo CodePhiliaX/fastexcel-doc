@@ -1,0 +1,126 @@
+.container {
+  padding: 4rem 0;
+  background: #000;
+  text-align: center;
+  overflow: hidden;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: #888;
+  margin-bottom: 3rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.scrollContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.scrollRow {
+  overflow: hidden;
+  padding: 1rem 0;
+}
+
+.scrollTrack {
+  display: flex;
+  gap: 1rem;
+  animation: scroll 40s linear infinite;
+  width: fit-content;
+}
+
+.scrollTrack.reverse {
+  animation: scroll-reverse 40s linear infinite;
+}
+
+.testimonialCard {
+  background: #1a1a1a;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  width: 300px;
+  text-align: left;
+  flex-shrink: 0;
+}
+
+.testimonialHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.authorInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.author {
+  color: #fff;
+  font-weight: 600;
+}
+
+.location {
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.content {
+  color: #fff;
+  line-height: 1.5;
+  margin: 0;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes scroll-reverse {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* 鼠标悬停时暂停动画 */
+.scrollTrack:hover {
+  animation-play-state: paused;
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 2rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+    padding: 0 1rem;
+  }
+
+  .testimonialCard {
+    width: 250px;
+  }
+} 

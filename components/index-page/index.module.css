@@ -1,0 +1,132 @@
+.container {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.hero {
+  padding-top: 4rem;
+  padding-bottom: 8rem;
+  text-align: center;
+  background: #4039e9;
+  color: white;
+  margin-bottom: 4rem;
+  .title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+  .subtitle {
+    font-size: 1.2rem;
+    max-width: 800px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+  }
+  .buttonGroup {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    display: inline-flex;
+    padding: 16px 32px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    border-radius: 50px;
+    border: 2px solid #000;
+    background: #6eea29;
+    color: #000;
+    font-weight: 700;
+    font-size: 16px;
+    filter: drop-shadow(4px 6px 0px #000);
+  }
+}
+
+.features {
+  border-radius: 3rem 3rem 0 0;
+  margin-top: -8rem;
+  padding: 3rem 4rem 0 4rem;
+
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2rem;
+  margin-bottom: 4rem;
+  background: white;
+  .featureCard {
+    padding: 2rem;
+    border-radius: 1rem;
+    background: #f5f5f5;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    .featureIcon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .featureTitle {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+
+    .featureDescription {
+      color: #333;
+      line-height: 1.5;
+    }
+  }
+}
+
+.installation {
+  padding: 4rem 2rem;
+  background: #f8f9fa;
+}
+
+.sectionTitle {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+
+  color: #000;
+
+  font-size: 28px;
+
+  font-weight: 700;
+}
+
+.sectionSubtitle {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 400;
+  color: #333;
+  margin-bottom: 3rem;
+}
+
+.codeBlocks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 2rem;
+  }
+
+  .buttonGroup {
+    flex-direction: column;
+  }
+
+  .features {
+    grid-template-columns: 1fr;
+  }
+
+  .codeBlocks {
+    grid-template-columns: 1fr;
+  }
+}

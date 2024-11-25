@@ -1,0 +1,54 @@
+.navbar {
+  height: 88px;
+  background: #3f39e9;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navContent {
+  height: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+}
+
+.navLinks {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.navLink {
+  font-family: "SF Pro";
+  font-size: 16px;
+  font-weight: 700;
+
+  color: #fff;
+
+  text-shadow: 4px 4px 0px #000;
+  /* -webkit-text-stroke: 1px #000; */
+}
+
+.navLink:hover {
+  /* background-color: rgba(255, 255, 255, 0.1); */
+  /* color: #000; */
+}
+
+@media (max-width: 768px) {
+  .navLinks {
+    gap: 1rem;
+  }
+
+  .navLink {
+    font-size: 0.875rem;
+  }
+}

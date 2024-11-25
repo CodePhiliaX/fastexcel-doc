@@ -49,7 +49,7 @@ export const Contributors: React.FC = () => {
       </div>
 
       <a 
-        href="https://github.com/your-repo" 
+        href="https://github.com/CodePhiliaX/easyexcel-plus" 
         target="_blank" 
         rel="noopener noreferrer" 
         className={styles.githubButton}

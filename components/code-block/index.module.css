@@ -56,6 +56,8 @@
 
   font-family: Consolas, monospace;
 
+  min-height: 100px;
+
 }
 
 .copyButton {
@@ -63,6 +65,7 @@
   padding: 8px 16px;
   justify-content: center;
   align-items: center;
+  gap: 6px;
   border-radius: 50px;
   border: 2px solid #000;
   background: #6eea29;
@@ -75,9 +78,36 @@
   left: 50%;
   bottom: 5rem;
   transform: translateX(-50%);
+  transition: all 0.2s ease;
 }
-.copyButton:hover {
-  background: #5ed220;
+
+.copyButton:hover:not(.copied) {
+  background: #62C829;
+  transform: translateX(-50%) translateY(-2px);
+}
+
+.copyButton.copied {
+  background: #4CAF50;
+  color: white;
+  cursor: default;
+  animation: pop 0.3s ease;
+}
+
+.checkmark {
+  font-size: 16px;
+  margin-right: 4px;
+}
+
+@keyframes pop {
+  0% {
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    transform: translateX(-50%) scale(1.1);
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+  }
 }
 
 .description {

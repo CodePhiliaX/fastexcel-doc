@@ -1,10 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./index.module.css";
 
 interface CodeBlockProps {
   type: "maven" | "gradle";
 }
-// ... existing code ...
 
 const mavenCode = `
 <dependency>
@@ -25,8 +24,20 @@ implementation 'cn.hutool:hutool-all:5.8.33'
 const gradleCodeHighlight = `<span style="color: #6DFF1C">implementation</span> '<span style="color: #e5c07b">cn.hutool</span>:<span style="color: #61afef">hutool-all</span>:<span style="color: #ff69b4">5.8.33</span>'`;
 
 export const CodeBlock: React.FC<CodeBlockProps> = ({ type }) => {
-  const highlightCode =
-    type === "maven" ? mavenCodeHighlight : gradleCodeHighlight;
+  const [copied, setCopied] = useState(false);
+  const highlightCode = type === "maven" ? mavenCodeHighlight : gradleCodeHighlight;
+
+  const handleCopy = async () => {
+    const code = type === "maven" ? mavenCode : gradleCode;
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000); // 2秒后重置状态
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.codeBlock}>
@@ -41,13 +52,17 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ type }) => {
           <div dangerouslySetInnerHTML={{ __html: highlightCode }} />
         </div>
         <button
-          className={styles.copyButton}
-          onClick={() => {
-            const code = type === "maven" ? mavenCode : gradleCode;
-            navigator.clipboard.writeText(code);
-          }}
+          className={`${styles.copyButton} ${copied ? styles.copied : ''}`}
+          onClick={handleCopy}
+          disabled={copied}
         >
-          一键复制
+          {copied ? (
+            <>
+              <span className={styles.checkmark}>✓</span> 复制成功
+            </>
+          ) : (
+            '一键复制'
+          )}
         </button>
       </div>
       <div className={styles.description}>

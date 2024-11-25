@@ -25,7 +25,8 @@ const gradleCodeHighlight = `<span style="color: #6DFF1C">implementation</span> 
 
 export const CodeBlock: React.FC<CodeBlockProps> = ({ type }) => {
   const [copied, setCopied] = useState(false);
-  const highlightCode = type === "maven" ? mavenCodeHighlight : gradleCodeHighlight;
+  const highlightCode =
+    type === "maven" ? mavenCodeHighlight : gradleCodeHighlight;
 
   const handleCopy = async () => {
     const code = type === "maven" ? mavenCode : gradleCode;
@@ -34,12 +35,20 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ type }) => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000); // 2秒后重置状态
     } catch (err) {
-      console.error('Failed to copy:', err);
+      console.error("Failed to copy:", err);
     }
   };
 
   return (
     <div className={styles.wrapper}>
+      <div className={styles.logo}>
+        <img
+          src={`/images/${type}.png`}
+          alt="EasyExcel Plus"
+          width={136}
+          height={40}
+        />
+      </div>
       <div className={styles.codeBlock}>
         <div className={styles.codeHeader}>
           <div className={styles.windowButtons}>
@@ -52,7 +61,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ type }) => {
           <div dangerouslySetInnerHTML={{ __html: highlightCode }} />
         </div>
         <button
-          className={`${styles.copyButton} ${copied ? styles.copied : ''}`}
+          className={`${styles.copyButton} ${copied ? styles.copied : ""}`}
           onClick={handleCopy}
           disabled={copied}
         >
@@ -61,7 +70,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ type }) => {
               <span className={styles.checkmark}>✓</span> 复制成功
             </>
           ) : (
-            '一键复制'
+            "一键复制"
           )}
         </button>
       </div>

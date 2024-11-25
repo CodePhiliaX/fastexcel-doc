@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://easyexcel-plus.vercel.app
+
+# Sitemaps
+Sitemap: https://easyexcel-plus.vercel.app/sitemap.xml

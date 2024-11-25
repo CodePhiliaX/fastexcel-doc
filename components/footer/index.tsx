@@ -9,16 +9,16 @@ const Footer: React.FC = () => {
       <div className={styles.footerContent}>
         <div className={styles.logoSection}>
           <Link href="/">
-            <Image 
-              src="/logo.svg" 
-              alt="EasyExcel+" 
-              width={136} 
-              height={40} 
+            <Image
+              src="/images/logo.svg"
+              alt="EasyExcel Plus"
+              width={136}
+              height={40}
               priority
             />
           </Link>
           <p className={styles.copyright}>
-            @2024 Chat2DB. All rights reserved.
+            @2024 EasyExcel Plus. All rights reserved.
           </p>
         </div>
 

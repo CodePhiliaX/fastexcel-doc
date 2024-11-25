@@ -1,3 +1,5 @@
+/** @type {import('nextra').Meta} */
+
 export default {
   index: {
     title: "首页",

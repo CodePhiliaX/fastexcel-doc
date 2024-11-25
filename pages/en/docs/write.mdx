@@ -1,0 +1,805 @@
+---
+title: Writing Excel
+description: Writing Excel Files
+---
+
+## **Basic Writing**
+
+### Overview
+Using EasyExcel to write Excel data through entity objects is the simplest way to write.
+
+#### Sample Object
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class DemoData {
+    @ExcelProperty("String Title")
+    private String string;
+    @ExcelProperty("Date Title")
+    private Date date;
+    @ExcelProperty("Number Title")
+    private Double doubleData;
+    @ExcelIgnore
+    private String ignore; // Ignored field
+}
+```
+
+#### Code Example
+```java
+@Test
+public void simpleWrite() {
+    String fileName = "simpleWrite" + System.currentTimeMillis() + ".xlsx";
+
+    // Method 1: JDK8 Lambda
+    EasyExcel.write(fileName, DemoData.class)
+        .sheet("Template")
+        .doWrite(() -> data()); // Using pagination to get data
+
+    // Method 2: Direct data passing
+    EasyExcel.write(fileName, DemoData.class)
+        .sheet("Template")
+        .doWrite(data());
+
+    // Method 3: Using ExcelWriter
+    try (ExcelWriter excelWriter = EasyExcel.write(fileName, DemoData.class).build()) {
+        WriteSheet writeSheet = EasyExcel.writerSheet("Template").build();
+        excelWriter.write(data(), writeSheet);
+    }
+}
+```
+
+---
+
+## **Export Specific Columns Based on Parameters**
+
+### Overview
+Dynamically select columns to export by setting a collection of column names, supporting column exclusion or inclusion.
+
+#### Code Example
+```java
+@Test
+public void excludeOrIncludeWrite() {
+    String fileName = "excludeOrIncludeWrite" + System.currentTimeMillis() + ".xlsx";
+
+    // Exclude specific columns
+    Set<String> excludeColumns = Set.of("date");
+    EasyExcel.write(fileName, DemoData.class)
+        .excludeColumnFiledNames(excludeColumns)
+        .sheet("Template")
+        .doWrite(data());
+
+    // Include only specific columns
+    Set<String> includeColumns = Set.of("date");
+    EasyExcel.write(fileName, DemoData.class)
+        .includeColumnFiledNames(includeColumns)
+        .sheet("Template")
+        .doWrite(data());
+}
+```
+
+---
+
+## **Specify the Order of Columns to Write**
+
+### Overview
+Specify the order of columns by using the `index` attribute of the `@ExcelProperty` annotation.
+
+#### Sample Object
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class IndexData {
+    @ExcelProperty(value = "String Title", index = 0)
+    private String string;
+    @ExcelProperty(value = "Date Title", index = 1)
+    private Date date;
+    @ExcelProperty(value = "Number Title", index = 3)
+    private Double doubleData; // Leave the second column empty
+}
+```
+
+#### Code Example
+```java
+@Test
+public void indexWrite() {
+    String fileName = "indexWrite" + System.currentTimeMillis() + ".xlsx";
+    EasyExcel.write(fileName, IndexData.class)
+        .sheet("Template")
+        .doWrite(data());
+}
+```
+
+---
+
+## **Complex Header Writing**
+
+### Overview
+Support multi-level headers by specifying main and sub-titles with the `@ExcelProperty` annotation.
+
+#### Sample Object
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class ComplexHeadData {
+    @ExcelProperty({"Main Title", "String Title"})
+    private String string;
+    @ExcelProperty({"Main Title", "Date Title"})
+    private Date date;
+    @ExcelProperty({"Main Title", "Number Title"})
+    private Double doubleData;
+}
+```
+
+#### Code Example
+```java
+@Test
+public void complexHeadWrite() {
+    String fileName = "complexHeadWrite" + System.currentTimeMillis() + ".xlsx";
+    EasyExcel.write(fileName, ComplexHeadData.class)
+        .sheet("Template")
+        .doWrite(data());
+}
+```
+
+---
+
+## **Repeated Writing**
+
+### Overview
+Write data in batches to the same Sheet or multiple Sheets, which can achieve paging writing of large data.
+
+#### Code Example
+```java
+@Test
+public void repeatedWrite() {
+    String fileName = "repeatedWrite" + System.currentTimeMillis() + ".xlsx";
+
+    // Method 1: Write to the same Sheet
+    try (ExcelWriter excelWriter = EasyExcel.write(fileName, DemoData.class).build()) {
+        WriteSheet writeSheet = EasyExcel.writerSheet("Template").build();
+        for (int i = 0; i < 5; i++) {
+            excelWriter.write(data(), writeSheet);
+        }
+    }
+
+    // Method 2: Write to multiple Sheets
+    try (ExcelWriter excelWriter = EasyExcel.write(fileName, DemoData.class).build()) {
+        for (int i = 0; i < 5; i++) {
+            WriteSheet writeSheet = EasyExcel.writerSheet(i, "Template" + i).build();
+            excelWriter.write(data(), writeSheet);
+        }
+    }
+}
+```
+
+---
+
+## **Custom Format Writing**
+
+### Overview
+Support custom formats such as dates and numbers, implemented through annotations.
+
+#### Sample Object
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class ConverterData {
+    @ExcelProperty(value = "String Title", converter = CustomStringStringConverter.class)
+    private String string;
+
+    @DateTimeFormat("yyyy年MM月dd日HH时mm分ss秒")
+    @ExcelProperty("Date Title")
+    private Date date;
+
+    @NumberFormat("#.##%")
+    @ExcelProperty("Number Title")
+    private Double doubleData;
+}
+```
+
+#### Code Example
+```java
+@Test
+public void converterWrite() {
+    String fileName = "converterWrite" + System.currentTimeMillis() + ".xlsx";
+    EasyExcel.write(fileName, ConverterData.class)
+        .sheet("Template")
+        .doWrite(data());
+}
+```
+
+---
+
+## **Custom Styles**
+
+### Annotation Style
+
+#### Overview
+Set cell styles through annotations in the entity class, including font, background color, and row height.
+
+#### Sample Object
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+// Set the header background to red
+@HeadStyle(fillPatternType = FillPatternTypeEnum.SOLID_FOREGROUND, fillForegroundColor = 10)
+// Set the header font size to 20
+@HeadFontStyle(fontHeightInPoints = 20)
+// Set the content background to green
+@ContentStyle(fillPatternType = FillPatternTypeEnum.SOLID_FOREGROUND, fillForegroundColor = 17)
+// Set the content font size to 20
+@ContentFontStyle(fontHeightInPoints = 20)
+public class DemoStyleData {
+    // Set the header and content styles of a specific column
+    @HeadStyle(fillPatternType = FillPatternTypeEnum.SOLID_FOREGROUND, fillForegroundColor = 14)
+    @HeadFontStyle(fontHeightInPoints = 30)
+    @ContentStyle(fillPatternType = FillPatternTypeEnum.SOLID_FOREGROUND, fillForegroundColor = 40)
+    @ContentFontStyle(fontHeightInPoints = 30)
+    @ExcelProperty("String Title")
+    private String string;
+
+    @ExcelProperty("Date Title")
+    private Date date;
+
+    @ExcelProperty("Number Title")
+    private Double doubleData;
+}
+```
+
+#### Code Example
+```java
+@Test
+public void annotationStyleWrite() {
+    String fileName = "annotationStyleWrite" + System.currentTimeMillis() + ".xlsx";
+
+    EasyExcel.write(fileName, DemoStyleData.class)
+        .sheet("Style Template")
+        .doWrite(data());
+}
+```
+
+---
+
+### **Interceptor Style**
+
+#### Overview
+Set styles dynamically through the `WriteHandler` interface, which is suitable for complex style logic.
+
+#### Example 1: Using Existing Strategies
+Set styles for headers and content using the `HorizontalCellStyleStrategy`.
+
+#### Code Example
+```java
+@Test
+public void handlerStyleWrite() {
+    String fileName = "handlerStyleWrite" + System.currentTimeMillis() + ".xlsx";
+
+    // Define header styles
+    WriteCellStyle headStyle = new WriteCellStyle();
+    headStyle.setFillForegroundColor(IndexedColors.RED.getIndex()); // Red background
+    WriteFont headFont = new WriteFont();
+    headFont.setFontHeightInPoints((short) 20); // Font size is 20
+    headStyle.setWriteFont(headFont);
+
+    // Define content styles
+    WriteCellStyle contentStyle = new WriteCellStyle();
+    contentStyle.setFillForegroundColor(IndexedColors.GREEN.getIndex()); // Green background
+    contentStyle.setFillPatternType(FillPatternType.SOLID_FOREGROUND);
+    WriteFont contentFont = new WriteFont();
+    contentFont.setFontHeightInPoints((short) 20);
+    contentStyle.setWriteFont(contentFont);
+
+    // Use the strategy to set styles
+    HorizontalCellStyleStrategy styleStrategy =
+        new HorizontalCellStyleStrategy(headStyle, contentStyle);
+
+    EasyExcel.write(fileName, DemoData.class)
+        .registerWriteHandler(styleStrategy)
+        .sheet("Style Template")
+        .doWrite(data());
+}
+```
+
+---
+
+#### Example 2: Completely Custom Interceptor
+If existing strategies cannot meet your needs, you can implement the `CellWriteHandler` interface to completely customize styles.
+
+#### Custom Interceptor
+```java
+@Slf4j
+public class CustomCellStyleWriteHandler implements CellWriteHandler {
+
+    @Override
+    public void afterCellDispose(CellWriteHandlerContext context) {
+        // Set styles only for content cells
+        if (BooleanUtils.isNotTrue(context.getHead())) {
+            WriteCellData<?> cellData = context.getFirstCellData();
+            WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
+
+            // Set background color to yellow
+            writeCellStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+            writeCellStyle.setFillPatternType(FillPatternType.SOLID_FOREGROUND);
+
+            // Set font color to blue
+            WriteFont writeFont = new WriteFont();
+            writeFont.setColor(IndexedColors.BLUE.getIndex());
+            writeFont.setFontHeightInPoints((short) 14); // Font size is 14
+            writeCellStyle.setWriteFont(writeFont);
+
+            log.info("Customized cell styles: row {}, column {}", context.getRowIndex(), context.getColumnIndex());
+        }
+    }
+}
+```
+
+#### Code Example
+```java
+@Test
+public void customCellStyleWrite() {
+    String fileName = "customCellStyleWrite" + System.currentTimeMillis() + ".xlsx";
+
+    EasyExcel.write(fileName, DemoData.class)
+        .registerWriteHandler(new CustomCellStyleWriteHandler())
+        .sheet("Custom Styles")
+        .doWrite(data());
+}
+```
+
+---
+
+#### Example 3: Combining with POI Styles
+Directly manipulate POI's `CellStyle`, suitable for precise control over styles.
+
+#### Code Example
+```java
+@Test
+public void poiStyleWrite() {
+    String fileName = "poiStyleWrite" + System.currentTimeMillis() + ".xlsx";
+
+    EasyExcel.write(fileName, DemoData.class)
+        .registerWriteHandler(new CellWriteHandler() {
+            @Override
+            public void afterCellDispose(CellWriteHandlerContext context) {
+                if (BooleanUtils.isNotTrue(context.getHead())) {
+                    Cell cell = context.getCell();
+                    Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
+                    
+                    // Create and set styles
+                    CellStyle cellStyle = workbook.createCellStyle();
+                    cellStyle.setFillForegroundColor(IndexedColors.LIGHT_ORANGE.getIndex());
+                    cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                    cell.setCellStyle(cellStyle);
+                }
+            }
+        })
+        .sheet("POI Styles")
+        .doWrite(data());
+}
+```
+
+---
+
+### **Application Scenario**
+
+| Scenario                             | Recommended Method                 | Example            |
+|----------------------------------|-----------------------------|-----------------|
+| Simple style settings              | Annotation style                   | Example 1          |
+| Different columns or rows dynamic style settings | Using existing strategies | Example 2-1        |
+| Complex conditional control styles | Custom interceptor                | Example 2-2        |
+| Precise control over cell styles   | POI custom                      | Example 3          |
+
+
+---
+
+## **Image Export**
+
+### Overview
+Support exporting images through files, streams, byte arrays, URLs, etc.
+
+#### Sample Object
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+@ContentRowHeight(100)
+@ColumnWidth(25)
+public class ImageDemoData {
+    private File file;
+    private InputStream inputStream;
+    @ExcelProperty(converter = StringImageConverter.class)
+    private String string;
+    private byte[] byteArray;
+    private URL url;
+}
+```
+
+#### Code Example
+```java
+@Test
+public void imageWrite() throws Exception {
+    String fileName = "imageWrite" + System.currentTimeMillis() + ".xlsx";
+    String imagePath = "path/to/image.jpg";
+
+    List<ImageDemoData> list = new ArrayList<>();
+    ImageDemoData data = new ImageDemoData();
+    data.setFile(new File(imagePath));
+    data.setByteArray(Files.readAllBytes(Paths.get(imagePath)));
+    data.setUrl(new URL("https://example.com/image.jpg"));
+    list.add(data);
+
+    EasyExcel.write(fileName, ImageDemoData.class)
+        .sheet()
+        .doWrite(list);
+}
+```
+
+---
+
+## **Hyperlink, Comment, Formula Writing**
+
+### Overview
+Support writing hyperlinks, comments, and formulas in cells.
+
+#### Sample Object
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class WriteCellDemoData {
+    private WriteCellData<String> hyperlink;
+    private WriteCellData<String> commentData;
+    private WriteCellData<String> formulaData;
+}
+```
+
+#### Code Example
+```java
+@Test
+public void writeCellDataWrite() {
+    String fileName = "writeCellDataWrite" + System.currentTimeMillis() + ".xlsx";
+    WriteCellDemoData data = new WriteCellDemoData();
+
+    // Set hyperlink
+    data.setHyperlink(new WriteCellData<>("Click to visit").hyperlink("https://example.com"));
+
+    // Set comment
+    data.setCommentData(new WriteCellData<>("Comment information"));
+
+    // Set formula
+    data.setFormulaData(new WriteCellData<>("=SUM(A1:A10)"));
+
+    EasyExcel.write(fileName, WriteCellDemoData.class)
+        .sheet("Template")
+        .doWrite(Collections.singletonList(data));
+}
+```
+
+---
+
+## **Dynamic Head Writing**
+
+### Overview
+Generate dynamic headers in real-time for dynamic data or internationalization scenarios.
+
+#### Code Example
+```java
+@Test
+public void dynamicHeadWrite() {
+    String fileName = "dynamicHeadWrite" + System.currentTimeMillis() + ".xlsx";
+
+    List<List<String>> head = Arrays.asList(
+        Collections.singletonList("Dynamic String Title"),
+        Collections.singletonList("Dynamic Number Title"),
+        Collections.singletonList("Dynamic Date Title")
+    );
+
+    EasyExcel.write(fileName).head(head)
+        .sheet("Template")
+        .doWrite(data());
+}
+```
+
+
+## **Insert Comments**
+
+### Overview
+Add comments to specific cells through interceptors for annotations or special prompts.
+
+### Custom Comment Interceptor
+```java
+@Slf4j
+public class CommentWriteHandler implements RowWriteHandler {
+
+    @Override
+    public void afterRowDispose(RowWriteHandlerContext context) {
+        if (BooleanUtils.isTrue(context.getHead())) {
+            Sheet sheet = context.getWriteSheetHolder().getSheet();
+            Drawing<?> drawingPatriarch = sheet.createDrawingPatriarch();
+            // Create a comment in the first row and second column
+            Comment comment = drawingPatriarch.createCellComment(
+                new XSSFClientAnchor(0, 0, 0, 0, (short) 1, 0, (short) 2, 1));
+            comment.setString(new XSSFRichTextString("Comment content"));
+            sheet.getRow(0).getCell(1).setCellComment(comment);
+        }
+    }
+}
+```
+
+### Code Example
+```java
+@Test
+public void commentWrite() {
+    String fileName = "commentWrite" + System.currentTimeMillis() + ".xlsx";
+
+    EasyExcel.write(fileName, DemoData.class)
+        .inMemory(Boolean.TRUE) // Comments must be enabled in memory mode
+        .registerWriteHandler(new CommentWriteHandler())
+        .sheet("Comment Example")
+        .doWrite(data());
+}
+```
+
+---
+
+## **Template Writing**
+
+### Overview
+Support using existing template files to fill in data on the template, suitable for standardized output.
+
+### Code Example
+```java
+@Test
+public void templateWrite() {
+    String templateFileName = "path/to/template.xlsx";
+    String fileName = "templateWrite" + System.currentTimeMillis() + ".xlsx";
+
+    EasyExcel.write(fileName, DemoData.class)
+        .withTemplate(templateFileName)
+        .sheet()
+        .doWrite(data());
+}
+```
+
+---
+
+## **Column Width and Row Height**
+
+### Overview
+Control column width and row height through annotations for scenarios with specific table format requirements.
+
+### Sample Object
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+@ContentRowHeight(20)
+@HeadRowHeight(30)
+@ColumnWidth(25) // Default column width
+public class WidthAndHeightData {
+    @ExcelProperty("String Title")
+    private String string;
+
+    @ExcelProperty("Date Title")
+    private Date date;
+
+    @ColumnWidth(50) // Set column width individually
+    @ExcelProperty("Number Title")
+    private Double doubleData;
+}
+```
+
+### Code Example
+```java
+@Test
+public void widthAndHeightWrite() {
+    String fileName = "widthAndHeightWrite" + System.currentTimeMillis() + ".xlsx";
+
+    EasyExcel.write(fileName, WidthAndHeightData.class)
+        .sheet("Width and Height Example")
+        .doWrite(data());
+}
+```
+
+---
+
+## **Merge Cells**
+
+### Overview
+Support merging cells through annotations or custom merge strategies.
+
+### Method 1: Annotation Style
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class DemoMergeData {
+    @ContentLoopMerge(eachRow = 2) // Merge every 2 rows
+    @ExcelProperty("String Title")
+    private String string;
+
+    @ExcelProperty("Date Title")
+    private Date date;
+
+    @ExcelProperty("Number Title")
+    private Double doubleData;
+}
+```
+
+### Method 2: Custom Merge Strategy
+```java
+public class CustomMergeStrategy extends AbstractMergeStrategy {
+    @Override
+    protected void merge(Sheet sheet, WriteSheetHolder writeSheetHolder) {
+        // Custom merge rules
+        sheet.addMergedRegion(new CellRangeAddress(1, 2, 0, 1)); // Example merge range
+    }
+}
+```
+
+### Code Example
+```java
+@Test
+public void mergeWrite() {
+    String fileName = "mergeWrite" + System.currentTimeMillis() + ".xlsx";
+
+    // Annotation style
+    EasyExcel.write(fileName, DemoMergeData.class)
+        .sheet("Merge Example")
+        .doWrite(data());
+
+    // Custom merge strategy
+    EasyExcel.write(fileName, DemoData.class)
+        .registerWriteHandler(new CustomMergeStrategy())
+        .sheet("Custom Merge")
+        .doWrite(data());
+}
+```
+
+---
+
+## **Using Table to Write**
+
+### Overview
+Support writing multiple Tables in a single Sheet using the `Table` feature.
+
+### Code Example
+```java
+@Test
+public void tableWrite() {
+    String fileName = "tableWrite" + System.currentTimeMillis() + ".xlsx";
+
+    try (ExcelWriter excelWriter = EasyExcel.write(fileName, DemoData.class).build()) {
+        WriteSheet writeSheet = EasyExcel.writerSheet("Table Example").build();
+        WriteTable table1 = EasyExcel.writerTable(0).build();
+        WriteTable table2 = EasyExcel.writerTable(1).build();
+
+        excelWriter.write(data(), writeSheet, table1);
+        excelWriter.write(data(), writeSheet, table2);
+    }
+}
+```
+
+---
+
+## **Dynamic Head Writing**
+
+### Overview
+Generate dynamic headers in real-time for scenarios where the header content changes dynamically.
+
+### Code Example
+```java
+@Test
+public void dynamicHeadWrite() {
+    String fileName = "dynamicHeadWrite" + System.currentTimeMillis() + ".xlsx";
+
+    List<List<String>> head = Arrays.asList(
+        Collections.singletonList("Dynamic String Title"),
+        Collections.singletonList("Dynamic Number Title"),
+        Collections.singletonList("Dynamic Date Title"));
+
+    EasyExcel.write(fileName)
+        .head(head)
+        .sheet("Dynamic Head")
+        .doWrite(data());
+}
+```
+
+---
+
+## **Custom Interceptor**
+
+### Overview
+Custom logic (such as adding dropdowns or setting hyperlinks) requires interceptor operations.
+
+### Example 1: Setting Dropdowns
+```java
+public class DropdownWriteHandler implements SheetWriteHandler {
+    @Override
+    public void afterSheetCreate(SheetWriteHandlerContext context) {
+        DataValidationHelper helper = context.getWriteSheetHolder().getSheet().getDataValidationHelper();
+        CellRangeAddressList range = new CellRangeAddressList(1, 10, 0, 0); // Dropdown area
+        DataValidationConstraint constraint = helper.createExplicitListConstraint(new String[] {"Option 1", "Option 2"});
+        DataValidation validation = helper.createValidation(constraint, range);
+        context.getWriteSheetHolder().getSheet().addValidationData(validation);
+    }
+}
+```
+
+### Code Example
+```java
+@Test
+public void customHandlerWrite() {
+    String fileName = "customHandlerWrite" + System.currentTimeMillis() + ".xlsx";
+
+    EasyExcel.write(fileName, DemoData.class)
+        .registerWriteHandler(new DropdownWriteHandler())
+        .sheet("Custom Interceptor")
+        .doWrite(data());
+}
+```
+
+
+
+---
+
+## **Writing Without Creating Objects**
+
+### Overview
+Write data directly using `List<List<String>>` to define headers and data without creating entity classes.
+
+### Code Example
+```java
+@Test
+public void noModelWrite() {
+    String fileName = "noModelWrite" + System.currentTimeMillis() + ".xlsx";
+
+    EasyExcel.write(fileName)
+        .head(head()) // Dynamic head
+        .sheet("No Object Writing")
+        .doWrite(dataList());
+}
+
+private List<List<String>> head() {
+    return Arrays.asList(
+        Collections.singletonList("String Title"),
+        Collections.singletonList("Number Title"),
+        Collections.singletonList("Date Title"));
+}
+
+private List<List<Object>> dataList() {
+    List<List<Object>> list = new ArrayList<>();
+    for (int i = 0; i < 10; i++) {
+        list.add(Arrays.asList("String" + i, 0.56, new Date()));
+    }
+    return list;
+}
+```
+
+
+---
+
+## **Web Environment Writing**
+
+### Overview
+Generate Excel files through HTTP interfaces and provide download functionality.
+
+#### Code Example
+```java
+@GetMapping("download")
+public void download(HttpServletResponse response) throws IOException {
+    response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    response.setCharacterEncoding("utf-8");
+    String fileName = URLEncoder.encode("Test", "UTF-8").replaceAll("\\+", "%20");
+    response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
+
+    EasyExcel.write(response.getOutputStream(), DemoData.class)
+        .sheet("Template")
+        .doWrite(data());
+}
+```

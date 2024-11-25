@@ -1,0 +1,98 @@
+---
+title: 讀取Excel
+description: 讀取Excel
+---
+
+# 安裝
+
+下表列出了各版本 EasyExcel-Plus 基礎庫對 Java 語言版本最低要求的情況：
+
+| 版本   | jdk版本支援範圍 | 備註                             |
+|--------|:---------------:|----------------------------------|
+| 4.0.0+ | jdk8 - jdk21   | 目前的master分支，完全相容easyexcel |
+| 5.0.0+ | jdk8 - jdk21   | 下一代版本，移除poi相依            |
+
+我們強烈建議您使用最新版本的 EasyExcel-Plus，因為最新版本中的效能最佳化、錯誤修復和新功能都會讓您的使用更加方便。
+
+> 因為 EasyExcel-Plus 底層使用 poi 作為基礎套件，如果您使用 4+ 以上的版本，並且專案中已經有 poi 相關元件，需要您手動排除 poi 的相關 jar 套件。
+
+如果您使用 Maven 進行專案構建，請在 `pom.xml` 文件中引入以下配置：
+```xml
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>easyexcel</artifactId>
+    <version>4.0.3</version>
+</dependency>
+```
+
+如果您使用 Gradle 進行專案構建，請在 `build.gradle` 文件中引入以下配置：
+```gradle
+dependencies {
+    implementation 'com.alibaba:easyexcel:4.0.3'
+}
+```
+
+# 更新
+
+訪問 [easyexcel-plus](https://github.com/alibaba/easyexcel) 獲取最新版本。
+
+
+# 讀取 Excel 文件
+
+下面是讀取 Excel 文件的例子：
+```java
+// 實現 ReadListener 介面，設置讀取資料的操作
+public class DemoDataListener implements ReadListener<DemoData> {
+    @Override
+    public void invoke(DemoData data, AnalysisContext context) {
+        System.out.println("解析到一条数据" + JSON.toJSONString(data));
+    }
+
+    @Override
+    public void doAfterAllAnalysed(AnalysisContext context) {
+        System.out.println("所有数据解析完成！");
+    }
+}
+
+public static void main(String[] args) {
+    String fileName = "demo.xlsx";
+    // 读取 Excel 文件
+    EasyExcel.read(fileName, DemoData.class, new DemoDataListener()).sheet().doRead();
+}
+```
+
+# 创建 Excel 文件
+
+下面是一个创建 Excel 文档的简单例子：
+```java
+// 示例数据类
+public class DemoData {
+    @ExcelProperty("字符串标题")
+    private String string;
+    @ExcelProperty("日期标题")
+    private Date date;
+    @ExcelProperty("数字标题")
+    private Double doubleData;
+    @ExcelIgnore
+    private String ignore;
+}
+
+// 填充要写入的数据
+private static List<DemoData> data() {
+    List<DemoData> list = new ArrayList<>();
+    for (int i = 0; i < 10; i++) {
+        DemoData data = new DemoData();
+        data.setString("字符串" + i);
+        data.setDate(new Date());
+        data.setDoubleData(0.56);
+        list.add(data);
+    }
+    return list;
+}
+
+public static void main(String[] args) {
+    String fileName = "demo.xlsx";
+    // 创建一个名为“模板”的 sheet 页，并写入数据
+    EasyExcel.write(fileName, DemoData.class).sheet("模板").doWrite(data());
+}
+```

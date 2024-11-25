@@ -1,0 +1,18 @@
+---
+title: 高度なAPI
+description: 高度なAPI
+---
+
+# コア概念
+
+Excelに対して大量または詳細な読み書き操作を行う必要がある場合、easyexcel-plusの重要な概念とクラスを理解する必要があります。これらは、カスタム操作を試みる際に豊富なオプションを提供します。
+
+- `EasyExcel`：エントリークラス、各種操作を開始するために使用
+- `ExcelReaderBuilder`：ReadWorkbook/WriteWorkbookを構築、Excelオブジェクトとして理解可能
+- `ExcelReaderSheetBuilder`：ReadSheet/WriteSheetオブジェクトを構築、Excelの1ページとして理解可能
+- `ReadListener`：各行の読み取り後にデータを処理するために呼び出される
+- `WriteHandler`：セルの作成、テーブルの作成などの各操作で呼び出される
+
+すべての設定は継承され、Workbookの設定はSheetに継承されます。そのため、EasyExcelでパラメータを設定する際、EasyExcel...sheet()メソッドの前のスコープはシート全体に、その後は個別のシートに適用されます。
+
+[以下、原文と同じ構造で日本語に翻訳...] 

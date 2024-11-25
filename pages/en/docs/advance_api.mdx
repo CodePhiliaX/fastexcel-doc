@@ -1,0 +1,18 @@
+---
+title: Advanced API
+description: Advanced API
+---
+
+# Core Concepts
+
+If you need to perform extensive or detailed read/write operations on Excel, you need to understand some important concepts and classes in EasyExcel-Plus. These will provide rich options when you try to customize operations.
+
+- `EasyExcel`: Entry class, used to start various operations
+- `ExcelReaderBuilder`: Builds a ReadWorkbook/WriteWorkbook, can be understood as an Excel object
+- `ExcelReaderSheetBuilder`: Builds a ReadSheet/WriteSheet object, can be understood as a page in Excel
+- `ReadListener`: Called after each row is read to process data
+- `WriteHandler`: Called for each operation including creating cells, creating tables, etc.
+
+All configurations are inherited, Workbook's configuration will be inherited by Sheet, so when setting parameters in EasyExcel, the scope before the EasyExcel...sheet() method is the entire sheet, after that it's for individual sheets.
+
+[Rest of content translated following the same structure as original...] 

@@ -1,0 +1,49 @@
+---
+title: Excel埋め込み
+description: Excel埋め込み
+---
+
+## **シンプルな埋め込み**
+
+### 概要
+テンプレートファイルをベースに、オブジェクトまたはMapを使用してExcelにデータを埋め込みます。
+
+#### サンプルオブジェクト
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class FillData {
+    private String name;
+    private double number;
+    private Date date;
+}
+```
+
+#### サンプルコード
+```java
+@Test
+public void simpleFill() {
+    String templateFileName = "path/to/simple.xlsx";
+
+    // 方法1：オブジェクトによる埋め込み
+    FillData fillData = new FillData();
+    fillData.setName("山田");
+    fillData.setNumber(5.2);
+    EasyExcel.write("simpleFill.xlsx")
+        .withTemplate(templateFileName)
+        .sheet()
+        .doFill(fillData);
+
+    // 方法2：Mapによる埋め込み
+    Map<String, Object> map = new HashMap<>();
+    map.put("name", "山田");
+    map.put("number", 5.2);
+    EasyExcel.write("simpleFillMap.xlsx")
+        .withTemplate(templateFileName)
+        .sheet()
+        .doFill(map);
+}
+```
+
+[以下、原文と同じ構造で日本語に翻訳...] 

@@ -1,0 +1,306 @@
+---
+title: 常見問題
+description: 常見問題
+---
+
+#### 功能限制
+- **Q:** EasyExcel支持哪些功能？有哪些不支持的功能？
+- **A:** EasyExcel支持Excel檔案的高效讀寫操作，包括CSV格式的支持（從3.0.0-beta1版本開始）。不支持的功能包括單個檔案的並發寫入、讀取圖片巨集等。
+
+#### 寫操作的選擇
+- **Q:** 在寫Excel時，何時選擇填充方式，何時選擇直接寫入？
+- **A:** 對於格式複雜的導出內容，推薦使用模板填充；對於格式簡單的場景，直接寫入更為高效。
+
+#### Lombok註解
+- **Q:** 使用EasyExcel時，實體類中的Lombok註解有何作用？
+- **A:** 實體類中常用的Lombok註解如`@Getter`、`@Setter`、`@EqualsAndHashCode`用於自動生成getter、setter方法及equals和hashCode方法。如果不想使用這些自動生成的方法，可以自行實現。
+
+#### 欄位匹配
+- **Q:** 如何解決部分欄位無法正確讀取或寫入的問題？
+- **A:** 確保實體類欄位遵循駝峰命名規則，避免使用`@Accessors(chain = true)`，推薦使用`@Builder`替代。另外，確保實體類中使用了`@ExcelProperty`註解標記參與讀寫的欄位。
+
+#### 相容性問題
+- **Q:** 使用EasyExcel時遇到相容性問題怎麼辦？
+- **A:** 常見的相容性問題包括`NoSuchMethodException`、`ClassNotFoundException`、`NoClassDefFoundError`等，通常是由於jar包衝突引起。建議檢查並清理專案中的依賴，確保使用的EasyExcel版本與專案中的其他庫相容。
+
+#### 線上部署
+- **Q:** 本地運行正常，為何線上環境出現問題？
+- **A:** 大多數情況下是由於線上環境缺少必要的字體庫導致。可以通過安裝字體庫（如`dejavu-sans-fonts`和`fontconfig`）或啟用記憶體處理模式來解決問題。
+
+#### 並發讀取
+- **Q:** 為何不能將Listener交給Spring管理？
+- **A:** Listener不應被Spring管理，因為這會導致Listener變成單例模式，在並發讀取檔案時可能引發資料混淆問題。每次讀取檔案時應新建一個Listener實例。
+
+#### 效能優化
+- **Q:** 對於10M以上的大型檔案，EasyExcel提供了哪些讀取策略？
+- **A:** EasyExcel支持預設的大檔案處理策略，以及可以自定義的高速模式和針對高並發、超大檔案的優化設定。
+
+#### 寫入與格式設定
+- **Q:** 如何設定單元格格式？
+- **A:** 可以通過在實體類屬性上使用`@ContentStyle`等註解來設定單元格的格式，例如數字格式、日期格式等。
+
+#### 導出問題
+- **Q:** 導出的Excel檔案無法打開或提示需要修復，如何解決？
+- **A:** 這通常是由於前端框架或後端攔截器修改了檔案流導致。建議先測試本地導出，確保後端邏輯無誤後再排查前端和網路相關的問題。
+
+#### 大檔案讀取優化
+- **Q:** EasyExcel在讀取大檔案時如何優化記憶體使用？
+- **A:** EasyExcel預設會自動判斷大檔案的處理方式。對於共享字串超過5MB的檔案，會使用檔案儲存策略，減少記憶體佔用。可以通過設定`readCache`參數來開啟極速模式，但這會增加記憶體消耗。
+
+#### 並發處理
+- **Q:** 如何在高並發環境下高效讀取Excel檔案？
+- **A:** 在高並發環境下，可以使用`SimpleReadCacheSelector`來優化讀取效能。通過設定`maxUseMapCacheSize`和`maxCacheActivateBatchCount`參數，可以控制共享字串的快取策略，提高命中率，減少檔案讀取的延遲。
+
+#### 欄位映射
+- **Q:** 如何處理實體類欄位與Excel列名不一致的情況？
+- **A:** 可以使用`@ExcelProperty`註解來指定實體類欄位與Excel列名的對應關係。例如：
+  ```java
+  @ExcelProperty("姓名")
+  private String name;
+  ```
+
+#### 資料校驗
+- **Q:** 如何在讀取Excel資料時進行校驗？
+- **A:** 可以在`ReadListener`中實現資料校驗邏輯。例如：
+  ```java
+  public class DataValidatorListener extends AnalysisEventListener<DemoData> {
+      @Override
+      public void invoke(DemoData data, AnalysisContext context) {
+          if (data.getName() == null || data.getName().isEmpty()) {
+              throw new RuntimeException("姓名不能為空");
+          }
+          // 處理資料
+      }
+  }
+  ```
+
+#### 自定義樣式
+- **Q:** 如何自定義單元格樣式？
+- **A:** 可以通過實現`WriteHandler`介面來自定義單元格樣式。例如：
+  ```java
+  public class CustomCellStyleWriteHandler extends AbstractCellStyleWriteHandler {
+      @Override
+      protected void setCellStyle(Cell cell, Head head, Integer relativeRowIndex) {
+          CellStyle style = cell.getSheet().getWorkbook().createCellStyle();
+          style.setFillForegroundColor(IndexedColors.RED.getIndex());
+          style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+          cell.setCellStyle(style);
+      }
+  }
+  ```
+
+#### 填充模式
+- **Q:** 如何在填充模式下解決欄位未替換的問題？
+- **A:** 使用`inMemory(true)`參數可以確保欄位正確替換。例如：
+  ```java
+  EasyExcel.write(fileName, DemoData.class).inMemory(true).sheet("模板").doWrite(fillData());
+  ```
+
+#### CSV分隔符
+- **Q:** 如何修改CSV檔案的分隔符？
+- **A:** 可以通過設定`CsvFormat`來修改CSV檔案的分隔符。例如：
+  ```java
+  try (ExcelReader excelReader = EasyExcel.read(fileName, DemoData.class, new DemoDataListener()).build()) {
+      ReadWorkbookHolder readWorkbookHolder = excelReader.analysisContext().readWorkbookHolder();
+      if (readWorkbookHolder instanceof CsvReadWorkbookHolder) {
+          CsvReadWorkbookHolder csvReadWorkbookHolder = (CsvReadWorkbookHolder) readWorkbookHolder;
+          csvReadWorkbookHolder.setCsvFormat(csvReadWorkbookHolder.getCsvFormat().withDelimiter(';'));
+      }
+      ReadSheet readSheet = EasyExcel.readSheet(0).build();
+      excelReader.read(readSheet);
+  }
+  ```
+
+#### 錯誤處理
+- **Q:** 如何處理讀取過程中拋出的異常？
+- **A:** 可以在`ReadListener`中捕獲並處理異常。例如：
+  ```java
+  public class ErrorHandlingListener extends AnalysisEventListener<DemoData> {
+      @Override
+      public void invoke(DemoData data, AnalysisContext context) {
+          try {
+              // 處理資料
+          } catch (Exception e) {
+              // 處理異常
+          }
+      }
+  }
+  ```
+
+#### 依賴衝突
+- **Q:** 如何解決依賴衝突問題？
+- **A:** 常見的依賴衝突包括POI、ehcache和commons-io等。建議檢查專案中的依賴樹，確保使用的版本與EasyExcel相容。可以通過Maven的`dependency:tree`命令查看依賴樹。
+
+#### 效能監控
+- **Q:** 如何監控EasyExcel的效能？
+- **A:** 可以通過開啟除錯日誌來監控EasyExcel的效能。例如：
+  ```java
+  LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+  ch.qos.logback.classic.Logger logger = lc.getLogger("com.alibaba.excel");
+  logger.setLevel(Level.DEBUG);
+  ```
+
+#### 多Sheet讀取
+- **Q:** 如何讀取包含多個Sheet的Excel檔案？
+- **A:** 可以使用`MultipleSheetsListener`來處理多Sheet的讀取。例如：
+  ```java
+  EasyExcel.read(file, MultipleSheetsData.class, new MultipleSheetsListener()).doReadAll();
+  ```
+  或者，可以在讀取前獲取所有Sheet的資訊：
+  ```java
+  ExcelReader excelReader = EasyExcel.read(file, MultipleSheetsData.class, multipleSheetsListener).build();
+  List<ReadSheet> sheets = excelReader.excelExecutor().sheetList();
+  for (ReadSheet readSheet : sheets) {
+      excelReader.read(readSheet);
+  }
+  excelReader.finish();
+  ```
+
+#### 獲取Excel總行數
+- **Q:** 如何獲取Excel檔案的總行數？
+- **A:** 可以在監聽器中使用`analysisContext.readSheetHolder().getApproximateTotalRowNumber()`方法獲取大致的行數。例如：
+  ```java
+  @Override
+  public void doAfterAllAnalysed(AnalysisContext context) {
+      int totalRows = context.readSheetHolder().getApproximateTotalRowNumber();
+      System.out.println("總行數: " + totalRows);
+  }
+  ```
+
+#### 記憶體模式
+- **Q:** 如何使用記憶體模式處理Excel檔案？
+- **A:** 記憶體模式適合處理較小的檔案，可以顯著提高處理速度。例如：
+  ```java
+  EasyExcel.write(fileName, DemoData.class)
+      .inMemory(Boolean.TRUE)
+      .sheet("模板")
+      .doWrite(data());
+  ```
+
+#### 讀取CSV檔案
+- **Q:** 如何讀取CSV檔案並修改分隔符？
+- **A:** 可以通過設定`CsvFormat`來修改CSV檔案的分隔符。例如：
+  ```java
+  String fileName = TestFileUtil.getPath() + "demo" + File.separator + "demo.csv";
+  try (ExcelReader excelReader = EasyExcel.read(fileName, DemoData.class, new DemoDataListener()).build()) {
+      ReadWorkbookHolder readWorkbookHolder = excelReader.analysisContext().readWorkbookHolder();
+      if (readWorkbookHolder instanceof CsvReadWorkbookHolder) {
+          CsvReadWorkbookHolder csvReadWorkbookHolder = (CsvReadWorkbookHolder) readWorkbookHolder;
+          csvReadWorkbookHolder.setCsvFormat(csvReadWorkbookHolder.getCsvFormat().withDelimiter(';'));
+      }
+      ReadSheet readSheet = EasyExcel.readSheet(0).build();
+      excelReader.read(readSheet);
+  }
+  ```
+
+#### 自定義讀取監聽器
+- **Q:** 如何自定義讀取監聽器？
+- **A:** 可以繼承`AnalysisEventListener`類並實現自己的邏輯。例如：
+  ```java
+  public class CustomReadListener extends AnalysisEventListener<DemoData> {
+      @Override
+      public void invoke(DemoData data, AnalysisContext context) {
+          // 處理資料
+      }
+
+      @Override
+      public void doAfterAllAnalysed(AnalysisContext context) {
+          // 所有資料讀取完成後執行的操作
+      }
+  }
+  ```
+
+#### 讀取時忽略未標註的欄位
+- **Q:** 如何在讀取時忽略未標註`@ExcelProperty`的欄位？
+- **A:** 在類的最上面加入`@ExcelIgnoreUnannotated`註解。例如：
+  ```java
+  @Data
+  @ExcelIgnoreUnannotated
+  public class DemoData {
+      @ExcelProperty("姓名")
+      private String name;
+  }
+  ```
+
+#### 導出時設定表頭樣式
+- **Q:** 如何在導出時設定表頭樣式？
+- **A:** 可以通過實現`WriteHandler`介面來自定義表頭樣式。例如：
+  ```java
+  public class CustomHeadStyleWriteHandler extends AbstractHeadStyleWriteHandler {
+      @Override
+      protected void setHeadCellStyle(Cell cell, Head head, Integer relativeRowIndex) {
+          CellStyle style = cell.getSheet().getWorkbook().createCellStyle();
+          style.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+          style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+          cell.setCellStyle(style);
+      }
+  }
+  ```
+
+#### 導出時設定單元格資料格式
+- **Q:** 如何在導出時設定單元格的資料格式？
+- **A:** 可以在實體類屬性上使用`@ContentStyle`註解來設定資料格式。例如：
+  ```java
+  @ExcelProperty("金額")
+  @ContentStyle(dataFormat = 4) // 4對應貨幣格式
+  private Double amount;
+  ```
+
+#### 導出時合併單元格
+- **Q:** 如何在導出時合併單元格？
+- **A:** 可以通過實現`WriteHandler`介面來自定義合併單元格的邏輯。例如：
+  ```java
+  public class MergeCellWriteHandler implements WriteHandler {
+      @Override
+      public void sheet(Sheet sheet, Map<Integer, List<CellRangeAddress>> mergedRegions, AnalysisContext context) {
+          sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 2)); // 合併第1行第1列到第3列
+      }
+  }
+  ```
+
+#### 導出時設定字體
+- **Q:** 如何在導出時設定單元格的字體？
+- **A:** 可以通過創建`Font`物件並應用到`CellStyle`中來設定字體。例如：
+  ```java
+  public class CustomFontWriteHandler extends AbstractCellStyleWriteHandler {
+      @Override
+      protected void setCellStyle(Cell cell, Head head, Integer relativeRowIndex) {
+          Workbook workbook = cell.getSheet().getWorkbook();
+          Font font = workbook.createFont();
+          font.setFontName("Arial");
+          font.setBold(true);
+          CellStyle style = workbook.createCellStyle();
+          style.setFont(font);
+          cell.setCellStyle(style);
+      }
+  }
+  ```
+
+#### 讀取時處理空值
+- **Q:** 如何在讀取時處理空值？
+- **A:** 可以在`ReadListener`中處理空值。例如：
+  ```java
+  public class NullValueHandlerListener extends AnalysisEventListener<DemoData> {
+      @Override
+      public void invoke(DemoData data, AnalysisContext context) {
+          if (data.getName() == null) {
+              data.setName("預設值");
+          }
+          // 處理資料
+      }
+  }
+  ```
+
+#### 讀取時過濾資料
+- **Q:** 如何在讀取時過濾資料？
+- **A:** 可以在`ReadListener`中實現過濾邏輯。例如：
+  ```java
+  public class DataFilterListener extends AnalysisEventListener<DemoData> {
+      @Override
+      public void invoke(DemoData data, AnalysisContext context) {
+          if (data.getAmount() > 1000) {
+              // 保存或處理資料
+          }
+      }
+  }
+  ```

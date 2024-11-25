@@ -1,7 +1,8 @@
-import React from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import styles from './index.module.css';
+import React from "react";
+import Image from "next/image";
+import Link from "next/link";
+import styles from "./index.module.css";
+import { LanguageSelector } from "../language-switch";
 
 const Footer: React.FC = () => {
   return (
@@ -23,10 +24,7 @@ const Footer: React.FC = () => {
         </div>
 
         <div className={styles.footerLinks}>
-          <div className={styles.languageSelector}>
-            <span className={styles.flag}>🇺🇸</span>
-            <span className={styles.language}>English</span>
-          </div>
+          <LanguageSelector />
 
           <Link href="/docs" className={styles.footerLink}>
             使用文档
@@ -36,19 +34,19 @@ const Footer: React.FC = () => {
             联系我们
           </Link>
 
-          <a 
-            href="https://github.com/CodePhiliaX/easyexcel-plus" 
-            target="_blank" 
-            rel="noopener noreferrer" 
+          <a
+            href="https://github.com/CodePhiliaX/easyexcel-plus"
+            target="_blank"
+            rel="noopener noreferrer"
             className={styles.footerLink}
           >
             Github
           </a>
 
-          <a 
-            href="https://chat2db.ai" 
-            target="_blank" 
-            rel="noopener noreferrer" 
+          <a
+            href="https://chat2db.ai"
+            target="_blank"
+            rel="noopener noreferrer"
             className={styles.footerLink}
           >
             🔥Chat2DB
@@ -59,4 +57,4 @@ const Footer: React.FC = () => {
   );
 };
 
-export default Footer; 
+export default Footer;

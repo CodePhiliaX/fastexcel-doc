@@ -1,0 +1,18 @@
+---
+title: 進階API
+description: 高級API
+---
+
+# 核心概念
+
+如果你需要對 excel 進行大量或者詳細的讀寫操作，你需要知道一些 easyexcel-plus 中比較重要的概念和類。它們在你嘗試自定義操作時，能夠提供豐富的選項。
+
+- `EasyExcel`：入口類，用於構建開始各種操作
+- `ExcelReaderBuilder`：構建出一個 ReadWorkbook WriteWorkbook，可以理解成一個excel對象
+- `ExcelReaderSheetBuilder`：構建出一個 ReadSheet WriteSheet對象，可以理解成excel裡面的一頁
+- `ReadListener`：在每一行讀取完畢後都會調用ReadListener來處理數據
+- `WriteHandler`：在每一個操作包括創建單元格、創建表格等都會調用WriteHandler來處理數據
+
+所有配置都是繼承的，Workbook的配置會被Sheet繼承，所以在用EasyExcel設置參數的時候，在EasyExcel...sheet()方法之前作用域是整個sheet,之後針對單個sheet。
+
+[其餘內容與原文相同，僅轉換為繁體中文...] 

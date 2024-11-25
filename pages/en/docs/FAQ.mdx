@@ -1,0 +1,46 @@
+---
+title: FAQ
+description: Frequently Asked Questions
+---
+
+#### Feature Limitations
+- **Q:** What features does EasyExcel support? What features are not supported?
+- **A:** EasyExcel supports efficient reading and writing of Excel files, including CSV format support (starting from version 3.0.0-beta1). Unsupported features include concurrent writing to a single file, reading image macros, etc.
+
+#### Writing Operation Choices
+- **Q:** When writing Excel, when should I choose fill mode and when should I choose direct writing?
+- **A:** For complex export formats, template filling is recommended; for simple format scenarios, direct writing is more efficient.
+
+#### Lombok Annotations
+- **Q:** What's the purpose of Lombok annotations in entity classes when using EasyExcel?
+- **A:** Common Lombok annotations like `@Getter`, `@Setter`, `@EqualsAndHashCode` are used to automatically generate getter, setter methods and equals/hashCode methods. If you don't want to use these auto-generated methods, you can implement them manually.
+
+#### Field Mapping
+- **Q:** How to resolve issues where some fields cannot be correctly read or written?
+- **A:** Ensure entity class fields follow camelCase naming conventions, avoid using `@Accessors(chain = true)`, recommend using `@Builder` instead. Also, make sure fields participating in read/write operations are marked with `@ExcelProperty` annotation.
+
+#### Compatibility Issues
+- **Q:** What should I do when encountering compatibility issues with EasyExcel?
+- **A:** Common compatibility issues include `NoSuchMethodException`, `ClassNotFoundException`, `NoClassDefFoundError`, etc., usually caused by jar package conflicts. It's recommended to check and clean up project dependencies, ensuring the EasyExcel version is compatible with other libraries in your project.
+
+#### Production Deployment
+- **Q:** Why does it work locally but fails in production?
+- **A:** Most cases are due to missing font libraries in the production environment. This can be resolved by installing font libraries (like `dejavu-sans-fonts` and `fontconfig`) or enabling memory processing mode.
+
+#### Concurrent Reading
+- **Q:** Why shouldn't Listeners be managed by Spring?
+- **A:** Listeners should not be managed by Spring as this would make them singletons, potentially causing data confusion during concurrent file reading. A new Listener instance should be created for each file read operation.
+
+#### Performance Optimization
+- **Q:** What reading strategies does EasyExcel provide for large files over 10MB?
+- **A:** EasyExcel supports default large file processing strategies, as well as customizable high-speed mode and optimizations for high concurrency and extremely large files.
+
+#### Writing and Formatting
+- **Q:** How to set cell formats?
+- **A:** Cell formats can be set using annotations like `@ContentStyle` on entity class properties, for example, number formats, date formats, etc.
+
+#### Export Issues
+- **Q:** What should I do if the exported Excel file can't be opened or needs repair?
+- **A:** This is usually caused by frontend frameworks or backend interceptors modifying the file stream. It's recommended to test local export first, ensure backend logic is correct before investigating frontend and network-related issues.
+
+[More content...] 

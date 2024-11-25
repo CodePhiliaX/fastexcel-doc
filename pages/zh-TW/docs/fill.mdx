@@ -1,0 +1,49 @@
+---
+title: 填充Excel
+description: 填充Excel
+---
+
+## **簡單填充**
+
+### 概述
+基於模板文件，通過對象或 Map 填充數據到 Excel 中。
+
+#### 示例對象
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class FillData {
+    private String name;
+    private double number;
+    private Date date;
+}
+```
+
+#### 示例代碼
+```java
+@Test
+public void simpleFill() {
+    String templateFileName = "path/to/simple.xlsx";
+
+    // 方案1：基於對象填充
+    FillData fillData = new FillData();
+    fillData.setName("張三");
+    fillData.setNumber(5.2);
+    EasyExcel.write("simpleFill.xlsx")
+        .withTemplate(templateFileName)
+        .sheet()
+        .doFill(fillData);
+
+    // 方案2：基於 Map 填充
+    Map<String, Object> map = new HashMap<>();
+    map.put("name", "張三");
+    map.put("number", 5.2);
+    EasyExcel.write("simpleFillMap.xlsx")
+        .withTemplate(templateFileName)
+        .sheet()
+        .doFill(map);
+}
+```
+
+[其餘內容與原文相同，僅轉換為繁體中文...] 

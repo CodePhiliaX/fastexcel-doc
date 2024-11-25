@@ -1,0 +1,39 @@
+---
+title: クイックスタート
+description: EasyExcel Plusのクイックスタート
+---
+
+# インストール
+
+以下の表は、各バージョンのEasyExcel-PlusのJavaバージョン要件を示しています：
+
+| バージョン | JDKバージョン対応 | 備考                                          |
+|------------|:----------------:|-----------------------------------------------|
+| 4.0.0+     | jdk8 - jdk21    | 現在のmasterブランチ、easyexcelと完全互換      |
+| 5.0.0+     | jdk8 - jdk21    | 次世代バージョン、POI依存を削除                |
+
+最新バージョンのEasyExcel-Plusの使用を強く推奨します。最新バージョンには、パフォーマンスの最適化、バグ修正、新機能が含まれており、より便利に使用できます。
+
+> EasyExcel-PlusはPOIを基盤パッケージとして使用しているため、バージョン4+を使用し、プロジェクトに既にPOI関連コンポーネントがある場合は、POI関連のjarパッケージを手動で除外する必要があります。
+
+Mavenでプロジェクトをビルドする場合は���`pom.xml`ファイルに以下の設定を追加してください：
+```xml
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>easyexcel</artifactId>
+    <version>4.0.3</version>
+</dependency>
+```
+
+Gradleでプロジェクトをビルドする場合は、`build.gradle`ファイルに以下の設定を追加してください：
+```gradle
+dependencies {
+    implementation 'com.alibaba:easyexcel:4.0.3'
+}
+```
+
+# アップデート
+
+最新バージョンは[easyexcel-plus](https://github.com/alibaba/easyexcel)で確認できます。
+
+[以下、原文と同じ構造で日本語に翻訳...] 

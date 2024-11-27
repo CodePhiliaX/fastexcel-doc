@@ -7,7 +7,16 @@ const withNextra = nextra({
 
 export default withNextra({
   i18n: {
-    locales: ["zh-CN", "zh-TW", "en", "ja"],
+    locales: ["zh-CN", "zh-TW", "en-US", "ja-JP"],
     defaultLocale: "zh-CN",
+  },
+  async redirects() {
+    return [
+      {
+        source: "/en/:path*",
+        destination: "/en-US/:path*",
+        permanent: true,
+      },
+    ];
   },
 });

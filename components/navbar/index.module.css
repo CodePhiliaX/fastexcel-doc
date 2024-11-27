@@ -34,8 +34,8 @@
 
   color: #fff;
 
-  text-shadow: 4px 4px 0px #000;
-  /* -webkit-text-stroke: 1px #000; */
+  /* text-shadow: 4px 4px 0px #000; */
+  -webkit-text-stroke: 1.2px #000;
 }
 
 .navLink:hover {

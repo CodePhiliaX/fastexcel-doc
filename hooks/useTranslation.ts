@@ -1,14 +1,14 @@
   import { useRouter } from "nextra/hooks";
 import zhCN from "../locales/zh-CN";
-import en from "../locales/en";
+import en from "../locales/en-US";
 import zhTW from "../locales/zh-TW";
-import ja from "../locales/ja";
+import ja from "../locales/ja-JP";
 
 const translations = {
   "zh-CN": zhCN,
-  en: en,
+  "en-US": en,
   "zh-TW": zhTW,
-  ja: ja,
+  "ja-JP": ja,
 };
 
 export const useTranslation = () => {

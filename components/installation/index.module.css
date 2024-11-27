@@ -1,6 +1,6 @@
 .installation {
   padding: 4rem 2rem;
-
+  background: #FFFFFF;
 }
 
 .sectionTitle {
@@ -29,7 +29,11 @@
 }
 
 @media (max-width: 768px) {
+  .installation {
+    padding: 4rem 0;
+  }
+  
   .codeBlocks {
     grid-template-columns: 1fr;
   }
-} 
+}

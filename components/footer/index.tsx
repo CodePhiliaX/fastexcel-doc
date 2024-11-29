@@ -14,14 +14,14 @@ const Footer: React.FC = () => {
           <Link href="/">
             <Image
               src="/images/logo.svg"
-              alt="EasyExcel Plus"
+              alt="FastExcel"
               width={136}
               height={40}
               priority
             />
           </Link>
           <p className={styles.copyright}>
-            @2024 EasyExcel Plus. {t("footer.copyright")}
+            @2024 FastExcel. {t("footer.copyright")}
           </p>
         </div>
 

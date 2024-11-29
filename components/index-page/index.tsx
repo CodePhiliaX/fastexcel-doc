@@ -15,6 +15,7 @@ const IndexPage: React.FC = () => {
       <div className={styles.container}>
         <div className={styles.hero}>
           <h1 className={styles.title}>{t("common.title")}</h1>
+
           <p className={styles.subtitle}>{t("common.subtitle")}</p>
           <div className={styles.buttonGroup}>
             <Link href="/docs" className={styles.primaryButton}>

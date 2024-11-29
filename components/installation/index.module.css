@@ -1,6 +1,6 @@
 .installation {
   padding: 4rem 2rem;
-  background: #FFFFFF;
+  background: #ffffff;
 }
 
 .sectionTitle {
@@ -8,7 +8,10 @@
   font-size: 28px;
   font-weight: 700;
   margin-bottom: 1rem;
-  color: #000;
+  color: #FFF;
+  -webkit-text-stroke: 8px black;
+  paint-order: stroke fill;
+  text-shadow: 2px 2px 0px black;
 }
 
 .sectionSubtitle {
@@ -32,7 +35,7 @@
   .installation {
     padding: 4rem 0;
   }
-  
+
   .codeBlocks {
     grid-template-columns: 1fr;
   }

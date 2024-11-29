@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "deploy": "PORT=3111 npm run start ",
-    "sitemap": "next-sitemap"
+    "postbuild": "next-sitemap"
   },
   "repository": {
     "type": "git",

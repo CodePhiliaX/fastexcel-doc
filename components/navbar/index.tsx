@@ -16,7 +16,7 @@ const Navbar = () => {
         <Link href="/" className={styles.logoContainer}>
           <Image
             src="/images/logo.svg"
-            alt="EasyExcel Plus"
+            alt="FastExcel"
             width={136}
             height={40}
             priority

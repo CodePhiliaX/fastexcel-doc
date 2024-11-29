@@ -44,7 +44,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ type }) => {
       <div className={styles.logo}>
         <img
           src={`/images/${type}.png`}
-          alt="EasyExcel Plus"
+          alt="FastExcel"
           width={136}
           height={40}
         />

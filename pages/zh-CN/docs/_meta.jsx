@@ -5,7 +5,7 @@ export default {
       layout: "full",
     },
   },
-  quick_start: "快速开始",
+  intro: "入门",
   write: "写入Excel",
   read: "读取Excel",
   fill: "填充Excel",

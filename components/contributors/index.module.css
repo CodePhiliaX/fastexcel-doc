@@ -8,7 +8,7 @@
   font-size: 28px;
   font-weight: 700;
   margin-bottom: 1rem;
-  color: #FFF;
+  color: #fff;
   -webkit-text-stroke: 8px black;
   paint-order: stroke fill;
   text-shadow: 2px 2px 0px black;
@@ -54,6 +54,9 @@
 .name {
   font-weight: 600;
   color: #000;
+}
+.name:hover {
+  text-decoration: underline;
 }
 
 .githubButton {

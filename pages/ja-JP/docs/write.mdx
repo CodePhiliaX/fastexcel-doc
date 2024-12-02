@@ -32,18 +32,18 @@ public void simpleWrite() {
     String fileName = "simpleWrite" + System.currentTimeMillis() + ".xlsx";
 
     // 写法1：JDK8 Lambda
-    EasyExcel.write(fileName, DemoData.class)
+    FastExcel.write(fileName, DemoData.class)
         .sheet("模板")
         .doWrite(() -> data()); // 使用分页获取数据
 
     // 写法2：直接传递数据
-    EasyExcel.write(fileName, DemoData.class)
+    FastExcel.write(fileName, DemoData.class)
         .sheet("模板")
         .doWrite(data());
 
     // 写法3：使用 ExcelWriter
-    try (ExcelWriter excelWriter = EasyExcel.write(fileName, DemoData.class).build()) {
-        WriteSheet writeSheet = EasyExcel.writerSheet("模板").build();
+    try (ExcelWriter excelWriter = FastExcel.write(fileName, DemoData.class).build()) {
+        WriteSheet writeSheet = FastExcel.writerSheet("模板").build();
         excelWriter.write(data(), writeSheet);
     }
 }
@@ -64,14 +64,14 @@ public void excludeOrIncludeWrite() {
 
     // 忽略指定列
     Set<String> excludeColumns = Set.of("date");
-    EasyExcel.write(fileName, DemoData.class)
+    FastExcel.write(fileName, DemoData.class)
         .excludeColumnFiledNames(excludeColumns)
         .sheet("模板")
         .doWrite(data());
 
     // 仅导出指定列
     Set<String> includeColumns = Set.of("date");
-    EasyExcel.write(fileName, DemoData.class)
+    FastExcel.write(fileName, DemoData.class)
         .includeColumnFiledNames(includeColumns)
         .sheet("模板")
         .doWrite(data());
@@ -105,7 +105,7 @@ public class IndexData {
 @Test
 public void indexWrite() {
     String fileName = "indexWrite" + System.currentTimeMillis() + ".xlsx";
-    EasyExcel.write(fileName, IndexData.class)
+    FastExcel.write(fileName, IndexData.class)
         .sheet("模板")
         .doWrite(data());
 }
@@ -138,7 +138,7 @@ public class ComplexHeadData {
 @Test
 public void complexHeadWrite() {
     String fileName = "complexHeadWrite" + System.currentTimeMillis() + ".xlsx";
-    EasyExcel.write(fileName, ComplexHeadData.class)
+    FastExcel.write(fileName, ComplexHeadData.class)
         .sheet("模板")
         .doWrite(data());
 }
@@ -158,17 +158,17 @@ public void repeatedWrite() {
     String fileName = "repeatedWrite" + System.currentTimeMillis() + ".xlsx";
 
     // 方法1：写入同一个 Sheet
-    try (ExcelWriter excelWriter = EasyExcel.write(fileName, DemoData.class).build()) {
-        WriteSheet writeSheet = EasyExcel.writerSheet("模板").build();
+    try (ExcelWriter excelWriter = FastExcel.write(fileName, DemoData.class).build()) {
+        WriteSheet writeSheet = FastExcel.writerSheet("模板").build();
         for (int i = 0; i < 5; i++) {
             excelWriter.write(data(), writeSheet);
         }
     }
 
     // 方法2：写入多个 Sheet
-    try (ExcelWriter excelWriter = EasyExcel.write(fileName, DemoData.class).build()) {
+    try (ExcelWriter excelWriter = FastExcel.write(fileName, DemoData.class).build()) {
         for (int i = 0; i < 5; i++) {
-            WriteSheet writeSheet = EasyExcel.writerSheet(i, "模板" + i).build();
+            WriteSheet writeSheet = FastExcel.writerSheet(i, "模板" + i).build();
             excelWriter.write(data(), writeSheet);
         }
     }
@@ -206,7 +206,7 @@ public class ConverterData {
 @Test
 public void converterWrite() {
     String fileName = "converterWrite" + System.currentTimeMillis() + ".xlsx";
-    EasyExcel.write(fileName, ConverterData.class)
+    FastExcel.write(fileName, ConverterData.class)
         .sheet("模板")
         .doWrite(data());
 }
@@ -257,7 +257,7 @@ public class DemoStyleData {
 public void annotationStyleWrite() {
     String fileName = "annotationStyleWrite" + System.currentTimeMillis() + ".xlsx";
 
-    EasyExcel.write(fileName, DemoStyleData.class)
+    FastExcel.write(fileName, DemoStyleData.class)
         .sheet("样式模板")
         .doWrite(data());
 }
@@ -298,7 +298,7 @@ public void handlerStyleWrite() {
     HorizontalCellStyleStrategy styleStrategy =
         new HorizontalCellStyleStrategy(headStyle, contentStyle);
 
-    EasyExcel.write(fileName, DemoData.class)
+    FastExcel.write(fileName, DemoData.class)
         .registerWriteHandler(styleStrategy)
         .sheet("样式模板")
         .doWrite(data());
@@ -344,7 +344,7 @@ public class CustomCellStyleWriteHandler implements CellWriteHandler {
 public void customCellStyleWrite() {
     String fileName = "customCellStyleWrite" + System.currentTimeMillis() + ".xlsx";
 
-    EasyExcel.write(fileName, DemoData.class)
+    FastExcel.write(fileName, DemoData.class)
         .registerWriteHandler(new CustomCellStyleWriteHandler())
         .sheet("自定义样式")
         .doWrite(data());
@@ -362,7 +362,7 @@ public void customCellStyleWrite() {
 public void poiStyleWrite() {
     String fileName = "poiStyleWrite" + System.currentTimeMillis() + ".xlsx";
 
-    EasyExcel.write(fileName, DemoData.class)
+    FastExcel.write(fileName, DemoData.class)
         .registerWriteHandler(new CellWriteHandler() {
             @Override
             public void afterCellDispose(CellWriteHandlerContext context) {
@@ -433,7 +433,7 @@ public void imageWrite() throws Exception {
     data.setUrl(new URL("https://example.com/image.jpg"));
     list.add(data);
 
-    EasyExcel.write(fileName, ImageDemoData.class)
+    FastExcel.write(fileName, ImageDemoData.class)
         .sheet()
         .doWrite(list);
 }
@@ -474,7 +474,7 @@ public void writeCellDataWrite() {
     // 设置公式
     data.setFormulaData(new WriteCellData<>("=SUM(A1:A10)"));
 
-    EasyExcel.write(fileName, WriteCellDemoData.class)
+    FastExcel.write(fileName, WriteCellDemoData.class)
         .sheet("模板")
         .doWrite(Collections.singletonList(data));
 }
@@ -499,7 +499,7 @@ public void dynamicHeadWrite() {
         Collections.singletonList("动态日期标题")
     );
 
-    EasyExcel.write(fileName).head(head)
+    FastExcel.write(fileName).head(head)
         .sheet("模板")
         .doWrite(data());
 }
@@ -537,7 +537,7 @@ public class CommentWriteHandler implements RowWriteHandler {
 public void commentWrite() {
     String fileName = "commentWrite" + System.currentTimeMillis() + ".xlsx";
 
-    EasyExcel.write(fileName, DemoData.class)
+    FastExcel.write(fileName, DemoData.class)
         .inMemory(Boolean.TRUE) // 批注必须启用内存模式
         .registerWriteHandler(new CommentWriteHandler())
         .sheet("批注示例")
@@ -559,7 +559,7 @@ public void templateWrite() {
     String templateFileName = "path/to/template.xlsx";
     String fileName = "templateWrite" + System.currentTimeMillis() + ".xlsx";
 
-    EasyExcel.write(fileName, DemoData.class)
+    FastExcel.write(fileName, DemoData.class)
         .withTemplate(templateFileName)
         .sheet()
         .doWrite(data());
@@ -600,7 +600,7 @@ public class WidthAndHeightData {
 public void widthAndHeightWrite() {
     String fileName = "widthAndHeightWrite" + System.currentTimeMillis() + ".xlsx";
 
-    EasyExcel.write(fileName, WidthAndHeightData.class)
+    FastExcel.write(fileName, WidthAndHeightData.class)
         .sheet("宽高示例")
         .doWrite(data());
 }
@@ -649,12 +649,12 @@ public void mergeWrite() {
     String fileName = "mergeWrite" + System.currentTimeMillis() + ".xlsx";
 
     // 注解方式
-    EasyExcel.write(fileName, DemoMergeData.class)
+    FastExcel.write(fileName, DemoMergeData.class)
         .sheet("合并示例")
         .doWrite(data());
 
     // 自定义合并策略
-    EasyExcel.write(fileName, DemoData.class)
+    FastExcel.write(fileName, DemoData.class)
         .registerWriteHandler(new CustomMergeStrategy())
         .sheet("自定义合并")
         .doWrite(data());
@@ -674,10 +674,10 @@ public void mergeWrite() {
 public void tableWrite() {
     String fileName = "tableWrite" + System.currentTimeMillis() + ".xlsx";
 
-    try (ExcelWriter excelWriter = EasyExcel.write(fileName, DemoData.class).build()) {
-        WriteSheet writeSheet = EasyExcel.writerSheet("Table示例").build();
-        WriteTable table1 = EasyExcel.writerTable(0).build();
-        WriteTable table2 = EasyExcel.writerTable(1).build();
+    try (ExcelWriter excelWriter = FastExcel.write(fileName, DemoData.class).build()) {
+        WriteSheet writeSheet = FastExcel.writerSheet("Table示例").build();
+        WriteTable table1 = FastExcel.writerTable(0).build();
+        WriteTable table2 = FastExcel.writerTable(1).build();
 
         excelWriter.write(data(), writeSheet, table1);
         excelWriter.write(data(), writeSheet, table2);
@@ -703,7 +703,7 @@ public void dynamicHeadWrite() {
         Collections.singletonList("动态数字标题"),
         Collections.singletonList("动态日期标题"));
 
-    EasyExcel.write(fileName)
+    FastExcel.write(fileName)
         .head(head)
         .sheet("动态头")
         .doWrite(data());
@@ -737,7 +737,7 @@ public class DropdownWriteHandler implements SheetWriteHandler {
 public void customHandlerWrite() {
     String fileName = "customHandlerWrite" + System.currentTimeMillis() + ".xlsx";
 
-    EasyExcel.write(fileName, DemoData.class)
+    FastExcel.write(fileName, DemoData.class)
         .registerWriteHandler(new DropdownWriteHandler())
         .sheet("自定义拦截器")
         .doWrite(data());
@@ -759,7 +759,7 @@ public void customHandlerWrite() {
 public void noModelWrite() {
     String fileName = "noModelWrite" + System.currentTimeMillis() + ".xlsx";
 
-    EasyExcel.write(fileName)
+    FastExcel.write(fileName)
         .head(head()) // 动态头
         .sheet("无对象写入")
         .doWrite(dataList());
@@ -800,7 +800,7 @@ public void download(HttpServletResponse response) throws IOException {
     String fileName = URLEncoder.encode("测试", "UTF-8").replaceAll("\\+", "%20");
     response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
 
-    EasyExcel.write(response.getOutputStream(), DemoData.class)
+    FastExcel.write(response.getOutputStream(), DemoData.class)
         .sheet("模板")
         .doWrite(data());
 }

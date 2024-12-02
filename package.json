@@ -1,8 +1,8 @@
 {
-  "name": "easyexcel-docs",
+  "name": "excel-docs",
   "version": "0.0.1",
   "type": "module",
-  "description": "EasyExcel Docs",
+  "description": "FastExcel Docs",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -12,14 +12,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/CodePhiliaX/easyexcel-doc.git"
+    "url": "git+https://github.com/CodePhiliaX/fastexcel-doc.git"
   },
   "author": "CodePhiliaX",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/CodePhiliaX/easyexcel-doc/issues"
+    "url": "https://github.com/CodePhiliaX/fastexcel-doc/issues"
   },
-  "homepage": "https://github.com/CodePhiliaX/easyexcel-doc#readme",
+  "homepage": "https://github.com/CodePhiliaX/fastexcel-doc#readme",
   "dependencies": {
     "next": "^13.0.6",
     "next-sitemap": "^4.2.3",

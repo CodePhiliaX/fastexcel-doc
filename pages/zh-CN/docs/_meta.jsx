@@ -1,14 +1,10 @@
 export default {
-  index: {
-    title: "介绍",
-    theme: {
-      layout: "full",
-    },
-  },
+  index: "介绍",
   intro: "入门",
-  write: "写入Excel",
   read: "读取Excel",
-  fill: "填充Excel",
+  write: "写入Excel",
+  fill: "填充写入Excel",
+  converter_file: "文件类型转换",
   bug: "反馈问题",
   FAQ: "常见问题",
   advance_api: "进阶API",

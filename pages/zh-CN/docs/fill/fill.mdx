@@ -30,7 +30,7 @@ public void simpleFill() {
     FillData fillData = new FillData();
     fillData.setName("张三");
     fillData.setNumber(5.2);
-    EasyExcel.write("simpleFill.xlsx")
+    FastExcel.write("simpleFill.xlsx")
         .withTemplate(templateFileName)
         .sheet()
         .doFill(fillData);
@@ -39,7 +39,7 @@ public void simpleFill() {
     Map<String, Object> map = new HashMap<>();
     map.put("name", "张三");
     map.put("number", 5.2);
-    EasyExcel.write("simpleFillMap.xlsx")
+    FastExcel.write("simpleFillMap.xlsx")
         .withTemplate(templateFileName)
         .sheet()
         .doFill(map);
@@ -60,14 +60,14 @@ public void listFill() {
     String templateFileName = "path/to/list.xlsx";
 
     // 方案1：一次性填充所有数据
-    EasyExcel.write("listFill.xlsx")
+    FastExcel.write("listFill.xlsx")
         .withTemplate(templateFileName)
         .sheet()
         .doFill(data());
 
     // 方案2：分批填充
-    try (ExcelWriter writer = EasyExcel.write("listFillBatch.xlsx").withTemplate(templateFileName).build()) {
-        WriteSheet writeSheet = EasyExcel.writerSheet().build();
+    try (ExcelWriter writer = FastExcel.write("listFillBatch.xlsx").withTemplate(templateFileName).build()) {
+        WriteSheet writeSheet = FastExcel.writerSheet().build();
         writer.fill(data(), writeSheet);
         writer.fill(data(), writeSheet);
     }
@@ -87,8 +87,8 @@ public void listFill() {
 public void complexFill() {
     String templateFileName = "path/to/complex.xlsx";
 
-    try (ExcelWriter writer = EasyExcel.write("complexFill.xlsx").withTemplate(templateFileName).build()) {
-        WriteSheet writeSheet = EasyExcel.writerSheet().build();
+    try (ExcelWriter writer = FastExcel.write("complexFill.xlsx").withTemplate(templateFileName).build()) {
+        WriteSheet writeSheet = FastExcel.writerSheet().build();
 
         // 填充列表数据，开启 forceNewRow
         FillConfig config = FillConfig.builder().forceNewRow(true).build();
@@ -116,8 +116,8 @@ public void complexFill() {
 public void complexFillWithTable() {
     String templateFileName = "path/to/complexFillWithTable.xlsx";
 
-    try (ExcelWriter writer = EasyExcel.write("complexFillWithTable.xlsx").withTemplate(templateFileName).build()) {
-        WriteSheet writeSheet = EasyExcel.writerSheet().build();
+    try (ExcelWriter writer = FastExcel.write("complexFillWithTable.xlsx").withTemplate(templateFileName).build()) {
+        WriteSheet writeSheet = FastExcel.writerSheet().build();
 
         // 填充列表数据
         writer.fill(data(), writeSheet);
@@ -148,8 +148,8 @@ public void complexFillWithTable() {
 public void horizontalFill() {
     String templateFileName = "path/to/horizontal.xlsx";
 
-    try (ExcelWriter writer = EasyExcel.write("horizontalFill.xlsx").withTemplate(templateFileName).build()) {
-        WriteSheet writeSheet = EasyExcel.writerSheet().build();
+    try (ExcelWriter writer = FastExcel.write("horizontalFill.xlsx").withTemplate(templateFileName).build()) {
+        WriteSheet writeSheet = FastExcel.writerSheet().build();
 
         FillConfig config = FillConfig.builder().direction(WriteDirectionEnum.HORIZONTAL).build();
         writer.fill(data(), config, writeSheet);
@@ -174,8 +174,8 @@ public void horizontalFill() {
 public void compositeFill() {
     String templateFileName = "path/to/composite.xlsx";
 
-    try (ExcelWriter writer = EasyExcel.write("compositeFill.xlsx").withTemplate(templateFileName).build()) {
-        WriteSheet writeSheet = EasyExcel.writerSheet().build();
+    try (ExcelWriter writer = FastExcel.write("compositeFill.xlsx").withTemplate(templateFileName).build()) {
+        WriteSheet writeSheet = FastExcel.writerSheet().build();
 
         // 使用 FillWrapper 进行多列表填充
         writer.fill(new FillWrapper("data1", data()), writeSheet);

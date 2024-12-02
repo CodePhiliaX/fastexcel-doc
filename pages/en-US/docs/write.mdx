@@ -32,18 +32,18 @@ public void simpleWrite() {
     String fileName = "simpleWrite" + System.currentTimeMillis() + ".xlsx";
 
     // Method 1: JDK8 Lambda
-    EasyExcel.write(fileName, DemoData.class)
+    FastExcel.write(fileName, DemoData.class)
         .sheet("Template")
         .doWrite(() -> data()); // Using pagination to get data
 
     // Method 2: Direct data passing
-    EasyExcel.write(fileName, DemoData.class)
+    FastExcel.write(fileName, DemoData.class)
         .sheet("Template")
         .doWrite(data());
 
     // Method 3: Using ExcelWriter
-    try (ExcelWriter excelWriter = EasyExcel.write(fileName, DemoData.class).build()) {
-        WriteSheet writeSheet = EasyExcel.writerSheet("Template").build();
+    try (ExcelWriter excelWriter = FastExcel.write(fileName, DemoData.class).build()) {
+        WriteSheet writeSheet = FastExcel.writerSheet("Template").build();
         excelWriter.write(data(), writeSheet);
     }
 }
@@ -64,14 +64,14 @@ public void excludeOrIncludeWrite() {
 
     // Exclude specific columns
     Set<String> excludeColumns = Set.of("date");
-    EasyExcel.write(fileName, DemoData.class)
+    FastExcel.write(fileName, DemoData.class)
         .excludeColumnFiledNames(excludeColumns)
         .sheet("Template")
         .doWrite(data());
 
     // Include only specific columns
     Set<String> includeColumns = Set.of("date");
-    EasyExcel.write(fileName, DemoData.class)
+    FastExcel.write(fileName, DemoData.class)
         .includeColumnFiledNames(includeColumns)
         .sheet("Template")
         .doWrite(data());
@@ -105,7 +105,7 @@ public class IndexData {
 @Test
 public void indexWrite() {
     String fileName = "indexWrite" + System.currentTimeMillis() + ".xlsx";
-    EasyExcel.write(fileName, IndexData.class)
+    FastExcel.write(fileName, IndexData.class)
         .sheet("Template")
         .doWrite(data());
 }
@@ -138,7 +138,7 @@ public class ComplexHeadData {
 @Test
 public void complexHeadWrite() {
     String fileName = "complexHeadWrite" + System.currentTimeMillis() + ".xlsx";
-    EasyExcel.write(fileName, ComplexHeadData.class)
+    FastExcel.write(fileName, ComplexHeadData.class)
         .sheet("Template")
         .doWrite(data());
 }
@@ -158,17 +158,17 @@ public void repeatedWrite() {
     String fileName = "repeatedWrite" + System.currentTimeMillis() + ".xlsx";
 
     // Method 1: Write to the same Sheet
-    try (ExcelWriter excelWriter = EasyExcel.write(fileName, DemoData.class).build()) {
-        WriteSheet writeSheet = EasyExcel.writerSheet("Template").build();
+    try (ExcelWriter excelWriter = FastExcel.write(fileName, DemoData.class).build()) {
+        WriteSheet writeSheet = FastExcel.writerSheet("Template").build();
         for (int i = 0; i < 5; i++) {
             excelWriter.write(data(), writeSheet);
         }
     }
 
     // Method 2: Write to multiple Sheets
-    try (ExcelWriter excelWriter = EasyExcel.write(fileName, DemoData.class).build()) {
+    try (ExcelWriter excelWriter = FastExcel.write(fileName, DemoData.class).build()) {
         for (int i = 0; i < 5; i++) {
-            WriteSheet writeSheet = EasyExcel.writerSheet(i, "Template" + i).build();
+            WriteSheet writeSheet = FastExcel.writerSheet(i, "Template" + i).build();
             excelWriter.write(data(), writeSheet);
         }
     }
@@ -206,7 +206,7 @@ public class ConverterData {
 @Test
 public void converterWrite() {
     String fileName = "converterWrite" + System.currentTimeMillis() + ".xlsx";
-    EasyExcel.write(fileName, ConverterData.class)
+    FastExcel.write(fileName, ConverterData.class)
         .sheet("Template")
         .doWrite(data());
 }
@@ -257,7 +257,7 @@ public class DemoStyleData {
 public void annotationStyleWrite() {
     String fileName = "annotationStyleWrite" + System.currentTimeMillis() + ".xlsx";
 
-    EasyExcel.write(fileName, DemoStyleData.class)
+    FastExcel.write(fileName, DemoStyleData.class)
         .sheet("Style Template")
         .doWrite(data());
 }
@@ -298,7 +298,7 @@ public void handlerStyleWrite() {
     HorizontalCellStyleStrategy styleStrategy =
         new HorizontalCellStyleStrategy(headStyle, contentStyle);
 
-    EasyExcel.write(fileName, DemoData.class)
+    FastExcel.write(fileName, DemoData.class)
         .registerWriteHandler(styleStrategy)
         .sheet("Style Template")
         .doWrite(data());
@@ -344,7 +344,7 @@ public class CustomCellStyleWriteHandler implements CellWriteHandler {
 public void customCellStyleWrite() {
     String fileName = "customCellStyleWrite" + System.currentTimeMillis() + ".xlsx";
 
-    EasyExcel.write(fileName, DemoData.class)
+    FastExcel.write(fileName, DemoData.class)
         .registerWriteHandler(new CustomCellStyleWriteHandler())
         .sheet("Custom Styles")
         .doWrite(data());
@@ -362,7 +362,7 @@ Directly manipulate POI's `CellStyle`, suitable for precise control over styles.
 public void poiStyleWrite() {
     String fileName = "poiStyleWrite" + System.currentTimeMillis() + ".xlsx";
 
-    EasyExcel.write(fileName, DemoData.class)
+    FastExcel.write(fileName, DemoData.class)
         .registerWriteHandler(new CellWriteHandler() {
             @Override
             public void afterCellDispose(CellWriteHandlerContext context) {
@@ -433,7 +433,7 @@ public void imageWrite() throws Exception {
     data.setUrl(new URL("https://example.com/image.jpg"));
     list.add(data);
 
-    EasyExcel.write(fileName, ImageDemoData.class)
+    FastExcel.write(fileName, ImageDemoData.class)
         .sheet()
         .doWrite(list);
 }
@@ -474,7 +474,7 @@ public void writeCellDataWrite() {
     // Set formula
     data.setFormulaData(new WriteCellData<>("=SUM(A1:A10)"));
 
-    EasyExcel.write(fileName, WriteCellDemoData.class)
+    FastExcel.write(fileName, WriteCellDemoData.class)
         .sheet("Template")
         .doWrite(Collections.singletonList(data));
 }
@@ -499,7 +499,7 @@ public void dynamicHeadWrite() {
         Collections.singletonList("Dynamic Date Title")
     );
 
-    EasyExcel.write(fileName).head(head)
+    FastExcel.write(fileName).head(head)
         .sheet("Template")
         .doWrite(data());
 }
@@ -537,7 +537,7 @@ public class CommentWriteHandler implements RowWriteHandler {
 public void commentWrite() {
     String fileName = "commentWrite" + System.currentTimeMillis() + ".xlsx";
 
-    EasyExcel.write(fileName, DemoData.class)
+    FastExcel.write(fileName, DemoData.class)
         .inMemory(Boolean.TRUE) // Comments must be enabled in memory mode
         .registerWriteHandler(new CommentWriteHandler())
         .sheet("Comment Example")
@@ -559,7 +559,7 @@ public void templateWrite() {
     String templateFileName = "path/to/template.xlsx";
     String fileName = "templateWrite" + System.currentTimeMillis() + ".xlsx";
 
-    EasyExcel.write(fileName, DemoData.class)
+    FastExcel.write(fileName, DemoData.class)
         .withTemplate(templateFileName)
         .sheet()
         .doWrite(data());
@@ -600,7 +600,7 @@ public class WidthAndHeightData {
 public void widthAndHeightWrite() {
     String fileName = "widthAndHeightWrite" + System.currentTimeMillis() + ".xlsx";
 
-    EasyExcel.write(fileName, WidthAndHeightData.class)
+    FastExcel.write(fileName, WidthAndHeightData.class)
         .sheet("Width and Height Example")
         .doWrite(data());
 }
@@ -649,12 +649,12 @@ public void mergeWrite() {
     String fileName = "mergeWrite" + System.currentTimeMillis() + ".xlsx";
 
     // Annotation style
-    EasyExcel.write(fileName, DemoMergeData.class)
+    FastExcel.write(fileName, DemoMergeData.class)
         .sheet("Merge Example")
         .doWrite(data());
 
     // Custom merge strategy
-    EasyExcel.write(fileName, DemoData.class)
+    FastExcel.write(fileName, DemoData.class)
         .registerWriteHandler(new CustomMergeStrategy())
         .sheet("Custom Merge")
         .doWrite(data());
@@ -674,10 +674,10 @@ Support writing multiple Tables in a single Sheet using the `Table` feature.
 public void tableWrite() {
     String fileName = "tableWrite" + System.currentTimeMillis() + ".xlsx";
 
-    try (ExcelWriter excelWriter = EasyExcel.write(fileName, DemoData.class).build()) {
-        WriteSheet writeSheet = EasyExcel.writerSheet("Table Example").build();
-        WriteTable table1 = EasyExcel.writerTable(0).build();
-        WriteTable table2 = EasyExcel.writerTable(1).build();
+    try (ExcelWriter excelWriter = FastExcel.write(fileName, DemoData.class).build()) {
+        WriteSheet writeSheet = FastExcel.writerSheet("Table Example").build();
+        WriteTable table1 = FastExcel.writerTable(0).build();
+        WriteTable table2 = FastExcel.writerTable(1).build();
 
         excelWriter.write(data(), writeSheet, table1);
         excelWriter.write(data(), writeSheet, table2);
@@ -703,7 +703,7 @@ public void dynamicHeadWrite() {
         Collections.singletonList("Dynamic Number Title"),
         Collections.singletonList("Dynamic Date Title"));
 
-    EasyExcel.write(fileName)
+    FastExcel.write(fileName)
         .head(head)
         .sheet("Dynamic Head")
         .doWrite(data());
@@ -737,7 +737,7 @@ public class DropdownWriteHandler implements SheetWriteHandler {
 public void customHandlerWrite() {
     String fileName = "customHandlerWrite" + System.currentTimeMillis() + ".xlsx";
 
-    EasyExcel.write(fileName, DemoData.class)
+    FastExcel.write(fileName, DemoData.class)
         .registerWriteHandler(new DropdownWriteHandler())
         .sheet("Custom Interceptor")
         .doWrite(data());
@@ -759,7 +759,7 @@ Write data directly using `List<List<String>>` to define headers and data withou
 public void noModelWrite() {
     String fileName = "noModelWrite" + System.currentTimeMillis() + ".xlsx";
 
-    EasyExcel.write(fileName)
+    FastExcel.write(fileName)
         .head(head()) // Dynamic head
         .sheet("No Object Writing")
         .doWrite(dataList());
@@ -798,7 +798,7 @@ public void download(HttpServletResponse response) throws IOException {
     String fileName = URLEncoder.encode("Test", "UTF-8").replaceAll("\\+", "%20");
     response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
 
-    EasyExcel.write(response.getOutputStream(), DemoData.class)
+    FastExcel.write(response.getOutputStream(), DemoData.class)
         .sheet("Template")
         .doWrite(data());
 }

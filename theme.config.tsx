@@ -10,10 +10,10 @@ const config: DocsThemeConfig = {
   navigation: false,
 
   project: {
-    link: "https://github.com/CodePhiliaX/easyexcel-plus",
+    link: "https://github.com/CodePhiliaX/fastexcel",
   },
   docsRepositoryBase:
-    "https://github.com/CodePhiliaX/easyexcel-plus/tree/main/docs",
+    "https://github.com/CodePhiliaX/fastexcel/tree/main/docs",
   footer: {
     content: `© ${new Date().getFullYear()} FastExcel. All rights reserved.`,
   },

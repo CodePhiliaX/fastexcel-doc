@@ -3,24 +3,24 @@ title: 进阶API
 description: 高级API
 ---
 
-EasyExcel 提供了一套简单易用的 API 来处理 Excel 文件，支持读、写、拦截器、自定义样式等高级特性，让开发者可以灵活处理各种复杂的业务场景。  
+FastExcel 提供了一套简单易用的 API 来处理 Excel 文件，支持读、写、拦截器、自定义样式等高级特性，让开发者可以灵活处理各种复杂的业务场景。
 
----
+
 
 # 核心概念 
-如果你需要对 excel 进行大量或者详细的读写操作，你需要知道一些 easyexcel-plus中比较重要的概念和类。它们在你尝试自定义操作时，能够提供丰富的选项。
-- `EasyExcel`：入口类，用于构建开始各种操作
+如果你需要对 excel 进行大量或者详细的读写操作，你需要知道一些 fastexcel中比较重要的概念和类。它们在你尝试自定义操作时，能够提供丰富的选项。
+- `FastExcel`：入口类，用于构建开始各种操作
 - `ExcelReaderBuilder`：ExcelWriterBuilder 构建出一个 ReadWorkbook WriteWorkbook，可以理解成一个excel对象，一个excel只要构建一个
 - `ExcelReaderSheetBuilder`：ExcelWriterSheetBuilder 构建出一个 ReadSheet WriteSheet对象，可以理解成excel里面的一页,每一页都要构建一个
 - `ReadListener`：在每一行读取完毕后都会调用ReadListener来处理数据
 - `WriteHandler`：在每一个操作包括创建单元格、创建表格等都会调用WriteHandler来处理数据
 
-所有配置都是继承的，Workbook的配置会被Sheet继承，所以在用EasyExcel设置参数的时候，在EasyExcel...sheet()方法之前作用域是整个sheet,之后针对单个sheet
+所有配置都是继承的，Workbook的配置会被Sheet继承，所以在用FastExcel设置参数的时候，在FastExcel...sheet()方法之前作用域是整个sheet,之后针对单个sheet
 
 
 # 实体类注释  
 
-实体类是读写操作的基础。EasyExcel 提供了多种注解，帮助开发者轻松定义字段和格式。  
+实体类是读写操作的基础。FastExcel 提供了多种注解，帮助开发者轻松定义字段和格式。
 ## **`@ExcelProperty`**
 定义 Excel 列名和映射的字段名。 具体参数如下：
 
@@ -29,7 +29,7 @@ EasyExcel 提供了一套简单易用的 API 来处理 Excel 文件，支持读�
 | value           | 空                 | 用于匹配excel中的头，必须全匹配,如果有多行头，会匹配最后一行头                                                                                                                  |
 | order           | Integer.MAX_VALUE | 优先级高于`value`，会根据`order`的顺序来匹配实体和excel中数据的顺序                                                                                                         |
 | index           | &#45;1            | 优先级高于`value`和`order`，会根据`index`直接指定到excel中具体的哪一列                                                                                                    |
-| converter           | 自动选择              | 指定当前字段用什么转换器，默认会自动选择。读的情况下只要实现`com.alibaba.excel.converters.Converter#convertToJavaData(com.alibaba.excel.converters.ReadConverterContext<?>)` 方法即可 |
+| converter           | 自动选择              | 指定当前字段用什么转换器，默认会自动选择。读的情况下只要实现`cn.idev.excel.converters.Converter#convertToJavaData(com.idev.excel.converters.ReadConverterContext<?>)` 方法即可 |
 
 ## **`@ColumnWidth`**
 指定列宽。
@@ -70,7 +70,7 @@ EasyExcel 提供了一套简单易用的 API 来处理 Excel 文件，支持读�
 | 名称                  | 默认值                                                     | 描述                                                                                                                                                                                                                                                                                                                           |
 |---------------------|---------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | excelType           | 空                                                       | 当前excel的类型,支持XLS、XLSX、CSV                                                                                                                                                                                                                                                                                                    |
-| inputStream           | 空                                                       | 与`file`二选一。读取文件的流，如果接收到的是流就只用，不用流建议使用`file`参数。因为使用了`inputStream` easyexcel会帮忙创建临时文件，最终还是`file`                                                                                                                                                                                                                               |
+| inputStream           | 空                                                       | 与`file`二选一。读取文件的流，如果接收到的是流就只用，不用流建议使用`file`参数。因为使用了`inputStream` FastExcel会帮忙创建临时文件，最终还是`file`                                                                                                                                                                                                                               |
 | file           | 空                                                       | 与`inputStream`二选一。读取文件的文件。                                                                                                                                                                                                                                                                                                   |
 | mandatoryUseInputStream           | false                                                   | 强制使用  `inputStream` 来创建对象，性能会变差，但是不会创建临文件。                                                                                                                                                                                                                                                                                   |
 | charset           | Charset#defaultCharset                 | 只有csv文件有用，读取文件的时候使用的编码                                                                                                                                                                                                                                                                                                       |
@@ -139,14 +139,14 @@ EasyExcel 提供了一套简单易用的 API 来处理 Excel 文件，支持读�
 
 #  **WriteHandler**
 
-**`WriteHandler`** 是 EasyExcel 提供的接口，用于在写入 Excel 文件时拦截写入过程，允许开发者自定义操作，如设置单元格样式、合并单元格、添加超链接、插入批注等。  
+**`WriteHandler`** 是 FastExcel 提供的接口，用于在写入 Excel 文件时拦截写入过程，允许开发者自定义操作，如设置单元格样式、合并单元格、添加超链接、插入批注等。
 通过实现 `WriteHandler`，开发者可以深入控制写入流程，以满足复杂的业务需求。
 
 ---
 
 ## **WriteHandler 接口分类**
 
-EasyExcel 提供了以下几种 WriteHandler 接口，分别用于处理不同的写入场景：
+FastExcel 提供了以下几种 WriteHandler 接口，分别用于处理不同的写入场景：
 
 | 接口名                     | 描述                                                                 |
 |----------------------------|----------------------------------------------------------------------|
@@ -163,7 +163,7 @@ EasyExcel 提供了以下几种 WriteHandler 接口，分别用于处理不同�
    - 实现接口中的方法，在方法中定义自定义逻辑。
 
 2. **注册 WriteHandler**：
-   - 在调用 `EasyExcel.write()` 时通过 `.registerWriteHandler()` 注册自定义的 WriteHandler。
+   - 在调用 `FastExcel.write()` 时通过 `.registerWriteHandler()` 注册自定义的 WriteHandler。
 
 ---
 
@@ -202,7 +202,7 @@ public class CustomCellStyleHandler implements CellWriteHandler {
 public void customCellStyleWrite() {
     String fileName = "customCellStyleWrite.xlsx";
 
-    EasyExcel.write(fileName, DemoData.class)
+    FastExcel.write(fileName, DemoData.class)
         .registerWriteHandler(new CustomCellStyleHandler())
         .sheet("自定义样式")
         .doWrite(data());
@@ -241,7 +241,7 @@ public class CommentRowWriteHandler implements RowWriteHandler {
 public void commentWrite() {
     String fileName = "commentWrite.xlsx";
 
-    EasyExcel.write(fileName, DemoData.class)
+    FastExcel.write(fileName, DemoData.class)
         .registerWriteHandler(new CommentRowWriteHandler())
         .sheet("插入批注")
         .doWrite(data());
@@ -279,7 +279,7 @@ public class DropdownSheetWriteHandler implements SheetWriteHandler {
 public void dropdownWrite() {
     String fileName = "dropdownWrite.xlsx";
 
-    EasyExcel.write(fileName, DemoData.class)
+    FastExcel.write(fileName, DemoData.class)
         .registerWriteHandler(new DropdownSheetWriteHandler())
         .sheet("添加下拉框")
         .doWrite(data());
@@ -299,8 +299,8 @@ public void dropdownWrite() {
 
 #  **ReadListener**
 
-**`ReadListener`** 是 EasyExcel 提供的接口，用于在读取 Excel 文件时对每一行数据进行处理。  
-它是 EasyExcel 核心组件之一，允许开发者实现自定义逻辑来处理数据行、处理表头，甚至在读取完成后执行特定操作。
+**`ReadListener`** 是 FastExcel 提供的接口，用于在读取 Excel 文件时对每一行数据进行处理。
+它是 FastExcel 核心组件之一，允许开发者实现自定义逻辑来处理数据行、处理表头，甚至在读取完成后执行特定操作。
 
 ---
 
@@ -324,7 +324,7 @@ public void dropdownWrite() {
    - 实现核心方法，根据需要添加数据处理逻辑。
 
 2. **在读取时注册自定义 `ReadListener`**：
-   - 调用 `EasyExcel.read()` 方法时，传入自定义监听器实例。
+   - 调用 `FastExcel.read()` 方法时，传入自定义监听器实例。
 
 ---
 
@@ -382,7 +382,7 @@ public class DemoDataListener implements ReadListener<DemoData> {
 public void simpleRead() {
     String fileName = "path/to/demo.xlsx";
 
-    EasyExcel.read(fileName, DemoData.class, new DemoDataListener())
+    FastExcel.read(fileName, DemoData.class, new DemoDataListener())
         .sheet() // 默认读取第一个 Sheet
         .doRead();
 }
@@ -420,7 +420,7 @@ public class HeadDataListener implements ReadListener<DemoData> {
 public void readWithHead() {
     String fileName = "path/to/demo.xlsx";
 
-    EasyExcel.read(fileName, DemoData.class, new HeadDataListener())
+    FastExcel.read(fileName, DemoData.class, new HeadDataListener())
         .sheet() // 默认读取第一个 Sheet
         .doRead();
 }
@@ -458,7 +458,7 @@ public class ExceptionHandlingListener implements ReadListener<DemoData> {
 public void readWithExceptionHandling() {
     String fileName = "path/to/demo.xlsx";
 
-    EasyExcel.read(fileName, DemoData.class, new ExceptionHandlingListener())
+    FastExcel.read(fileName, DemoData.class, new ExceptionHandlingListener())
         .sheet()
         .doRead();
 }
@@ -474,7 +474,7 @@ public void readWithExceptionHandling() {
 public void pageRead() {
     String fileName = "path/to/demo.xlsx";
 
-    EasyExcel.read(fileName, DemoData.class, new PageReadListener<>(dataList -> {
+    FastExcel.read(fileName, DemoData.class, new PageReadListener<>(dataList -> {
         // 分页批量处理
         log.info("读取到一批数据: {}", JSON.toJSONString(dataList));
         // TODO: 实现数据处理逻辑
@@ -485,7 +485,7 @@ public void pageRead() {
 ```
 
 > **说明**：
-> - `PageReadListener` 是 EasyExcel 提供的便捷工具类，支持基于分页的批量处理。
+> - `PageReadListener` 是 FastExcel 提供的便捷工具类，支持基于分页的批量处理。
 > - 默认分页大小为 100，可通过构造器指定。
 
 ---
@@ -505,7 +505,7 @@ public void pageRead() {
 
 # **`AnalysisEventListener`** 
 
-`AnalysisEventListener` 是 **EasyExcel** 中用于处理读取 Excel 数据的核心监听器。它基于事件驱动机制，允许开发者在读取每一行数据时执行自定义操作，并在所有数据解析完成后进行相应处理。它通常用于流式读取大量数据，适合需要处理大数据量、进行批量操作（如批量插入数据库）的场景。
+`AnalysisEventListener` 是 **FastExcel** 中用于处理读取 Excel 数据的核心监听器。它基于事件驱动机制，允许开发者在读取每一行数据时执行自定义操作，并在所有数据解析完成后进行相应处理。它通常用于流式读取大量数据，适合需要处理大数据量、进行批量操作（如批量插入数据库）的场景。
 
 ## **核心特性**
 
@@ -530,7 +530,7 @@ public void pageRead() {
 ### **如何使用 `AnalysisEventListener`**
 
 1. **继承 `AnalysisEventListener`** 并实现其方法。
-2. **在读取时传入自定义监听器**，通过 `EasyExcel.read()` 注册。
+2. **在读取时传入自定义监听器**，通过 `FastExcel.read()` 注册。
 
 #### **示例 1：处理每行数据并批量入库**
 
@@ -582,7 +582,7 @@ public class DemoDataListener extends AnalysisEventListener<DemoData> {
 public void simpleRead() {
     String fileName = "path/to/demo.xlsx";
 
-    EasyExcel.read(fileName, DemoData.class, new DemoDataListener())
+    FastExcel.read(fileName, DemoData.class, new DemoDataListener())
         .sheet()  // 默认读取第一个 Sheet
         .doRead();
 }
@@ -627,7 +627,7 @@ public class DemoDataListenerWithHead extends AnalysisEventListener<DemoData> {
 public void readWithHead() {
     String fileName = "path/to/demo.xlsx";
 
-    EasyExcel.read(fileName, DemoData.class, new DemoDataListenerWithHead())
+    FastExcel.read(fileName, DemoData.class, new DemoDataListenerWithHead())
         .sheet()  // 默认读取第一个 Sheet
         .doRead();
 }
@@ -674,7 +674,7 @@ public class ExceptionHandlingListener extends AnalysisEventListener<DemoData> {
 public void readWithExceptionHandling() {
     String fileName = "path/to/demo.xlsx";
 
-    EasyExcel.read(fileName, DemoData.class, new ExceptionHandlingListener())
+    FastExcel.read(fileName, DemoData.class, new ExceptionHandlingListener())
         .sheet()
         .doRead();
 }
@@ -700,11 +700,11 @@ public void readWithExceptionHandling() {
 
 # **`AnalysisEventListener` 与 `ReadListener` 的区别**
 
-`AnalysisEventListener` 和 `ReadListener` 都是 EasyExcel 提供的接口，目的是为了让开发者在读取 Excel 时进行自定义处理，但它们在功能和使用场景上有一些关键的区别。
+`AnalysisEventListener` 和 `ReadListener` 都是 FastExcel 提供的接口，目的是为了让开发者在读取 Excel 时进行自定义处理，但它们在功能和使用场景上有一些关键的区别。
 
 ## **1. `AnalysisEventListener`**
 
-`AnalysisEventListener` 是 EasyExcel 的底层监听器，主要用于事件驱动的逐行读取，适用于需要对每一行数据进行操作的场景。
+`AnalysisEventListener` 是 FastExcel 的底层监听器，主要用于事件驱动的逐行读取，适用于需要对每一行数据进行操作的场景。
 
 ### **主要特点：**
 - **逐行读取**：`AnalysisEventListener` 每次读取一行数据，适合流式处理或需要按行进行大数据处理的场景。
@@ -761,7 +761,7 @@ public class DemoDataListener extends AnalysisEventListener<DemoData> {
 
 ## **2. `ReadListener`**
 
-`ReadListener` 是 EasyExcel 2.x 版本提供的接口，它提供了类似的功能，但它是对 `AnalysisEventListener` 的抽象和扩展，简化了处理，并且更符合现代的编程方式。
+`ReadListener` 是 FastExcel 2.x 版本提供的接口，它提供了类似的功能，但它是对 `AnalysisEventListener` 的抽象和扩展，简化了处理，并且更符合现代的编程方式。
 
 ### **主要特点：**
 - **易于使用**：`ReadListener` 更为简化，通常用来进行按行数据处理。

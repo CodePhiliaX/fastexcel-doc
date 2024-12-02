@@ -93,20 +93,20 @@ description: 常見問題
 - **Q:** 如何在填充模式下解決欄位未替換的問題？
 - **A:** 使用`inMemory(true)`參數可以確保欄位正確替換。例如：
   ```java
-  EasyExcel.write(fileName, DemoData.class).inMemory(true).sheet("模板").doWrite(fillData());
+  FastExcel.write(fileName, DemoData.class).inMemory(true).sheet("模板").doWrite(fillData());
   ```
 
 #### CSV分隔符
 - **Q:** 如何修改CSV檔案的分隔符？
 - **A:** 可以通過設定`CsvFormat`來修改CSV檔案的分隔符。例如：
   ```java
-  try (ExcelReader excelReader = EasyExcel.read(fileName, DemoData.class, new DemoDataListener()).build()) {
+  try (ExcelReader excelReader = FastExcel.read(fileName, DemoData.class, new DemoDataListener()).build()) {
       ReadWorkbookHolder readWorkbookHolder = excelReader.analysisContext().readWorkbookHolder();
       if (readWorkbookHolder instanceof CsvReadWorkbookHolder) {
           CsvReadWorkbookHolder csvReadWorkbookHolder = (CsvReadWorkbookHolder) readWorkbookHolder;
           csvReadWorkbookHolder.setCsvFormat(csvReadWorkbookHolder.getCsvFormat().withDelimiter(';'));
       }
-      ReadSheet readSheet = EasyExcel.readSheet(0).build();
+      ReadSheet readSheet = FastExcel.readSheet(0).build();
       excelReader.read(readSheet);
   }
   ```
@@ -136,7 +136,7 @@ description: 常見問題
 - **A:** 可以通過開啟除錯日誌來監控EasyExcel的效能。例如：
   ```java
   LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
-  ch.qos.logback.classic.Logger logger = lc.getLogger("com.alibaba.excel");
+  ch.qos.logback.classic.Logger logger = lc.getLogger("cn.idev.excel");
   logger.setLevel(Level.DEBUG);
   ```
 
@@ -144,11 +144,11 @@ description: 常見問題
 - **Q:** 如何讀取包含多個Sheet的Excel檔案？
 - **A:** 可以使用`MultipleSheetsListener`來處理多Sheet的讀取。例如：
   ```java
-  EasyExcel.read(file, MultipleSheetsData.class, new MultipleSheetsListener()).doReadAll();
+  FastExcel.read(file, MultipleSheetsData.class, new MultipleSheetsListener()).doReadAll();
   ```
   或者，可以在讀取前獲取所有Sheet的資訊：
   ```java
-  ExcelReader excelReader = EasyExcel.read(file, MultipleSheetsData.class, multipleSheetsListener).build();
+  ExcelReader excelReader = FastExcel.read(file, MultipleSheetsData.class, multipleSheetsListener).build();
   List<ReadSheet> sheets = excelReader.excelExecutor().sheetList();
   for (ReadSheet readSheet : sheets) {
       excelReader.read(readSheet);
@@ -171,7 +171,7 @@ description: 常見問題
 - **Q:** 如何使用記憶體模式處理Excel檔案？
 - **A:** 記憶體模式適合處理較小的檔案，可以顯著提高處理速度。例如：
   ```java
-  EasyExcel.write(fileName, DemoData.class)
+  FastExcel.write(fileName, DemoData.class)
       .inMemory(Boolean.TRUE)
       .sheet("模板")
       .doWrite(data());
@@ -182,13 +182,13 @@ description: 常見問題
 - **A:** 可以通過設定`CsvFormat`來修改CSV檔案的分隔符。例如：
   ```java
   String fileName = TestFileUtil.getPath() + "demo" + File.separator + "demo.csv";
-  try (ExcelReader excelReader = EasyExcel.read(fileName, DemoData.class, new DemoDataListener()).build()) {
+  try (ExcelReader excelReader = FastExcel.read(fileName, DemoData.class, new DemoDataListener()).build()) {
       ReadWorkbookHolder readWorkbookHolder = excelReader.analysisContext().readWorkbookHolder();
       if (readWorkbookHolder instanceof CsvReadWorkbookHolder) {
           CsvReadWorkbookHolder csvReadWorkbookHolder = (CsvReadWorkbookHolder) readWorkbookHolder;
           csvReadWorkbookHolder.setCsvFormat(csvReadWorkbookHolder.getCsvFormat().withDelimiter(';'));
       }
-      ReadSheet readSheet = EasyExcel.readSheet(0).build();
+      ReadSheet readSheet = FastExcel.readSheet(0).build();
       excelReader.read(readSheet);
   }
   ```

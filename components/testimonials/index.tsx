@@ -46,7 +46,7 @@ const testimonials: Testimonial[] = [
   },
   {
     author: 'linht12',
-    content: "看到easyexcel停更的消息，惨了下，幸好有easyexcel-plus,甚是期待",
+    content: "看到easyexcel停更的消息，惨了下，幸好有fastexcel,甚是期待",
     avatar: '/testimonials/linht12.png'
   },
   {
@@ -96,12 +96,12 @@ const testimonials: Testimonial[] = [
   },
   {
     author: 'wushanru',
-    content: "easyexcel浴火重生，easyexcel-plus 加油",
+    content: "easyexcel浴火重生，fastexcel 加油",
     avatar: '/testimonials/wushanru.png'
   },
   {
     author: 'Elara',
-    content: "easyexcel-plus 加油💪",
+    content: "fastexcel 加油💪",
     avatar: '/testimonials/elara.png'
   }
 ];

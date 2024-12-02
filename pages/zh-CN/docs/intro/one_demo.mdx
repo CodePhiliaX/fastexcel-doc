@@ -1,43 +1,10 @@
 ---
-title: 读取Excel
-description: 读取Excel
+title: 第一个简单示例
+description: 第一个简单示例
 ---
 
-# 安装
 
-下表列出了各版本 fastexcel 基础库对 Java 语言版本最低要求的情况：
-
-| 版本   | jdk版本支持范围 | 备注                             |
-|--------|:---------------:|----------------------------------|
-| 4.0.0+ | jdk8 - jdk21     | 目前的master分支，完全兼容easyexcel |
-| 5.0.0+ | jdk8 - jdk21     | 下一代版本，去除poi依赖            |
-
-我们强烈建议您使用最新版本的 fastexcel，因为最新版本中的性能优化、BUG修复和新功能都会让您的使用更加方便。
-
-> 因为 fastexcel 底层使用 poi 作为基础包，如果您使用 4+ 以上的版本，并且项目中已经有 poi 相关组件，需要您手动排除 poi 的相关 jar 包。
-
-如果您使用 Maven 进行项目构建，请在 `pom.xml` 文件中引入以下配置：
-```xml
-<dependency>
-    <groupId>com.alibaba</groupId>
-    <artifactId>easyexcel</artifactId>
-    <version>4.0.3</version>
-</dependency>
-```
-
-如果您使用 Gradle 进行项目构建，请在 `build.gradle` 文件中引入以下配置：
-```gradle
-dependencies {
-    implementation 'com.alibaba:easyexcel:4.0.3'
-}
-```
-
-# 更新
-
-访问 [fastexcel](https://github.com/alibaba/easyexcel) 获取最新版本。
-
-
-# 读取 Excel 文件
+## 简单示例：读取 Excel 文件
 
 下面是读取 Excel 文档的例子：
 ```java
@@ -61,7 +28,7 @@ public static void main(String[] args) {
 }
 ```
 
-# 创建 Excel 文件
+## 简单示例：创建 Excel 文件
 
 下面是一个创建 Excel 文档的简单例子：
 ```java

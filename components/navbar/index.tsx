@@ -31,7 +31,7 @@ const Navbar = () => {
             {t("navbar.contact")}
           </Link>
           <a
-            href="https://github.com/CodePhiliaX/easyexcel-plus"
+            href="https://github.com/CodePhiliaX/fastexcel"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.navLink}

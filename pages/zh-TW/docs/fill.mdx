@@ -30,7 +30,7 @@ public void simpleFill() {
     FillData fillData = new FillData();
     fillData.setName("張三");
     fillData.setNumber(5.2);
-    EasyExcel.write("simpleFill.xlsx")
+    FastExcel.write("simpleFill.xlsx")
         .withTemplate(templateFileName)
         .sheet()
         .doFill(fillData);
@@ -39,7 +39,7 @@ public void simpleFill() {
     Map<String, Object> map = new HashMap<>();
     map.put("name", "張三");
     map.put("number", 5.2);
-    EasyExcel.write("simpleFillMap.xlsx")
+    FastExcel.write("simpleFillMap.xlsx")
         .withTemplate(templateFileName)
         .sheet()
         .doFill(map);

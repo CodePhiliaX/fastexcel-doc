@@ -1,98 +1,84 @@
 ---
-title: 快速开始
-description: 快速开始使用FastExcel
+title: 安装与配置
+description: 快速开始使用 FastExcel 安装与配置
 ---
 
-# 安装
+## 安装
 
-下表列出了各版本 EasyExcel-Plus 基础库对 Java 语言版本最低要求的情况：
+下表列出了各版本 fastexcel 基础库对 Java 语言版本最低要求的情况：
 
 | 版本   | jdk版本支持范围 | 备注                             |
 |--------|:---------------:|----------------------------------|
-| 4.0.0+ | jdk8 - jdk21     | 目前的master分支，完全兼容easyexcel |
-| 5.0.0+ | jdk8 - jdk21     | 下一代版本，去除poi依赖            |
+| 1.0.0+ | jdk8 - jdk21     | 目前的master分支，完全兼容easyexcel |
 
-我们强烈建议您使用最新版本的 EasyExcel-Plus，因为最新版本中的性能优化、BUG修复和新功能都会让您的使用更加方便。
+我们强烈建议您使用最新版本的 fastexcel，因为最新版本中的性能优化、BUG修复和新功能都会让您的使用更加方便。
 
-> 因为 EasyExcel-Plus 底层使用 poi 作为基础包，如果您使用 4+ 以上的版本，并且项目中已经有 poi 相关组件，需要您手动排除 poi 的相关 jar 包。
+> 因为 fastexcel 底层使用 poi 作为基础包，如果您使用 4+ 以上的版本，并且项目中已经有 poi 相关组件，需要您手动排除 poi 的相关 jar 包。
 
+### Maven
 如果您使用 Maven 进行项目构建，请在 `pom.xml` 文件中引入以下配置：
 ```xml
 <dependency>
-    <groupId>com.alibaba</groupId>
-    <artifactId>easyexcel</artifactId>
-    <version>4.0.3</version>
+    <groupId>cn.idev.excel</groupId>
+    <artifactId>fastexcel</artifactId>
+    <version>1.0.0</version>
 </dependency>
 ```
-
+### Gradle
 如果您使用 Gradle 进行项目构建，请在 `build.gradle` 文件中引入以下配置：
 ```gradle
 dependencies {
-    implementation 'com.alibaba:easyexcel:4.0.3'
+    implementation 'cn.idev.excel:fastexcel:1.0.0'
 }
 ```
+## easyexcel 与 fastexcel 的区别
+_ 1. fastexcel 支持所有 easyexcel 的功能，但是 fastexcel 的性能更好，更稳定。
+_ 2. fastexcel 与 easyexcel 的 API 完全一致，可以无缝切换。
+_ 3. fastexcel 会持续的更新，修复 bug，优化性能，增加新功能。
 
-# 更新
+## easyexcel 如何升级到 fastexcel
+
+### 1. 修改依赖
+将 easyexcel 的依赖替换为 fastexcel 的依赖，如下：
+```xml
+<!-- easyexcel 依赖 -->
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>easyexcel</artifactId>
+    <version>xxxx</version>
+</dependency>
+```
+的依赖替换为
+```xml
+<dependency>
+    <groupId>cn.idev.excel</groupId>
+    <artifactId>fastexcel</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+### 2. 修改代码
+将 easyexcel 的包名替换为 fastexcel 的包名，如下：
+```java
+// 将 easyexcel 的包名替换为 fastexcel 的包名
+import com.alibaba.excel.**;
+```
+替换为
+```java
+import cn.idev.excel.**;
+```
+### 3. 不修改代码直接依赖 fastexcel
+如果由于种种原因您不想修改代码，可以直接依赖 fastexcel，然后在 `pom.xml` 文件中直接依赖 fastexcel。
+easyexcel 与 fastexcel 可以共存，但是长期建议替换为 fastexcel。
+
+### 4. 建议以后使用 FastExcel 类
+为了兼容性考虑保留了 EasyExcel 类，但是建议以后使用 FastExcel 类，FastExcel 类是 fastexcel 的入口类，功能包含了 EasyExcel 类的所有功能，以后新特性仅在 FastExcel 类中添加。
+
+
+
+
+## 更新
 
 访问  [FastExcel](https://github.com/CodePhiliaX/fastexcel)  获取最新版本。
 
 
-# 读取 Excel 文件
-
-下面是读取 Excel 文档的例子：
-```java
-// 实现 ReadListener 接口，设置读取数据的操作
-public class DemoDataListener implements ReadListener<DemoData> {
-    @Override
-    public void invoke(DemoData data, AnalysisContext context) {
-        System.out.println("解析到一条数据" + JSON.toJSONString(data));
-    }
-
-    @Override
-    public void doAfterAllAnalysed(AnalysisContext context) {
-        System.out.println("所有数据解析完成！");
-    }
-}
-
-public static void main(String[] args) {
-    String fileName = "demo.xlsx";
-    // 读取 Excel 文件
-    EasyExcel.read(fileName, DemoData.class, new DemoDataListener()).sheet().doRead();
-}
-```
-
-# 创建 Excel 文件
-
-下面是一个创建 Excel 文档的简单例子：
-```java
-// 示例数据类
-public class DemoData {
-    @ExcelProperty("字符串标题")
-    private String string;
-    @ExcelProperty("日期标题")
-    private Date date;
-    @ExcelProperty("数字标题")
-    private Double doubleData;
-    @ExcelIgnore
-    private String ignore;
-}
-
-// 填充要写入的数据
-private static List<DemoData> data() {
-    List<DemoData> list = new ArrayList<>();
-    for (int i = 0; i < 10; i++) {
-        DemoData data = new DemoData();
-        data.setString("字符串" + i);
-        data.setDate(new Date());
-        data.setDoubleData(0.56);
-        list.add(data);
-    }
-    return list;
-}
-
-public static void main(String[] args) {
-    String fileName = "demo.xlsx";
-    // 创建一个名为“模板”的 sheet 页，并写入数据
-    EasyExcel.write(fileName, DemoData.class).sheet("模板").doWrite(data());
-}
-```

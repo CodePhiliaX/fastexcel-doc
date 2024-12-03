@@ -76,7 +76,7 @@ Number conversion, using `String` to receive Excel number format data will trigg
 | xlsxSAXParserFactoryName | Empty       | Specifies the name of the class used for sax reading, for example: `com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl`. |
 | useDefaultListener    | true          | `@since 2.1.4` <br/>By default, `ModelBuildEventListener` is added to help convert to the object passed in. If set to `false`, it will not assist in converting objects, and custom listeners will receive a `Map<Integer, CellData>` object. If you still want to receive `class` objects, call the `readListener` method and add custom `beforeListener`, `ModelBuildEventListener`, and custom `afterListener`. |
 | extraReadSet          | Empty         | Set of additional content to be read, not read by default.                                                                  |
-| readDefaultReturn     | STRING        | `@since 3.2.0`<br/>STRING: Returns an array of Map<Integer, String>, the return value is the content you see in the excel cell without clicking on it.<br/>ACTUAL_DATA: Returns an array of Map<Integer, Object>, the actual stored data, will automatically convert types, Object type can be `BigDecimal`, `Boolean`, `String`, `LocalDateTime`, null.<br/>READ_CELL_DATA: Returns an array of Map<Integer, ReadCellData<?>>, where `?` type refers to ACTUAL_DATA.
+| readDefaultReturn     | STRING        | `@since 3.2.0`<br/>STRING: Returns an array of Map&lt;Integer,Object&gt;, the return value is the content you see in the excel cell without clicking on it.<br/>ACTUAL_DATA: Returns an array of Map&lt;Integer,Object&gt;, the actual stored data, will automatically convert types, Object type can be `BigDecimal`, `Boolean`, `String`, `LocalDateTime`, null.<br/>READ_CELL_DATA: Returns an array of Map&lt;Integer,ReadCellData&lt;?&gt;&gt;, where `?` type refers to ACTUAL_DATA.
 
 ## ReadSheet (just a Sheet in excel) parameters
 | Name                  | Default Value | Description                                                                 |
@@ -301,6 +301,8 @@ public void dropdownWrite() {
 
 `ReadListener` is a generic interface, with the generic type being the type of object to be read (e.g., `DemoData`). Its core methods are as follows:
 
-| Method                                 | Description                                                                                   |
-|----------------------------------------|----------------------------------------------------------------------------------------------|
-| `void invoke(T data, AnalysisContext context)` | Triggered when
+| Method | Description |
+|--------|-------------|
+| `void invoke(T data, AnalysisContext context)` | Triggered when reading each row of data |
+
+

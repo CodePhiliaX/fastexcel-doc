@@ -3,6 +3,6 @@ export default {
     entry: "pages/zh-CN",
     entryLocale: "zh-CN",
     output: "pages",
-    outputLocales: ["en-US", 'ja-JP'],
+    outputLocales: ["zh-TW", 'ja-JP', 'en-US'],
   },
 };

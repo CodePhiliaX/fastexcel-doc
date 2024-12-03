@@ -1,11 +1,11 @@
 ---
-title: FAQ
+title: Frequently Asked Questions
 description: Frequently Asked Questions
 ---
 
 #### Feature Limitations
 - **Q:** What functions does FastExcel support? What functions are not supported?
-- **A:** FastExcel supports efficient reading and writing operations for Excel files, including support for CSV format (starting from version 3.0.0-beta1). Unsupported functions include concurrent writing to a single file, reading image macros, etc.
+- **A:** FastExcel supports efficient reading and writing operations for Excel files, including support for CSV format (starting from version 3.0.0-beta1). Unsupported functions include concurrent writing to a single file, reading and writing image macros, etc.
 
 #### Choosing Write Operations
 - **Q:** When writing to Excel, when should I choose the fill mode and when should I choose direct writing?
@@ -17,11 +17,11 @@ description: Frequently Asked Questions
 
 #### Field Matching
 - **Q:** How to solve the problem of some fields not being read or written correctly?
-- **A:** Ensure that the entity class fields follow the camel case naming convention, avoid using `@Accessors(chain = true)`, and recommend using `@Builder` instead. Also, ensure that the entity class is marked with `@ExcelProperty` annotation for fields involved in reading and writing.
+- **A:** Ensure that the entity class fields follow the camel case naming convention, avoid using `@Accessors(chain = true)`, and recommend using `@Builder` instead. Also, ensure that the entity class uses the `@ExcelProperty` annotation to mark the fields involved in reading and writing.
 
 #### Compatibility Issues
-- **Q:** What to do when encountering compatibility issues when using FastExcel?
-- **A:** Common compatibility issues include `NoSuchMethodException`, `ClassNotFoundException`, `NoClassDefFoundError`, etc., which are usually caused by jar conflicts. It is recommended to check and clean up dependencies in the project, ensuring that the FastExcel version used is compatible with other libraries in the project.
+- **Q:** What should I do if I encounter compatibility issues when using FastExcel?
+- **A:** Common compatibility issues include `NoSuchMethodException`, `ClassNotFoundException`, `NoClassDefFoundError`, etc., usually caused by jar conflicts. It is recommended to check and clean up dependencies in the project to ensure that the FastExcel version used is compatible with other libraries in the project.
 
 #### Online Deployment
 - **Q:** Why are there problems in the online environment when running normally locally?
@@ -29,7 +29,7 @@ description: Frequently Asked Questions
 
 #### Concurrent Reading
 - **Q:** Why shouldn't the Listener be managed by Spring?
-- **A:** Listeners should not be managed by Spring because this would cause the Listener to become a singleton, which may lead to data confusion issues when reading files concurrently. Each time a file is read, a new Listener instance should be created.
+- **A:** Listeners should not be managed by Spring because this would cause the Listener to become a singleton, which may lead to data confusion issues when concurrently reading files. A new Listener instance should be created each time a file is read.
 
 #### Performance Optimization
 - **Q:** For large files over 10M, what reading strategies does FastExcel provide?
@@ -41,7 +41,7 @@ description: Frequently Asked Questions
 
 #### Export Issues
 - **Q:** How to solve the problem when the exported Excel file cannot be opened or prompts for repair?
-- **A:** This is usually caused by front-end frameworks or back-end interceptors modifying the file stream. It is recommended to test local exports first, ensure the correctness of the back-end logic, and then investigate front-end and network-related issues.
+- **A:** This is usually caused by frontend frameworks or backend interceptors modifying the file stream. It is recommended to test local exports first, ensure the correctness of backend logic, and then investigate frontend and network-related issues.
 
 #### Large File Reading Optimization
 - **Q:** How does FastExcel optimize memory usage when reading large files?
@@ -49,7 +49,7 @@ description: Frequently Asked Questions
 
 #### Concurrent Processing
 - **Q:** How to efficiently read Excel files in a high-concurrency environment?
-- **A:** In a high-concurrency environment, you can optimize reading performance using `SimpleReadCacheSelector`. By setting parameters such as `maxUseMapCacheSize` and `maxCacheActivateBatchCount`, you can control the cache strategy for shared strings, improve hit rate, and reduce file reading latency.
+- **A:** In a high-concurrency environment, you can optimize reading performance using `SimpleReadCacheSelector`. By setting parameters like `maxUseMapCacheSize` and `maxCacheActivateBatchCount`, you can control the cache strategy for shared strings, improve hit rate, and reduce file read latency.
 
 #### Field Mapping
 - **Q:** How to handle cases where entity class fields do not match Excel column names?
@@ -60,7 +60,7 @@ description: Frequently Asked Questions
   ```
 
 #### Data Validation
-- **Q:** How to perform data validation when reading Excel data?
+- **Q:** How to validate data when reading Excel data?
 - **A:** Data validation logic can be implemented in the `ReadListener`. For example:
   ```java
   public class DataValidatorListener extends AnalysisEventListener<DemoData> {
@@ -91,7 +91,7 @@ description: Frequently Asked Questions
 
 #### Fill Mode
 - **Q:** How to solve the problem of fields not being replaced in fill mode?
-- **A:** Using the `inMemory(true)` parameter ensures correct field replacement. For example:
+- **A:** Using the `inMemory(true)` parameter can ensure that fields are correctly replaced. For example:
   ```java
   FastExcel.write(fileName, DemoData.class).inMemory(true).sheet("Template").doWrite(fillData());
   ```
@@ -129,7 +129,7 @@ description: Frequently Asked Questions
 
 #### Dependency Conflict
 - **Q:** How to resolve dependency conflict issues?
-- **A:** Common dependency conflicts include POI, ehcache, commons-io, etc. It is recommended to check the dependency tree in the project, ensure that the versions used are compatible with FastExcel. You can use the Maven `dependency:tree` command to view the dependency tree.
+- **A:** Common dependency conflicts include POI, ehcache, commons-io, etc. It is recommended to check the dependency tree in the project to ensure that the versions used are compatible with FastExcel. You can use the Maven `dependency:tree` command to view the dependency tree.
 
 #### Performance Monitoring
 - **Q:** How to monitor the performance of FastExcel?
@@ -169,7 +169,7 @@ description: Frequently Asked Questions
 
 #### Memory Mode
 - **Q:** How to use memory mode to process Excel files?
-- **A:** Memory mode is suitable for handling smaller files and can significantly improve processing speed. For example:
+- **A:** Memory mode is suitable for processing smaller files and can significantly improve processing speed. For example:
   ```java
   FastExcel.write(fileName, DemoData.class)
       .inMemory(Boolean.TRUE)
@@ -194,8 +194,8 @@ description: Frequently Asked Questions
   ```
 
 #### Custom Read Listener
-- **Q:** How to customize the read listener?
-- **A:** You can inherit from the `AnalysisEventListener` class and implement your own logic. For example:
+- **Q:** How to customize a read listener?
+- **A:** You can inherit the `AnalysisEventListener` class and implement your own logic. For example:
   ```java
   public class CustomReadListener extends AnalysisEventListener<DemoData> {
       @Override
@@ -205,13 +205,13 @@ description: Frequently Asked Questions
 
       @Override
       public void doAfterAllAnalysed(AnalysisContext context) {
-          // Operations to be executed after all data is read
+          // Operations after all data is read
       }
   }
   ```
 
 #### Ignore Unannotated Fields During Reading
-- **Q:** How to ignore fields that are not annotated with `@ExcelProperty` during reading?
+- **Q:** How to ignore fields not annotated with `@ExcelProperty` during reading?
 - **A:** Add the `@ExcelIgnoreUnannotated` annotation at the top of the class. For example:
   ```java
   @Data
@@ -223,8 +223,8 @@ description: Frequently Asked Questions
   ```
 
 #### Set Header Style During Export
-- **Q:** How to set the header style during export?
-- **A:** You can customize the header style by implementing the `WriteHandler` interface. For example:
+- **Q:** How to set header style during export?
+- **A:** You can customize header style by implementing the `WriteHandler` interface. For example:
   ```java
   public class CustomHeadStyleWriteHandler extends AbstractHeadStyleWriteHandler {
       @Override
@@ -248,7 +248,7 @@ description: Frequently Asked Questions
 
 #### Merge Cells During Export
 - **Q:** How to merge cells during export?
-- **A:** You can customize the logic for merging cells by implementing the `WriteHandler` interface. For example:
+- **A:** You can customize cell merging logic by implementing the `WriteHandler` interface. For example:
   ```java
   public class MergeCellWriteHandler implements WriteHandler {
       @Override

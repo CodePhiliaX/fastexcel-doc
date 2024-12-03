@@ -1,14 +1,14 @@
 ---
-title: Read the first few lines of an Excel file with FastExcel
-description: Read the first few lines of an Excel file with FastExcel
+title: Read the first few rows of an Excel file with FastExcel
+description: Learn how to read the first few rows of an Excel file using FastExcel
 ---
 
-## Reading the First Few Lines of an Excel File with FastExcel
+## Reading the First Few Rows of an Excel File with FastExcel
 ### Overview
 
-In the process of data analysis and processing, quickly viewing the contents of the first few lines of an Excel file can help us better understand the data structure and content. This article will introduce how to use FastExcel to read the first 100 rows of an Excel file.
-You can specify the number of rows to read using the numRows method. By setting numRows(100), you can read the first 100 rows of data. By default, FastExcel reads all the data in the entire Excel file, but you can limit the number of rows read by setting the numRows method.
-The row count starts from 0, where 0 indicates no limit on the number of rows to read, meaning it will read all rows. For example, setting numRows(100) means reading the first 100 rows of data, including the header row.
+When analyzing and processing data, quickly viewing the first few rows of an Excel file can help us better understand the data structure and content. This article will introduce how to use FastExcel to read the first 100 rows of an Excel file.
+By using the numRows method, you can specify the number of rows to read. Setting numRows(100) will read the first 100 rows of data. By default, FastExcel reads all data in the Excel file, but you can limit the number of rows read by setting the numRows method.
+The row count starts from 0, where 0 indicates no limit on the number of rows to read, meaning it will read all rows. For example, setting numRows(100) will read the first 100 rows of data, including the header row.
 
 ### 1. Read the First 100 Rows of All Sheets
 #### Code

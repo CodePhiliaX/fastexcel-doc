@@ -9,5 +9,5 @@ export default {
   FAQ: "FAQ",
   advance_api: "Advanced API",
   best_practices: "Best Practices",
-  contribution: "Contribution Guide",
+  contribution: "Contribution Guidelines",
 };

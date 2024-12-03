@@ -1,8 +1,8 @@
 ---
 title: Simple Read
-description: Read a simple excel file
----
+description: Read an Excel file easily
 
+---
 
 ## Simple Read Excel
 
@@ -33,12 +33,12 @@ public class DemoDataListener implements ReadListener<DemoData> {
 
     @Override
     public void invoke(DemoData data, AnalysisContext context) {
-        log.info("Parsed one piece of data:{}", JSON.toJSONString(data));
+        log.info("Parsed one piece of data: {}", JSON.toJSONString(data));
     }
 
     @Override
     public void doAfterAllAnalysed(AnalysisContext context) {
-        log.info("All data parsing completed!");
+        log.info("All data parsed!");
     }
 }
 ```
@@ -80,7 +80,7 @@ public void simpleRead() {
 ## Example 2: Read a Simple Excel File without Defining POJO
 
 ### Overview
-FastExcel also supports reading Excel files directly without defining a POJO class, by reading data directly as `Map<Integer, String>`.
+FastExcel also supports reading Excel files directly without defining a POJO class, by reading data directly through `Map<Integer, String>`.
 
 ```java
 @Slf4j
@@ -105,7 +105,7 @@ public class NoModelDataListener extends AnalysisEventListener<Map<Integer, Stri
     }
 
     private void saveData() {
-        // Actual business processing logic
+        // Actual business logic
         log.info("Stored {} pieces of data", cachedDataList.size());
     }
 }
@@ -114,7 +114,7 @@ public class NoModelDataListener extends AnalysisEventListener<Map<Integer, Stri
 ## Example 3: Read a Simple Excel File without Defining a Listener
 
 ### Overview
-Use the `doReadSync` method to directly read Excel data into a list in memory, which is suitable for scenarios with small amounts of data. The read data can be a list of POJO objects or Map lists.
+Use the `doReadSync` method to directly read Excel data into a list in memory, suitable for scenarios with small amounts of data. The read data can be a list of POJO objects or Map lists.
 
 ### Code Example
 #### Read as a list of objects
@@ -130,12 +130,13 @@ public class DemoData {
     private Date date;
     private Double doubleData;
 }
-Synchronously read to a list of objects
+
+// Synchronous read as a list of objects
 @Test
 public void synchronousReadToObjectList() {
     String fileName = "path/to/demo.xlsx";
 
-    // Use FastExcel to synchronously read Excel data into a list of objects
+    // Synchronously read Excel data into a list of objects using FastExcel
     List<DemoData> list = FastExcel.read(fileName).head(DemoData.class).sheet().doReadSync();
 
     // Process the read data list
@@ -146,7 +147,7 @@ public void synchronousReadToObjectList() {
 ```
 
 ### Read as a list of Maps
-Without using POJO, each row can be read as a Map, with the key as the column index and the value as the cell content.
+When not using POJO, each row can be read as a Map, with the key as the column index and the value as the cell content.
 
 ```java
 @Test

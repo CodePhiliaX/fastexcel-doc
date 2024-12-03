@@ -3,7 +3,7 @@
 export default {
   index: {
     title: "ホーム",
-    description: "FastExcel で Excel の処理を簡単に行う",
+    description: "FastExcel でExcel の処理を簡単にします",
     type: "page",
     theme: {
       layout: "raw",

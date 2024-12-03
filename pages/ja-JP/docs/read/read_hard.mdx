@@ -6,15 +6,15 @@ description: 複雑な読み取り操作
 ## 複雑な Excel ファイルの読み取りガイド
 ### 概要
 
-このガイドでは、FastExcel を使用して複数のシナリオで Excel の複雑な読み取りを行う方法について説明します。対象となるシナリオには、列名またはインデックスでの読み取り、複数のシートの読み取り、日付や数字の形式変換、複数行のヘッダーの解析、追加情報の読み取り（コメント、ハイパーリンク、セルの結合）、式や例外の処理などが含まれます。
+このガイドでは、FastExcel を使用して複数のシナリオで Excel の複雑な読み取りを行う方法について説明します。対象となるシナリオには、列名またはインデックスでの読み取り、複数のシートの読み取り、日付や数字の形式変換、複数行のヘッダーの解析、追加情報の読み取り（コメント、ハイパーリンク、セルの結合）、数式や例外の処理などが含まれます。
 
 ### **列名または列インデックスでの読み取り**
 
 #### 概要
-Excel データを読み取る際に、列名または列インデックスを指定することができます。これにより、動的に生成された Excel ファイルとの柔軟な対話が可能となります。
+Excel データを列名または列インデックスで指定して読み取ることができます。これにより、動的に生成された Excel ファイルと柔軟にやり取りできます。
 
 #### コード例
-#### 対象オブジェクト: `IndexOrNameData`
+#### 対象オブジェクト：`IndexOrNameData`
 ```java
 @Getter
 @Setter
@@ -23,16 +23,16 @@ public class IndexOrNameData {
     @ExcelProperty(index = 2)
     private Double doubleData;
 
-    @ExcelProperty("String Title")
+    @ExcelProperty("文字列タイトル")
     private String string;
 
-    @ExcelProperty("Date Title")
+    @ExcelProperty("日付タイトル")
     private Date date;
 }
 ```
 
 #### リスナー
-基本的な読み取りと同様ですが、ジェネリックを `IndexOrNameData` に変更するだけです。
+基本的な読み取りと同様に、ジェネリックを `IndexOrNameData` に変更するだけです。
 
 #### 読み取りコード例
 ```java
@@ -40,7 +40,7 @@ public class IndexOrNameData {
 public void indexOrNameRead() {
     String fileName = "path/to/demo.xlsx";
 
-    // 列名または列インデックスでの読み取り
+    // 列名または列インデックスで読み取り
     FastExcel.read(fileName, IndexOrNameData.class, new DemoDataListener()).sheet().doRead();
 }
 ```
@@ -76,7 +76,7 @@ public void repeatedRead() {
 
 ### **日付、数字、カスタム形式の変換**
 
-#### 対象オブジェクト: `ConverterData`
+#### 対象オブジェクト：`ConverterData`
 ```java
 @Getter
 @Setter
@@ -144,7 +144,7 @@ public void complexHeaderRead() {
 
     FastExcel.read(fileName, DemoData.class, new DemoDataListener())
         .sheet()
-        // ヘッダーの行数を設定（デフォルトは 1）
+        // ヘッダーの行数を設定、デフォルトは 1
         .headRowNumber(2)
         .doRead();
 }
@@ -155,7 +155,7 @@ public void complexHeaderRead() {
 ### **同期的なデータの返却**
 
 #### 概要
-Excel データを同期的に読み取り、データリストを直接返します。小規模なデータの場合に適しており、大規模なデータの使用は推奨されません。
+Excel データを同期的に読み取り、データリストを直接返します。データ量が少ない場合に適しており、大量のデータには推奨されません。
 
 #### 読み取りコード例
 ```java
@@ -169,7 +169,7 @@ public void synchronousRead() {
         log.info("データを読み取りました: {}", JSON.toJSONString(data));
     }
 
-    // Map リストを返す。キーは列インデックスで、値はセルの内容
+    // Map リストを返す、キーは列インデックス、値はセルの内容
     List<Map<Integer, String>> listMap = FastExcel.read(fileName).sheet().doReadSync();
     for (Map<Integer, String> data : listMap) {
         log.info("データを読み取りました: {}", JSON.toJSONString(data));
@@ -241,7 +241,7 @@ public class DemoExtraListener implements ReadListener<DemoExtraData> {
                 log.info("セルの結合範囲: {} - {}", extra.getFirstRowIndex(), extra.getLastRowIndex());
                 break;
             default:
-                log.warn("未知の追加情報タイプ");
+                log.warn("不明な追加情報のタイプ");
         }
     }
 }
@@ -262,12 +262,12 @@ public void extraRead() {
 ```
 
 
-### **式とセルのタイプの読み取り**
+### **数式とセルの種類の読み取り**
 
 #### 概要
-`CellData` 型を使用してセルデータを受け取り、式や複数のセル形式をサポートします。
+`CellData` タイプを使用してセルデータを受け取り、数式やさまざまなセル形式をサポートします。
 
-#### サンプルオブジェクト
+#### 対象オブジェクト
 ```java
 @Getter
 @Setter
@@ -305,7 +305,7 @@ public class DemoExceptionListener extends AnalysisEventListener<ExceptionDemoDa
         log.error("解析に失敗しました: {}", exception.getMessage());
         if (exception instanceof ExcelDataConvertException) {
             ExcelDataConvertException ex = (ExcelDataConvertException) exception;
-            log.error("第 {} 行、第 {} 列で解析エラーが発生しました。データ: {}", ex.getRowIndex(), ex.getColumnIndex(), ex.getCellData());
+            log.error("第 {} 行、第 {} 列の解析エラー、データ: {}", ex.getRowIndex(), ex.getColumnIndex(), ex.getCellData());
         }
     }
 
@@ -328,10 +328,10 @@ public void exceptionRead() {
 
 
 
-### **オブジェクトを作成せずに読み取る**
+### **オブジェクトを作成しない読み取り**
 
 #### 概要
-`Map<Integer, String>` を使用してデータを直接読み取り、エンティティクラスを定義する必要がありません。
+エンティティクラスを定義せずに、`Map<Integer, String>` を使用してデータを直接読み取ることができます。
 
 #### サンプルリスナー
 ```java

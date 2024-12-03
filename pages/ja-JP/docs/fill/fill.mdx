@@ -1,12 +1,12 @@
 ---
-title: Excelのデータ埋め
-description: Excelのデータ埋め
+title: Excelの埋め込み
+description: Excelの埋め込み
 ---
 
 ## **シンプルな埋め込み**
 
 ### 概要
-テンプレートファイルを基に、オブジェクトまたは Map を使用してExcelにデータを埋め込みます。
+テンプレートファイルを基に、オブジェクトや Map を使用してExcelにデータを埋め込みます。
 
 #### オブジェクトの例
 ```java
@@ -79,7 +79,7 @@ public void listFill() {
 ## **複雑な埋め込み**
 
 ### 概要
-リストや通常の変数など、さまざまなデータ型をテンプレートに埋め込みます。
+リストや通常の変数を含むさまざまなデータ型をテンプレートに埋め込みます。
 
 #### サンプルコード
 ```java
@@ -90,7 +90,7 @@ public void complexFill() {
     try (ExcelWriter writer = FastExcel.write("complexFill.xlsx").withTemplate(templateFileName).build()) {
         WriteSheet writeSheet = FastExcel.writerSheet().build();
 
-        // リストデータを埋め込み、forceNewRowを有効にする
+        // リストデータを埋め込み、forceNewRow を有効にする
         FillConfig config = FillConfig.builder().forceNewRow(true).build();
         writer.fill(data(), config, writeSheet);
 
@@ -105,10 +105,10 @@ public void complexFill() {
 
 ---
 
-## **大規模な複雑な埋め込み**
+## **大量データの複雑な埋め込み**
 
 ### 概要
-大規模なデータの埋め込みパフォーマンスを最適化し、テンプレートリストが最後の行にあることを確認し、後続データは `WriteTable` を使用して埋め込みます。
+大量データの埋め込みパフォーマンスを最適化し、テンプレートリストが最後の行に配置され、後続データは `WriteTable` を使用して埋め込まれます。
 
 #### サンプルコード
 ```java
@@ -166,7 +166,7 @@ public void horizontalFill() {
 ## **複数リストの組み合わせ埋め込み**
 
 ### 概要
-複数のリストを同時に埋め込み、リスト間をプレフィックスで区別します。
+複数のリストを同時に埋め込み、リスト間を接頭辞で区別します。
 
 #### サンプルコード
 ```java
@@ -177,7 +177,7 @@ public void compositeFill() {
     try (ExcelWriter writer = FastExcel.write("compositeFill.xlsx").withTemplate(templateFileName).build()) {
         WriteSheet writeSheet = FastExcel.writerSheet().build();
 
-        // FillWrapperを使用して複数のリストを埋め込む
+        // FillWrapper を使用して複数のリストを埋め込む
         writer.fill(new FillWrapper("data1", data()), writeSheet);
         writer.fill(new FillWrapper("data2", data()), writeSheet);
         writer.fill(new FillWrapper("data3", data()), writeSheet);
@@ -195,9 +195,9 @@ public void compositeFill() {
 
 | 機能               | 説明                                                                                      | サンプルコード              |
 |--------------------|-------------------------------------------------------------------------------------------|-----------------------|
-| 最もシンプルな埋め込み        | オブジェクトまたは Map を使用してシンプルなデータを埋め込む                                                              | [simpleFill](#1)      |
-| リストの埋め込み           | リストデータをテンプレートに埋め込み、分割埋め込みをサポート                                                        | [listFill](#2)        |
-| 複雑な埋め込み            | 同じテンプレートにリストや通常変数など、さまざまなデータ型を埋め込む                                           | [complexFill](#3)     |
-| 大規模な複雑な埋め込み    | 大規模なデータの埋め込みパフォーマンスを最適化し、テンプレートリストが最後の行にあることを確認し、後続データは `WriteTable` を使用して埋め込む |
+| 最もシンプルな埋め込み        | オブジェクトや Map を使用して単純なデータを埋め込む                                                              | [simpleFill](#1)      |
+| リストの埋め込み           | リストデータをテンプレートに埋め込み、バッチ埋め込みをサポート                                                        | [listFill](#2)        |
+| 複雑な埋め込み            | リストや通常の変数など、さまざまなデータ型を同じテンプレートに埋め込む                                           | [complexFill](#3)     |
+| 大量データの複雑な埋め込み    | 大量データの埋め込みパフォーマンスを最適化し、テンプレートリストが最後の行に配置する                                               | [complexFillWithTable](#4) |
 | 横方向の埋め込み            | リストデータを横方向に埋め込み、動的列データに適しています                                                    | [horizontalFill](#5)  |
-| 複数リストの組み合わせ埋め込み      | 複数のリストを同時に埋め込み、リスト間をプレフィックスで区別                                                   | [compositeFill](#6)   |
+| 複数リストの組み合わせ埋め込み      | 複数のリストを同時に埋め込み、リスト間を接頭辞で区別                                                   | [compositeFill](#6)   |

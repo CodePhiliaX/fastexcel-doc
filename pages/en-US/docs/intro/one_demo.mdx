@@ -12,12 +12,12 @@ Here is an example of reading an Excel document:
 public class DemoDataListener implements ReadListener<DemoData> {
     @Override
     public void invoke(DemoData data, AnalysisContext context) {
-        System.out.println("Parsed a piece of data" + JSON.toJSONString(data));
+        System.out.println("Data read: " + JSON.toJSONString(data));
     }
 
     @Override
     public void doAfterAllAnalysed(AnalysisContext context) {
-        System.out.println("All data parsing is completed!");
+        System.out.println("All data parsed!");
     }
 }
 
@@ -49,7 +49,7 @@ private static List<DemoData> data() {
     List<DemoData> list = new ArrayList<>();
     for (int i = 0; i < 10; i++) {
         DemoData data = new DemoData();
-        data.setString("String" + i);
+        data.setString("String " + i);
         data.setDate(new Date());
         data.setDoubleData(0.56);
         list.add(data);

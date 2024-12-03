@@ -4,27 +4,225 @@ description: よくある質問
 ---
 
 #### 機能制限
-- **Q:** FastExcelはどの機能をサポートしていますか？サポートされていない機能はありますか？
-- **A:** FastExcelはExcelファイルの効率的な読み書き操作をサポートしており、CSV形式もサポートしています（バージョン3.0.0-beta1から）。サポートされていない機能には、単一ファイルの同時書き込み、画像の読み取りなどがあります。
+- **Q:** FastExcelはどの機能をサポートしていますか？サポートされていない機能は何ですか？
+- **A:** FastExcelは効率的なExcelファイルの読み書きをサポートしており、CSV形式もサポートしています（バージョン3.0.0-beta1から）。サポートされていない機能には、単一ファイルの同時書き込み、画像マクロの読み取りなどがあります。
 
 #### 書き込み方法の選択
-- **Q:** Excelに書き込む際、いつフィル方式を選択し、いつ直接書き込むべきですか？
-- **A:** 複雑な書き出し内容の場合は、テンプレートのフィル方式を推奨します。単純な形式の場合は、直接書き込みが効率的です。
+- **Q:** Excelに書き込む際、どのようにして埋め込み方法と直接書き込みを選択すべきですか？
+- **A:** 複雑な書き出し内容の場合は、テンプレート埋め込みを推奨します。シンプルな形式の場合は、直接書き込みが効率的です。
 
 #### Lombokアノテーション
-- **Q:** FastExcelを使用する際、エンティティクラスにLombokアノテーションをどのように使用しますか？
-- **A:** エンティティクラスでよく使用されるLombokアノテーション（`@Getter`、`@Setter`、`@EqualsAndHashCode`）は、getter、setterメソッドおよびequals、hashCodeメソッドを自動生成するために使用されます。これらの自動生成メソッドを使用したくない場合は、独自に実装することができます。
+- **Q:** FastExcelを使用する際、エンティティクラスにLombokアノテーションを使用する目的は何ですか？
+- **A:** エンティティクラスでよく使用されるLombokアノテーション（`@Getter`、`@Setter`、`@EqualsAndHashCode`）は、getter、setterメソッドおよびequals、hashCodeメソッドを自動生成するために使用されます。これらの自動生成メソッドを使用したくない場合は、独自で実装することができます。
 
-#### フィールドのマッチング
-- **Q:** 一部のフィールドが正しく読み取られないまたは書き込まれない問題をどのように解決すればよいですか？
-- **A:** エンティティクラスのフィールドがキャメルケースの命名規則に従っていることを確認し、`@Accessors(chain = true)`を使用しないようにし、代わりに`@Builder`を使用することをお勧めします。さらに、エンティティクラスで`@ExcelProperty`アノテーションが使用されていることを確認してください。
+#### フィールドマッチング
+- **Q:** 一部のフィールドが正しく読み取られないまたは書き込まれない問題を解決するにはどうすればよいですか？
+- **A:** エンティティクラスのフィールドがキャメルケース命名規則に従っていることを確認し、`@Accessors(chain = true)`を使用しないようにし、代わりに`@Builder`を使用することをお勧めします。さらに、エンティティクラスで`@ExcelProperty`アノテーションが使用されていることを確認してください。
 
 #### 互換性の問題
 - **Q:** FastExcelを使用する際に互換性の問題が発生した場合はどうすればよいですか？
-- **A:** よくある互換性の問題には`NoSuchMethodException`、`ClassNotFoundException`、`NoClassDefFoundError`などがあり、通常はjarパッケージの競合が原因です。プロジェクトの依存関係を確認し、FastExcelのバージョンが他のライブラリと互換性があることを確認することをお勧めします。
+- **A:** 一般的な互換性の問題には、`NoSuchMethodException`、`ClassNotFoundException`、`NoClassDefFoundError`などがあります。これらは通常、jarパッケージの競合によるものです。プロジェクトの依存関係を確認し、使用しているFastExcelのバージョンが他のライブラリと互換性があることを確認することをお勧めします。
 
-#### オンライン展開
-- **Q:** ローカルで正常に実行されるのに、オンライン環境で問題が発生するのはなぜですか？
-- **A:** 大抵の場合、オンライン環境で問題が発生するのは必要なフォントライブラリが不足しているためです。フォントライブラリ（`dejavu-sans-fonts`や`fontconfig`など）をインストールするか、メモリ処理モードを有効にすることで問題を解決できます。
+#### 本番環境への展開
+- **Q:** ローカルで正常に実行されるのに、本番環境で問題が発生するのはなぜですか？
+- **A:** 大抵の場合、本番環境で必要なフォントライブラリが不足しているためです。フォントライブラリ（`dejavu-sans-fonts`や`fontconfig`など）をインストールするか、メモリ処理モードを有効にすることで問題を解決できます。
 
-（続く...）
+#### 並行読み取り
+- **Q:** ListenerをSpringに管理させることができないのはなぜですか？
+- **A:** ListenerはSpringに管理されるべきではないため、これによりListenerがシングルトンモードになり、ファイルの並行読み取り時にデータの混乱が発生する可能性があります。ファイルを読み取るたびに新しいListenerインスタンスを作成する必要があります。
+
+#### パフォーマンスの最適化
+- **Q:** 10M以上の大規模ファイルに対して、FastExcelはどのような読み取り戦略を提供していますか？
+- **A:** FastExcelはデフォルトの大規模ファイル処理戦略をサポートしており、高速モードや高並行、超大規模ファイル向けのカスタマイズ設定も可能です。
+
+#### 書き込みと書式設定
+- **Q:** セルの書式を設定する方法は？
+- **A:** エンティティクラスのプロパティに`@ContentStyle`などのアノテーションを使用して、セルの書式（数値形式、日付形式など）を設定できます。
+
+#### エクスポートの問題
+- **Q:** エクスポートされたExcelファイルを開けず、修復が必要と表示される場合、どのように解決すればよいですか？
+- **A:** これは通常、フロントエンドフレームワークやバックエンドインターセプターがファイルストリームを変更したためです。まず、ローカルエクスポートをテストし、バックエンドロジックに問題がないことを確認した後、フロントエンドやネットワーク関連の問題を調査してください。
+
+#### 大規模ファイルの読み取り最適化
+- **Q:** 大規模ファイルを読み取る際、FastExcelはどのようにメモリ使用を最適化していますか？
+- **A:** FastExcelは大規模ファイルの処理方法を自動的に判断します。共有文字列が5MBを超えるファイルの場合、ファイルストレージ戦略を使用してメモリ使用量を削減します。`readCache`パラメータを設定して高速モードを有効にすることもできますが、これによりメモリ消費量が増加します。
+
+#### 並行処理
+- **Q:** 高並行環境でExcelファイルを効率的に読み取る方法は？
+- **A:** 高並行環境では、`SimpleReadCacheSelector`を使用して読み取りパフォーマンスを最適化できます。`maxUseMapCacheSize`および`maxCacheActivateBatchCount`パラメータを設定することで、共有文字列のキャッシュ戦略を制御し、ヒット率を向上させ、ファイル読み取りの遅延を減らすことができます。
+
+#### フィールドマッピング
+- **Q:** エンティティクラスのフィールドとExcel列名が一致しない場合の処理方法は？
+- **A:** `@ExcelProperty`アノテーションを使用して、エンティティクラスのフィールドとExcel列名の対応関係を指定できます。例：
+  ```java
+  @ExcelProperty("姓名")
+  private String name;
+  ```
+
+#### データ検証
+- **Q:** Excelデータを読み取る際にデータ検証を行う方法は？
+- **A:** `ReadListener`でデータ検証ロジックを実装できます。例：
+  ```java
+  public class DataValidatorListener extends AnalysisEventListener<DemoData> {
+      @Override
+      public void invoke(DemoData data, AnalysisContext context) {
+          if (data.getName() == null || data.getName().isEmpty()) {
+              throw new RuntimeException("名前は必須です");
+          }
+          // データ処理
+      }
+  }
+  ```
+
+#### カスタムスタイル
+- **Q:** カスタムセルスタイルを作成する方法は？
+- **A:** `WriteHandler`インターフェースを実装して、カスタムセルスタイルを作成できます。例：
+  ```java
+  public class CustomCellStyleWriteHandler extends AbstractCellStyleWriteHandler {
+      @Override
+      protected void setCellStyle(Cell cell, Head head, Integer relativeRowIndex) {
+          CellStyle style = cell.getSheet().getWorkbook().createCellStyle();
+          style.setFillForegroundColor(IndexedColors.RED.getIndex());
+          style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+          cell.setCellStyle(style);
+      }
+  }
+  ```
+
+#### 埋め込みモード
+- **Q:** 埋め込みモードを使用してExcelファイルを処理する方法は？
+- **A:** 埋め込みモードは小規模ファイルの処理に適しており、処理速度を大幅に向上させることができます。例：
+  ```java
+  FastExcel.write(fileName, DemoData.class)
+      .inMemory(Boolean.TRUE)
+      .sheet("テンプレート")
+      .doWrite(data());
+  ```
+
+#### CSVファイルの読み取り
+- **Q:** CSVファイルを読み取り、区切り文字を変更する方法は？
+- **A:** `CsvFormat`を設定してCSVファイルの区切り文字を変更できます。例：
+  ```java
+  String fileName = TestFileUtil.getPath() + "demo" + File.separator + "demo.csv";
+  try (ExcelReader excelReader = FastExcel.read(fileName, DemoData.class, new DemoDataListener()).build()) {
+      ReadWorkbookHolder readWorkbookHolder = excelReader.analysisContext().readWorkbookHolder();
+      if (readWorkbookHolder instanceof CsvReadWorkbookHolder) {
+          CsvReadWorkbookHolder csvReadWorkbookHolder = (CsvReadWorkbookHolder) readWorkbookHolder;
+          csvReadWorkbookHolder.setCsvFormat(csvReadWorkbookHolder.getCsvFormat().withDelimiter(';'));
+      }
+      ReadSheet readSheet = FastExcel.readSheet(0).build();
+      excelReader.read(readSheet);
+  }
+  ```
+
+#### カスタム読み取りリスナー
+- **Q:** カスタム読み取りリスナーを作成する方法は？
+- **A:** `AnalysisEventListener`クラスを継承し、独自のロジックを実装できます。例：
+  ```java
+  public class CustomReadListener extends AnalysisEventListener<DemoData> {
+      @Override
+      public void invoke(DemoData data, AnalysisContext context) {
+          // データ処理
+      }
+
+      @Override
+      public void doAfterAllAnalysed(AnalysisContext context) {
+          // 全データ読み取り完了後の処理
+      }
+  }
+  ```
+
+#### 読み取り時に未注釈のフィールドを無視
+- **Q:** `@ExcelProperty`が付与されていないフィールドを読み取る際に無視する方法は？
+- **A:** クラスの先頭に`@ExcelIgnoreUnannotated`アノテーションを追加します。例：
+  ```java
+  @Data
+  @ExcelIgnoreUnannotated
+  public class DemoData {
+      @ExcelProperty("姓名")
+      private String name;
+  }
+  ```
+
+#### エクスポート時のヘッダースタイル設定
+- **Q:** エクスポート時にヘッダースタイルを設定する方法は？
+- **A:** `WriteHandler`インターフェースを実装して、カスタムヘッダースタイルを設定できます。例：
+  ```java
+  public class CustomHeadStyleWriteHandler extends AbstractHeadStyleWriteHandler {
+      @Override
+      protected void setHeadCellStyle(Cell cell, Head head, Integer relativeRowIndex) {
+          CellStyle style = cell.getSheet().getWorkbook().createCellStyle();
+          style.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+          style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+          cell.setCellStyle(style);
+      }
+  }
+  ```
+
+#### エクスポート時のセルデータ形式設定
+- **Q:** エクスポート時にセルのデータ形式を設定する方法は？
+- **A:** エンティティクラスのプロパティに`@ContentStyle`アノテーションを使用してデータ形式を設定できます。例：
+  ```java
+  @ExcelProperty("金額")
+  @ContentStyle(dataFormat = 4) // 4は通貨形式に対応
+  private Double amount;
+  ```
+
+#### エクスポート時のセル結合
+- **Q:** エクスポート時にセルを結合する方法は？
+- **A:** `WriteHandler`インターフェースを実装して、セルの結合ロジックをカスタマイズできます。例：
+  ```java
+  public class MergeCellWriteHandler implements WriteHandler {
+      @Override
+      public void sheet(Sheet sheet, Map<Integer, List<CellRangeAddress>> mergedRegions, AnalysisContext context) {
+          sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 2)); // 1行目の1列目から3列目を結合
+      }
+  }
+  ```
+
+#### エクスポート時のフォント設定
+- **Q:** エクスポート時にセルのフォントを設定する方法は？
+- **A:** `Font`オブジェクトを作成し、`CellStyle`に適用してフォントを設定できます。例：
+  ```java
+  public class CustomFontWriteHandler extends AbstractCellStyleWriteHandler {
+      @Override
+      protected void setCellStyle(Cell cell, Head head, Integer relativeRowIndex) {
+          Workbook workbook = cell.getSheet().getWorkbook();
+          Font font = workbook.createFont();
+          font.setFontName("Arial");
+          font.setBold(true);
+          CellStyle style = workbook.createCellStyle();
+          style.setFont(font);
+          cell.setCellStyle(style);
+      }
+  }
+  ```
+
+#### 読み取り時の空値処理
+- **Q:** 読み取り時に空値を処理する方法は？
+- **A:** `ReadListener`で空値を処理できます。例：
+  ```java
+  public class NullValueHandlerListener extends AnalysisEventListener<DemoData> {
+      @Override
+      public void invoke(DemoData data, AnalysisContext context) {
+          if (data.getName() == null) {
+              data.setName("デフォルト値");
+          }
+          // データ処理
+      }
+  }
+  ```
+
+#### 読み取り時のデータフィルタリング
+- **Q:** 読み取り時にデータをフィルタリングする方法は？
+- **A:** `ReadListener`でフィルタリングロジックを実装できます。例：
+  ```java
+  public class DataFilterListener extends AnalysisEventListener<DemoData> {
+      @Override
+      public void invoke(DemoData data, AnalysisContext context) {
+          if (data.getAmount() > 1000) {
+              // データを保存または処理
+          }
+      }
+  }
+  ```

@@ -6,12 +6,12 @@ description: 複雜的讀取操作
 ## 複雜讀取 Excel 檔案指南
 ### 概述
 
-本指南介紹如何使用 FastExcel 完成多場景 Excel 複雜讀取。涉及的場景包括：按列名或下標讀取、多 Sheet 讀取、日期和數字格式轉換、多行表頭解析、讀取額外資訊（如批註、超連結、合併儲存格）、處理公式和異常等。
+本指南介紹如何使用 FastExcel 完成多場景 Excel 複雜讀取。涉及的場景包括：按列名或索引讀取、多 Sheet 讀取、日期和數字格式轉換、多行表頭解析、讀取額外資訊（如註釋、超連結、合併儲存格）、處理公式和異常等。
 
-### **按列名或列下標讀取**
+### **按列名或列索引讀取**
 
 #### 概述
-您可以通過指定列名或列下標來讀取 Excel 資料。這使得與動態生成的 Excel 檔案互動更加靈活。
+您可以通過指定列名或列索引來讀取 Excel 資料。這使得與動態生成的 Excel 檔案互動更加靈活。
 
 #### 示例程式碼
 #### 示例物件：`IndexOrNameData`
@@ -34,13 +34,13 @@ public class IndexOrNameData {
 #### 監聽器
 與基礎讀取相同，僅需要修改泛型為 `IndexOrNameData`。
 
-#### 讀取程式碼範例
+#### 讀取程式碼示例
 ```java
 @Test
 public void indexOrNameRead() {
     String fileName = "path/to/demo.xlsx";
 
-    // 指定列名或列下標讀取
+    // 指定列名或列索引讀取
     FastExcel.read(fileName, IndexOrNameData.class, new DemoDataListener()).sheet().doRead();
 }
 ```
@@ -54,7 +54,7 @@ public void indexOrNameRead() {
 #### 示例物件與監聽器
 與基礎讀取相同。
 
-#### 讀取程式碼範例
+#### 讀取程式碼示例
 ```java
 @Test
 public void repeatedRead() {
@@ -118,7 +118,7 @@ public class CustomStringStringConverter implements Converter<String> {
 }
 ```
 
-#### 讀取程式碼範例
+#### 讀取程式碼示例
 ```java
 @Test
 public void converterRead() {
@@ -136,7 +136,7 @@ public void converterRead() {
 ### 概述
 通過設置 `headRowNumber` 參數或根據實體類的表頭註解自動解析多行表頭。
 
-#### 讀取程式碼範例
+#### 讀取程式碼示例
 ```java
 @Test
 public void complexHeaderRead() {
@@ -157,7 +157,7 @@ public void complexHeaderRead() {
 #### 概述
 同步讀取 Excel 資料，直接返回資料列表。適用於小資料量場景，不推薦大資料量使用。
 
-#### 讀取程式碼範例
+#### 讀取程式碼示例
 ```java
 @Test
 public void synchronousRead() {
@@ -201,7 +201,7 @@ public class DemoHeadDataListener extends AnalysisEventListener<DemoData> {
 }
 ```
 
-#### 讀取程式碼範例
+#### 讀取程式碼示例
 ```java
 @Test
 public void headerRead() {
@@ -212,10 +212,10 @@ public void headerRead() {
 
 
 
-### **額外資訊讀取（批註、超連結、合併儲存格）**
+### **額外資訊讀取（註釋、超連結、合併儲存格）**
 
 #### 概述
-通過設置 `extraRead` 參數讀取額外資訊，如批註、超連結、合併儲存格。
+通過設置 `extraRead` 參數讀取額外資訊，如註釋、超連結、合併儲存格。
 
 #### 示例監聽器
 ```java
@@ -232,7 +232,7 @@ public class DemoExtraListener implements ReadListener<DemoExtraData> {
         log.info("讀取到額外資訊: {}", JSON.toJSONString(extra));
         switch (extra.getType()) {
             case COMMENT:
-                log.info("批註資訊: {}", extra.getText());
+                log.info("註釋資訊: {}", extra.getText());
                 break;
             case HYPERLINK:
                 log.info("超連結資訊: {}", extra.getText());
@@ -247,14 +247,14 @@ public class DemoExtraListener implements ReadListener<DemoExtraData> {
 }
 ```
 
-#### 讀取程式碼範例
+#### 讀取程式碼示例
 ```java
 @Test
 public void extraRead() {
     String fileName = "path/to/demo.xlsx";
 
     FastExcel.read(fileName, DemoExtraData.class, new DemoExtraListener())
-        .extraRead(CellExtraTypeEnum.COMMENT) // 讀取批註
+        .extraRead(CellExtraTypeEnum.COMMENT) // 讀取註釋
         .extraRead(CellExtraTypeEnum.HYPERLINK) // 讀取超連結
         .extraRead(CellExtraTypeEnum.MERGE) // 讀取合併儲存格
         .sheet().doRead();
@@ -280,7 +280,7 @@ public class CellDataReadDemoData {
 }
 ```
 
-#### 讀取程式碼範例
+#### 讀取程式碼示例
 ```java
 @Test
 public void cellDataRead() {
@@ -317,7 +317,7 @@ public class DemoExceptionListener extends AnalysisEventListener<ExceptionDemoDa
 }
 ```
 
-#### 讀取程式碼範例
+#### 讀取程式碼示例
 ```java
 @Test
 public void exceptionRead() {
@@ -328,7 +328,7 @@ public void exceptionRead() {
 
 
 
-### **不建立物件的讀取**
+### **不創建物件的讀取**
 
 #### 概述
 通過 `Map<Integer, String>` 直接讀取資料，而無需定義實體類。
@@ -361,7 +361,7 @@ public class NoModelDataListener extends AnalysisEventListener<Map<Integer, Stri
 }
 ```
 
-#### 讀取程式碼範例
+#### 讀取程式碼示例
 ```java
 @Test
 public void noModelRead() {

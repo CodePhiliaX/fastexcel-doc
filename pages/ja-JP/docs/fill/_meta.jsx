@@ -1,3 +1,3 @@
 export default {
-  fill: "Excel に書き込みを埋める",
+  fill: "Excelの入力を埋める",
 };

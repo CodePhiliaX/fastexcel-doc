@@ -114,9 +114,9 @@ public class NoModelDataListener extends AnalysisEventListener<Map<Integer, Stri
 ## 例3：リスナーを定義せずに簡単な Excel ファイルを読み取る
 
 ### 概要
-`doReadSync` メソッドを使用して Excel データを直接メモリ内のリストとして読み取り、これはデータ量が少ない場合に適しています。読み取られたデータは、POJO オブジェクトのリストまたは Map のリストとして取得できます。
+doReadSync メソッドを使用して Excel データを直接メモリ内のリストとして読み取り、これはデータ量が少ない場合に適しています。読み取られたデータは、POJO オブジェクトのリストまたは Map のリストとして取得できます。
 
-### コード例
+### サンプルコード
 #### オブジェクトリストとして読み取る
 
 Excel 構造に対応する DemoData という POJO クラスがあると仮定します。
@@ -130,15 +130,12 @@ public class DemoData {
     private Date date;
     private Double doubleData;
 }
-```
-
-同期的にオブジェクトリストに読み取る
-```java
+同期的にオブジェクトリストとして読み取る
 @Test
 public void synchronousReadToObjectList() {
     String fileName = "path/to/demo.xlsx";
 
-    // FastExcel を使用して Excel データをオブジェクトリストに同期的に読み取る
+    // FastExcel を使用して Excel データをオブジェクトリストとして同期的に読み取る
     List<DemoData> list = FastExcel.read(fileName).head(DemoData.class).sheet().doReadSync();
 
     // 読み取ったデータリストを処理
@@ -148,7 +145,7 @@ public void synchronousReadToObjectList() {
 }
 ```
 
-### Map リストとして読み取る
+#### Map リストとして読み取る
 POJO を使用しない場合、各行を Map として読み取り、キーは列インデックス、値はセルの内容となります。
 
 ```java

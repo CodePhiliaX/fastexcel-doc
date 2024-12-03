@@ -5,7 +5,7 @@ description: 常見問題
 
 #### 功能限制
 - **Q:** FastExcel支援哪些功能？有哪些不支援的功能？
-- **A:** FastExcel支援Excel檔案的高效讀寫操作，包括CSV格式的支援（從3.0.0-beta1版本開始）。不支援的功能包括單個檔案的並發寫入、讀取圖片宏等。
+- **A:** FastExcel支援Excel文件的高效讀寫操作，包括CSV格式的支援（從3.0.0-beta1版本開始）。不支援的功能包括單個文件的並發寫入、讀取圖片宏等。
 
 #### 寫操作的選擇
 - **Q:** 在寫Excel時，何時選擇填充方式，何時選擇直接寫入？
@@ -15,13 +15,13 @@ description: 常見問題
 - **Q:** 使用FastExcel時，實體類中的Lombok註解有何作用？
 - **A:** 實體類中常用的Lombok註解如`@Getter`、`@Setter`、`@EqualsAndHashCode`用於自動生成getter、setter方法及equals和hashCode方法。如果不想使用這些自動生成的方法，可以自行實現。
 
-#### 欄位匹配
-- **Q:** 如何解決部分欄位無法正確讀取或寫入的問題？
-- **A:** 確保實體類欄位遵循駝峰命名規則，避免使用`@Accessors(chain = true)`，推薦使用`@Builder`替代。另外，確保實體類中使用了`@ExcelProperty`註解標記參與讀寫的字
+#### 字段匹配
+- **Q:** 如何解決部分字段無法正確讀取或寫入的問題？
+- **A:** 確保實體類字段遵循駝峰命名規則，避免使用`@Accessors(chain = true)`，推薦使用`@Builder`替代。另外，確保實體類中使用了`@ExcelProperty`註解標記參與讀寫的字
 
-#### 相容性問題
-- **Q:** 使用FastExcel時遇到相容性問題怎麼辦？
-- **A:** 常見的相容性問題包括`NoSuchMethodException`、`ClassNotFoundException`、`NoClassDefFoundError`等，通常是由jar包衝突引起。建議檢查並清理專案中的依賴，確保使用的FastExcel版本與專案中的其他庫相容。
+#### 兼容性問題
+- **Q:** 使用FastExcel時遇到兼容性問題怎麼辦？
+- **A:** 常見的兼容性問題包括`NoSuchMethodException`、`ClassNotFoundException`、`NoClassDefFoundError`等，通常是由jar包衝突引起。建議檢查並清理專案中的依賴，確保使用的FastExcel版本與專案中的其他庫兼容。
 
 #### 線上部署
 - **Q:** 本地運行正常，為何線上環境出現問題？
@@ -29,31 +29,31 @@ description: 常見問題
 
 #### 並發讀取
 - **Q:** 為何不能將Listener交給Spring管理？
-- **A:** Listener不應被Spring管理，因為這會導致Listener變成單例模式，在並發讀取檔案時可能引發資料混淆問題。每次讀取檔案時應新建一個Listener實例。
+- **A:** Listener不應被Spring管理，因為這會導致Listener變成單例模式，在並發讀取文件時可能引發數據混淆問題。每次讀取文件時應新建一個Listener實例。
 
 #### 效能優化
-- **Q:** 對於10M以上的大型檔案，FastExcel提供了哪些讀取策略？
-- **A:** FastExcel支援預設的大檔案處理策略，以及可以自定義的高速模式和針對高並發、超大檔案的優化設置。
+- **Q:** 對於10M以上的大型文件，FastExcel提供了哪些讀取策略？
+- **A:** FastExcel支援默認的大文件處理策略，以及可以自定義的高速模式和針對高並發、超大文件的優化設置。
 
-#### 寫入與格式設定
-- **Q:** 如何設定儲存格格式？
-- **A:** 可以通過在實體類屬性上使用`@ContentStyle`等註解來設定儲存格的格式，例如數字格式、日期格式等。
+#### 寫入與格式設置
+- **Q:** 如何設置單元格格式？
+- **A:** 可以通過在實體類屬性上使用`@ContentStyle`等註解來設置單元格的格式，例如數字格式、日期格式等。
 
 #### 導出問題
-- **Q:** 導出的Excel檔案無法打開或提示需要修復，如何解決？
-- **A:** 這通常是由於前端框架或後端攔截器修改了檔案流導致。建議先測試本地導出，確保後端邏輯無誤後再排查前端和網路相關的問題。
+- **Q:** 導出的Excel文件無法打開或提示需要修復，如何解決？
+- **A:** 這通常是由於前端框架或後端攔截器修改了文件流導致。建議先測試本地導出，確保後端邏輯無誤後再排查前端和網絡相關的問題。
 
-#### 大檔案讀取優化
-- **Q:** FastExcel在讀取大檔案時如何優化內存使用？
-- **A:** FastExcel預設會自動判斷大檔案的處理方式。對於共享字串超過5MB的檔案，會使用檔案存儲策略，減少內存佔用。可以通過設定`readCache`參數來開啟極速模式，但這會增加內存消耗。
+#### 大文件讀取優化
+- **Q:** FastExcel在讀取大文件時如何優化內存使用？
+- **A:** FastExcel默認會自動判斷大文件的處理方式。對於共享字符串超過5MB的文件，會使用文件存儲策略，減少內存佔用。可以通過設置`readCache`參數來開啟極速模式，但這會增加內存消耗。
 
 #### 並發處理
-- **Q:** 如何在高並發環境下高效讀取Excel檔案？
-- **A:** 在高並發環境下，可以使用`SimpleReadCacheSelector`來優化讀取性能。通過設定`maxUseMapCacheSize`和`maxCacheActivateBatchCount`參數，可以控制共享字串的緩存策略，提高命中率，減少檔案讀取的延遲。
+- **Q:** 如何在高並發環境下高效讀取Excel文件？
+- **A:** 在高並發環境下，可以使用`SimpleReadCacheSelector`來優化讀取性能。通過設置`maxUseMapCacheSize`和`maxCacheActivateBatchCount`參數，可以控制共享字符串的緩存策略，提高命中率，減少文件讀取的延遲。
 
-#### 欄位映射
-- **Q:** 如何處理實體類欄位與Excel列名不一致的情況？
-- **A:** 可以使用`@ExcelProperty`註解來指定實體類欄位與Excel列名的對應關係。例如：
+#### 字段映射
+- **Q:** 如何處理實體類字段與Excel列名不一致的情況？
+- **A:** 可以使用`@ExcelProperty`註解來指定實體類字段與Excel列名的對應關係。例如：
   ```java
   @ExcelProperty("姓名")
   private String name;
@@ -75,8 +75,8 @@ description: 常見問題
   ```
 
 #### 自定義樣式
-- **Q:** 如何自定義儲存格樣式？
-- **A:** 可以通過實現`WriteHandler`接口來自定義儲存格樣式。例如：
+- **Q:** 如何自定義單元格樣式？
+- **A:** 可以通過實現`WriteHandler`接口來自定義單元格樣式。例如：
   ```java
   public class CustomCellStyleWriteHandler extends AbstractCellStyleWriteHandler {
       @Override
@@ -90,15 +90,15 @@ description: 常見問題
   ```
 
 #### 填充模式
-- **Q:** 如何在填充模式下解決欄位未替換的問題？
-- **A:** 使用`inMemory(true)`參數可以確保欄位正確替換。例如：
+- **Q:** 如何在填充模式下解決字段未替換的問題？
+- **A:** 使用`inMemory(true)`參數可以確保字段正確替換。例如：
   ```java
   FastExcel.write(fileName, DemoData.class).inMemory(true).sheet("模板").doWrite(fillData());
   ```
 
 #### CSV分隔符
-- **Q:** 如何修改CSV檔案的分隔符？
-- **A:** 可以通過設定`CsvFormat`來修改CSV檔案的分隔符。例如：
+- **Q:** 如何修改CSV文件的分隔符？
+- **A:** 可以通過設置`CsvFormat`來修改CSV文件的分隔符。例如：
   ```java
   try (ExcelReader excelReader = FastExcel.read(fileName, DemoData.class, new DemoDataListener()).build()) {
       ReadWorkbookHolder readWorkbookHolder = excelReader.analysisContext().readWorkbookHolder();
@@ -129,7 +129,7 @@ description: 常見問題
 
 #### 依賴衝突
 - **Q:** 如何解決依賴衝突問題？
-- **A:** 常見的依賴衝突包括POI、ehcache和commons-io等。建議檢查專案中的依賴樹，確保使用的版本與FastExcel相容。可以通過Maven的`dependency:tree`命令查看依賴樹。
+- **A:** 常見的依賴衝突包括POI、ehcache和commons-io等。建議檢查專案中的依賴樹，確保使用的版本與FastExcel兼容。可以通過Maven的`dependency:tree`命令查看依賴樹。
 
 #### 效能監控
 - **Q:** 如何監控FastExcel的性能？
@@ -141,7 +141,7 @@ description: 常見問題
   ```
 
 #### 多Sheet讀取
-- **Q:** 如何讀取包含多個Sheet的Excel檔案？
+- **Q:** 如何讀取包含多個Sheet的Excel文件？
 - **A:** 可以使用`MultipleSheetsListener`來處理多Sheet的讀取。例如：
   ```java
   FastExcel.read(file, MultipleSheetsData.class, new MultipleSheetsListener()).doReadAll();
@@ -157,7 +157,7 @@ description: 常見問題
   ```
 
 #### 獲取Excel總行數
-- **Q:** 如何獲取Excel檔案的總行數？
+- **Q:** 如何獲取Excel文件的總行數？
 - **A:** 可以在監聽器中使用`analysisContext.readSheetHolder().getApproximateTotalRowNumber()`方法獲取大致的行數。例如：
   ```java
   @Override
@@ -168,8 +168,8 @@ description: 常見問題
   ```
 
 #### 內存模式
-- **Q:** 如何使用內存模式處理Excel檔案？
-- **A:** 內存模式適合處理較小的檔案，可以顯著提高處理速度。例如：
+- **Q:** 如何使用內存模式處理Excel文件？
+- **A:** 內存模式適合處理較小的文件，可以顯著提高處理速度。例如：
   ```java
   FastExcel.write(fileName, DemoData.class)
       .inMemory(Boolean.TRUE)
@@ -177,9 +177,9 @@ description: 常見問題
       .doWrite(data());
   ```
 
-#### 讀取CSV檔案
-- **Q:** 如何讀取CSV檔案並修改分隔符？
-- **A:** 可以通過設定`CsvFormat`來修改CSV檔案的分隔符。例如：
+#### 讀取CSV文件
+- **Q:** 如何讀取CSV文件並修改分隔符？
+- **A:** 可以通過設置`CsvFormat`來修改CSV文件的分隔符。例如：
   ```java
   String fileName = TestFileUtil.getPath() + "demo" + File.separator + "demo.csv";
   try (ExcelReader excelReader = FastExcel.read(fileName, DemoData.class, new DemoDataListener()).build()) {
@@ -210,8 +210,8 @@ description: 常見問題
   }
   ```
 
-#### 讀取時忽略未標註的欄位
-- **Q:** 如何在讀取時忽略未標註`@ExcelProperty`的欄位？
+#### 讀取時忽略未標註的字段
+- **Q:** 如何在讀取時忽略未標註`@ExcelProperty`的字段？
 - **A:** 在類的最上面加入`@ExcelIgnoreUnannotated`註解。例如：
   ```java
   @Data
@@ -237,8 +237,8 @@ description: 常見問題
   }
   ```
 
-#### 導出時設置儲存格數據格式
-- **Q:** 如何在導出時設置儲存格的數據格式？
+#### 導出時設置單元格數據格式
+- **Q:** 如何在導出時設置單元格的數據格式？
 - **A:** 可以在實體類屬性上使用`@ContentStyle`註解來設置數據格式。例如：
   ```java
   @ExcelProperty("金額")
@@ -246,9 +246,9 @@ description: 常見問題
   private Double amount;
   ```
 
-#### 導出時合併儲存格
-- **Q:** 如何在導出時合併儲存格？
-- **A:** 可以通過實現`WriteHandler`接口來自定義合併儲存格的邏輯。例如：
+#### 導出時合併單元格
+- **Q:** 如何在導出時合併單元格？
+- **A:** 可以通過實現`WriteHandler`接口來自定義合併單元格的邏輯。例如：
   ```java
   public class MergeCellWriteHandler implements WriteHandler {
       @Override
@@ -259,7 +259,7 @@ description: 常見問題
   ```
 
 #### 導出時設置字體
-- **Q:** 如何在導出時設置儲存格的字體？
+- **Q:** 如何在導出時設置單元格的字體？
 - **A:** 可以通過創建`Font`對象並應用到`CellStyle`中來設置字體。例如：
   ```java
   public class CustomFontWriteHandler extends AbstractCellStyleWriteHandler {
@@ -270,4 +270,16 @@ description: 常見問題
           font.setFontName("Arial");
           font.setBold(true);
           CellStyle style = workbook.createCellStyle();
-          style.setFont
+          style.setFont(font);
+          cell.setCellStyle(style);
+      }
+  }
+  ```
+
+#### 讀取時處理空值
+- **Q:** 如何在讀取時處理空值？
+- **A:** 可以在`ReadListener`中處理空值。例如：
+  ```java
+  public class NullValueHandlerListener extends AnalysisEventListener<DemoData> {
+      @Override
+      public void invoke(DemoData data, AnalysisContext context)

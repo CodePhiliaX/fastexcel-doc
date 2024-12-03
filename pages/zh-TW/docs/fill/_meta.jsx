@@ -1,3 +1,3 @@
 export default {
-  fill: "填滿 Excel",
+  fill: "填充寫 Excel",
 };

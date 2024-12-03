@@ -6,10 +6,10 @@ description: 複雑な書き込み操作により、データの一括書き込�
 ## 概要
 複雑な書き込み機能は、列の順序の指定、動的な列ヘッダー、セルの結合、カスタムスタイルなどの機能をサポートし、多様なExcelデータエクスポート要件を満たします。
 
-## **パラメータに基づいて特定の列のみをエクスポート**
+## **パラメータに基づいて特定の列のみをエクスポートする**
 
 ### 概要
-列名のコレクションを設定して、エクスポートする列を動的に選択し、列を無視するか特定の列のみをエクスポートすることができます。
+列名のセットを設定して、エクスポートする列を動的に選択し、列を無視したり特定の列のみをエクスポートすることができます。
 
 #### コード例
 ```java
@@ -35,7 +35,7 @@ public void excludeOrIncludeWrite() {
 
 
 
-## **書き込む列の順序を指定**
+## **書き込む列の順序を指定する**
 
 ### 概要
 `@ExcelProperty`アノテーションの`index`属性を使用して列の順序を指定します。
@@ -70,7 +70,7 @@ public void indexWrite() {
 ## **複雑なヘッダーの書き込み**
 
 ### 概要
-複数レベルのヘッダーをサポートし、`@ExcelProperty`アノテーションを使用してメインタイトルとサブタイトルを指定します。
+複数レベルのヘッダーを設定し、`@ExcelProperty`アノテーションで主タイトルとサブタイトルを指定します。
 
 #### サンプルオブジェクト
 ```java
@@ -78,11 +78,11 @@ public void indexWrite() {
 @Setter
 @EqualsAndHashCode
 public class ComplexHeadData {
-    @ExcelProperty({"メインタイトル", "文字列タイトル"})
+    @ExcelProperty({"主タイトル", "文字列タイトル"})
     private String string;
-    @ExcelProperty({"メインタイトル", "日付タイトル"})
+    @ExcelProperty({"主タイトル", "日付タイトル"})
     private Date date;
-    @ExcelProperty({"メインタイトル", "数字タイトル"})
+    @ExcelProperty({"主タイトル", "数字タイトル"})
     private Double doubleData;
 }
 ```
@@ -100,10 +100,10 @@ public void complexHeadWrite() {
 
 
 
-## **バッチで複数回書き込み**
+## **バッチで複数回書き込む**
 
 ### 概要
-同じシートまたは複数のシートにデータをバッチで書き込み、大量のデータをページごとに書き込むことができます。
+同じシートまたは複数のシートにデータをバッチで書き込み、大容量のページネーション書き込みを実現できます。
 
 #### コード例
 ```java
@@ -131,10 +131,10 @@ public void repeatedWrite() {
 
 
 
-## **カスタムフォーマットの書き込み**
+## **カスタム形式で書き込む**
 
 ### 概要
-日付、数字、または他のカスタムフォーマットをサポートし、アノテーションを使用して実装します。
+日付、数字、または他のカスタム形式をサポートし、アノテーションを使用して実装します。
 
 #### サンプルオブジェクト
 ```java
@@ -173,7 +173,7 @@ public void converterWrite() {
 ### アノテーション形式
 
 #### 概要
-エンティティクラス内のアノテーションを使用してセルのスタイルを設定し、フォント、背景色、行の高さなどを指定します。
+エンティティクラス内のアノテーションを使用してセルのスタイルを設定します。フォント、背景色、行の高さなどを設定できます。
 
 #### サンプルオブジェクト
 ```java
@@ -222,7 +222,7 @@ public void annotationStyleWrite() {
 ### **インターセプター形式**
 
 #### 概要
-`WriteHandler`インターフェースを実装してスタイルを動的に設定し、複雑なスタイルロジックに適用します。
+`WriteHandler`インターフェースを実装してスタイルを動的に設定し、複雑なスタイルロジックに適用できます。
 
 #### サンプル1：既存の戦略を使用
 `HorizontalCellStyleStrategy`を使用してヘッダーとコンテンツにそれぞれスタイルを設定します。
@@ -248,7 +248,7 @@ public void handlerStyleWrite() {
     contentFont.setFontHeightInPoints((short) 20);
     contentStyle.setWriteFont(contentFont);
 
-    // 戦略を使用してスタイルを設定
+    // スタイルを適用する戦略を使用
     HorizontalCellStyleStrategy styleStrategy =
         new HorizontalCellStyleStrategy(headStyle, contentStyle);
 
@@ -262,7 +262,7 @@ public void handlerStyleWrite() {
 
 
 #### サンプル2：完全にカスタムされたインターセプター
-既存の戦略が要件を満たさない場合は、`CellWriteHandler`インターフェースを実装してスタイルを完全にカスタマイズします。
+既存の戦略が要件を満たさない場合は、`CellWriteHandler`インターフェースを実装してスタイルを完全にカスタマイズできます。
 
 #### カスタムインターセプター
 ```java
@@ -308,7 +308,7 @@ public void customCellStyleWrite() {
 
 
 #### サンプル3：`POI`スタイルのカスタマイズ
-POIの`CellStyle`を直接操作し、スタイルを正確に制御します。
+POIの`CellStyle`を直接操作して、スタイルを細かく制御できます。
 
 #### サンプルコード
 ```java
@@ -339,14 +339,14 @@ public void poiStyleWrite() {
 
 
 
-### **適用シナリオの説明**
+### **使用シナリオの説明**
 
-| シナリオ                             | 推奨される使用方法                 | サンプル            |
+| シナリオ                         | 推奨される方法               | サンプル            |
 |----------------------------------|-----------------------------|-----------------|
-| シンプルなスタイル設定                     | アノテーション形式                   | サンプル1          |
-| 異なる列または行に動的にスタイルを設定            | 既存の戦略を使用               | サンプル2-1        |
-| 複雑な条件によるスタイル制御                  | カスタムインターセプター               | サンプル2-2        |
-| セルのスタイルを精密に制御                | POIカスタム                 | サンプル3          |
+| シンプルなスタイル設定             | アノテーション形式           | サンプル1          |
+| 異なる列または行に動的にスタイルを設定 | 既存の戦略を使用           | サンプル2-1        |
+| 複雑な条件でスタイルを制御         | カスタムインターセプター形式 | サンプル2-2        |
+| セルのスタイルを細かく制御         | POIカスタム                 | サンプル3          |
 
 
 
@@ -395,10 +395,10 @@ public void imageWrite() throws Exception {
 
 
 
-## **ハイパーリンク、コメント、数式の書き込み**
+## **ハイパーリンク、コメント、式の書き込み**
 
 ### 概要
-セルにハイパーリンクを設定したり、コメントを追加したり、数式の内容を設定したりすることができます。
+セルにハイパーリンクを設定したり、コメントを追加したり、式の内容を設定したりできます。
 
 #### サンプルオブジェクト
 ```java
@@ -425,7 +425,7 @@ public void writeCellDataWrite() {
     // コメントを設定
     data.setCommentData(new WriteCellData<>("コメント情報"));
 
-    // 数式を設定
+    // 式を設定
     data.setFormulaData(new WriteCellData<>("=SUM(A1:A10)"));
 
     FastExcel.write(fileName, WriteCellDemoData.class)
@@ -439,7 +439,7 @@ public void writeCellDataWrite() {
 ## **動的ヘッダーの書き込み**
 
 ### 概要
-動的な表ヘッダーをリアルタイムに生成し、動的データや国際化シナリオに適用します。
+動的な表ヘッダーをリアルタイムに生成し、動的データや国際化シナリオに適用できます。
 
 #### コード例
 ```java
@@ -453,8 +453,9 @@ public void dynamicHeadWrite() {
         Collections.singletonList("動的日付タイトル")
     );
 
-    FastExcel.write(fileName).head(head)
-        .sheet("テンプレート")
+    FastExcel.write(fileName)
+        .head(head)
+        .sheet("動的ヘッダー")
         .doWrite(data());
 }
 ```
@@ -463,7 +464,7 @@ public void dynamicHeadWrite() {
 ## **コメントの挿入**
 
 ### 概要
-特定のセルにコメントを追加するために、インターセプターを使用します。説明や特別なヒントを付けるために適用されます。
+特定のセルにコメントを追加するために、インターセプターを使用します。説明や特別なヒントを付けるために使用できます。
 
 ### カスタムコメントインターセプター
 ```java
@@ -474,4 +475,5 @@ public class CommentWriteHandler implements RowWriteHandler {
     public void afterRowDispose(RowWriteHandlerContext context) {
         if (BooleanUtils.isTrue(context.getHead())) {
             Sheet sheet = context.getWriteSheetHolder().getSheet();
-            Drawing<?> drawingPatriarch = sheet.createDrawingPatri
+            Drawing<?> drawingPatriarch = sheet.createDrawingPatriarch();
+            // 1行

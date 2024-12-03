@@ -11,7 +11,7 @@ export default {
     },
   },
   docs: {
-    title: "文件",
+    title: "文檔",
     type: "page",
   },
   contact: {

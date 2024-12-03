@@ -3,10 +3,10 @@ title: Complex Reading
 description: Complex reading operations
 ---
 
-## Guide to Complex Reading Excel Files
+## Complex Reading Excel File Guide
 ### Overview
 
-This guide explains how to use FastExcel to accomplish complex reading of Excel files in various scenarios. The scenarios covered include reading by column name or index, reading multiple sheets, converting date and number formats, parsing multi-row headers, reading additional information (such as comments, hyperlinks, merged cells), handling formulas, and exceptions.
+This guide introduces how to use FastExcel to complete complex Excel reading in various scenarios. The scenarios include reading by column name or index, reading multiple sheets, converting date and number formats, parsing multi-row headers, reading additional information (such as comments, hyperlinks, merged cells), handling formulas, and exceptions.
 
 ### **Reading by Column Name or Index**
 
@@ -74,7 +74,7 @@ public void repeatedRead() {
 
 
 
-### **Date, Number, Custom Format Conversion**
+### **Date, Number, and Custom Format Conversion**
 
 #### Sample Object: `ConverterData`
 ```java
@@ -131,11 +131,10 @@ public void converterRead() {
 }
 ```
 
-
 ### **Multi-Row Header Reading**
 
-### Overview
-By setting the `headRowNumber` parameter or automatically parsing multi-row headers based on annotations in the entity class.
+#### Overview
+By setting the `headRowNumber` parameter or automatically parsing multi-row headers based on header annotations in the entity class.
 
 #### Reading Code Example
 ```java
@@ -156,7 +155,7 @@ public void complexHeaderRead() {
 ### **Synchronously Returning Data**
 
 #### Overview
-Read Excel data synchronously and directly return a list of data. Suitable for small data scenarios, not recommended for large data volumes.
+Synchronously read Excel data and directly return a list of data. Suitable for small data scenarios, not recommended for large data volumes.
 
 #### Reading Code Example
 ```java
@@ -213,10 +212,10 @@ public void headerRead() {
 
 
 
-### **Reading Extra Information (Comments, Hyperlinks, Merged Cells)**
+### **Reading Additional Information (Comments, Hyperlinks, Merged Cells)**
 
 #### Overview
-Read extra information, such as comments, hyperlinks, and merged cells, by setting the `extraRead` parameter.
+Read additional information, such as comments, hyperlinks, and merged cells, by setting the `extraRead` parameter.
 
 #### Sample Listener
 ```java
@@ -306,7 +305,7 @@ public class DemoExceptionListener extends AnalysisEventListener<ExceptionDemoDa
         log.error("Parsing failed: {}", exception.getMessage());
         if (exception instanceof ExcelDataConvertException) {
             ExcelDataConvertException ex = (ExcelDataConvertException) exception;
-            log.error("Exception parsing row {}, column {}, data: {}", ex.getRowIndex(), ex.getColumnIndex(), ex.getCellData());
+            log.error("Exception parsing at row {}, column {}, data: {}", ex.getRowIndex(), ex.getColumnIndex(), ex.getCellData());
         }
     }
 

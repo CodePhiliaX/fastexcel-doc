@@ -4,14 +4,14 @@ description:  Spring Boot 整合寫入 Excel
 ---
 
 ## 概述
-Spring Boot 專案中可以透過 HTTP 接口生成 Excel 檔案並提供下載功能，方便在 Web 環境下使用 FastExcel。
+在 Spring Boot 項目中，可以通過 HTTP 接口生成 Excel 文件並提供下載功能，方便在 Web 環境下使用 FastExcel。
 
-### Spring 控制器範例
+### Spring 控制器示例
 
 ### 概述
-透過 HTTP 接口生成 Excel 檔案並提供下載功能。
+通過 HTTP 接口生成 Excel 文件並提供下載功能。
 
-#### 範例程式碼
+#### 示例代碼
 ```java
 @GetMapping("download")
 public void download(HttpServletResponse response) throws IOException {

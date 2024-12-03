@@ -1,0 +1,372 @@
+---
+title: Complex Reading
+description: Complex reading operations
+---
+
+## Guide to Complex Reading Excel Files
+### Overview
+
+This guide explains how to use FastExcel to accomplish complex reading of Excel files in various scenarios. The scenarios covered include reading by column name or index, reading multiple sheets, converting date and number formats, parsing multi-row headers, reading additional information (such as comments, hyperlinks, merged cells), handling formulas, and exceptions.
+
+### **Reading by Column Name or Index**
+
+#### Overview
+You can read Excel data by specifying column names or column indexes. This makes it more flexible to interact with dynamically generated Excel files.
+
+#### Sample Code
+#### Sample Object: `IndexOrNameData`
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class IndexOrNameData {
+    @ExcelProperty(index = 2)
+    private Double doubleData;
+
+    @ExcelProperty("String Title")
+    private String string;
+
+    @ExcelProperty("Date Title")
+    private Date date;
+}
+```
+
+#### Listener
+Same as basic reading, just need to modify the generic type to `IndexOrNameData`.
+
+#### Reading Code Example
+```java
+@Test
+public void indexOrNameRead() {
+    String fileName = "path/to/demo.xlsx";
+
+    // Read by specifying column name or index
+    FastExcel.read(fileName, IndexOrNameData.class, new DemoDataListener()).sheet().doRead();
+}
+```
+
+
+### **Reading Multiple Sheets**
+
+#### Overview
+You can read multiple sheets in an Excel file, and the same sheet cannot be read repeatedly.
+
+#### Sample Object and Listener
+Same as basic reading.
+
+#### Reading Code Example
+```java
+@Test
+public void repeatedRead() {
+    String fileName = "path/to/demo.xlsx";
+
+    // Read all sheets
+    FastExcel.read(fileName, DemoData.class, new DemoDataListener()).doReadAll();
+
+    // Read specific sheets
+    try (ExcelReader excelReader = FastExcel.read(fileName).build()) {
+        ReadSheet sheet1 = FastExcel.readSheet(0).head(DemoData.class).registerReadListener(new DemoDataListener()).build();
+        ReadSheet sheet2 = FastExcel.readSheet(1).head(DemoData.class).registerReadListener(new DemoDataListener()).build();
+        excelReader.read(sheet1, sheet2);
+    }
+}
+```
+
+
+
+### **Date, Number, Custom Format Conversion**
+
+#### Sample Object: `ConverterData`
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class ConverterData {
+    @ExcelProperty(converter = CustomStringStringConverter.class)
+    private String string;
+
+    @DateTimeFormat("yyyy年MM月dd日HH时mm分ss秒")
+    private String date;
+
+    @NumberFormat("#.##%")
+    private String doubleData;
+}
+```
+
+#### Custom Converter
+```java
+public class CustomStringStringConverter implements Converter<String> {
+    @Override
+    public Class<?> supportJavaTypeKey() {
+        return String.class;
+    }
+
+    @Override
+    public CellDataTypeEnum supportExcelTypeKey() {
+        return CellDataTypeEnum.STRING;
+    }
+
+    @Override
+    public String convertToJavaData(ReadConverterContext<?> context) {
+        return "Custom: " + context.getReadCellData().getStringValue();
+    }
+
+    @Override
+    public WriteCellData<?> convertToExcelData(WriteConverterContext<String> context) {
+        return new WriteCellData<>(context.getValue());
+    }
+}
+```
+
+#### Reading Code Example
+```java
+@Test
+public void converterRead() {
+    String fileName = "path/to/demo.xlsx";
+
+    // Read with custom format
+    FastExcel.read(fileName, ConverterData.class, new DemoDataListener())
+        .registerConverter(new CustomStringStringConverter())
+        .sheet().doRead();
+}
+```
+
+
+### **Multi-Row Header Reading**
+
+### Overview
+By setting the `headRowNumber` parameter or automatically parsing multi-row headers based on annotations in the entity class.
+
+#### Reading Code Example
+```java
+@Test
+public void complexHeaderRead() {
+    String fileName = "path/to/demo.xlsx";
+
+    FastExcel.read(fileName, DemoData.class, new DemoDataListener())
+        .sheet()
+        // Set the number of rows for multi-row headers, default is 1
+        .headRowNumber(2)
+        .doRead();
+}
+```
+
+
+
+### **Synchronously Returning Data**
+
+#### Overview
+Read Excel data synchronously and directly return a list of data. Suitable for small data scenarios, not recommended for large data volumes.
+
+#### Reading Code Example
+```java
+@Test
+public void synchronousRead() {
+    String fileName = "path/to/demo.xlsx";
+
+    // Return a list of entity objects
+    List<DemoData> list = FastExcel.read(fileName).head(DemoData.class).sheet().doReadSync();
+    for (DemoData data : list) {
+        log.info("Read data: {}", JSON.toJSONString(data));
+    }
+
+    // Return a list of maps, where the key is the column index and the value is the cell content
+    List<Map<Integer, String>> listMap = FastExcel.read(fileName).sheet().doReadSync();
+    for (Map<Integer, String> data : listMap) {
+        log.info("Read data: {}", JSON.toJSONString(data));
+    }
+}
+```
+
+
+
+### **Reading Header Data**
+
+#### Overview
+You can get header information by overriding the `invokeHead` method in the listener.
+
+#### Sample Listener
+```java
+@Slf4j
+public class DemoHeadDataListener extends AnalysisEventListener<DemoData> {
+    @Override
+    public void invokeHead(Map<Integer, ReadCellData<?>> headMap, AnalysisContext context) {
+        log.info("Parsed header data: {}", JSON.toJSONString(headMap));
+    }
+
+    @Override
+    public void invoke(DemoData data, AnalysisContext context) {}
+
+    @Override
+    public void doAfterAllAnalysed(AnalysisContext context) {}
+}
+```
+
+#### Reading Code Example
+```java
+@Test
+public void headerRead() {
+    String fileName = "path/to/demo.xlsx";
+    FastExcel.read(fileName, DemoData.class, new DemoHeadDataListener()).sheet().doRead();
+}
+```
+
+
+
+### **Reading Extra Information (Comments, Hyperlinks, Merged Cells)**
+
+#### Overview
+Read extra information, such as comments, hyperlinks, and merged cells, by setting the `extraRead` parameter.
+
+#### Sample Listener
+```java
+@Slf4j
+public class DemoExtraListener implements ReadListener<DemoExtraData> {
+    @Override
+    public void invoke(DemoExtraData data, AnalysisContext context) {}
+
+    @Override
+    public void doAfterAllAnalysed(AnalysisContext context) {}
+
+    @Override
+    public void extra(CellExtra extra, AnalysisContext context) {
+        log.info("Read extra information: {}", JSON.toJSONString(extra));
+        switch (extra.getType()) {
+            case COMMENT:
+                log.info("Comment information: {}", extra.getText());
+                break;
+            case HYPERLINK:
+                log.info("Hyperlink information: {}", extra.getText());
+                break;
+            case MERGE:
+                log.info("Merged cell range: {} - {}", extra.getFirstRowIndex(), extra.getLastRowIndex());
+                break;
+            default:
+                log.warn("Unknown extra information type");
+        }
+    }
+}
+```
+
+#### Reading Code Example
+```java
+@Test
+public void extraRead() {
+    String fileName = "path/to/demo.xlsx";
+
+    FastExcel.read(fileName, DemoExtraData.class, new DemoExtraListener())
+        .extraRead(CellExtraTypeEnum.COMMENT) // Read comments
+        .extraRead(CellExtraTypeEnum.HYPERLINK) // Read hyperlinks
+        .extraRead(CellExtraTypeEnum.MERGE) // Read merged cells
+        .sheet().doRead();
+}
+```
+
+
+### **Reading Formulas and Cell Types**
+
+#### Overview
+Use the `CellData` type to receive cell data to support formulas and various cell formats.
+
+#### Sample Object
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class CellDataReadDemoData {
+    private CellData<String> string;
+    private CellData<Date> date;
+    private CellData<Double> doubleData;
+    private CellData<String> formulaValue;
+}
+```
+
+#### Reading Code Example
+```java
+@Test
+public void cellDataRead() {
+    String fileName = "path/to/demo.xlsx";
+
+    FastExcel.read(fileName, CellDataReadDemoData.class, new DemoDataListener()).sheet().doRead();
+}
+```
+
+
+### **Exception Handling**
+
+#### Overview
+Handle data conversion or other reading exceptions by overriding the `onException` method in the listener.
+
+#### Sample Listener
+```java
+@Slf4j
+public class DemoExceptionListener extends AnalysisEventListener<ExceptionDemoData> {
+    @Override
+    public void onException(Exception exception, AnalysisContext context) {
+        log.error("Parsing failed: {}", exception.getMessage());
+        if (exception instanceof ExcelDataConvertException) {
+            ExcelDataConvertException ex = (ExcelDataConvertException) exception;
+            log.error("Exception parsing row {}, column {}, data: {}", ex.getRowIndex(), ex.getColumnIndex(), ex.getCellData());
+        }
+    }
+
+    @Override
+    public void invoke(ExceptionDemoData data, AnalysisContext context) {}
+
+    @Override
+    public void doAfterAllAnalysed(AnalysisContext context) {}
+}
+```
+
+#### Reading Code Example
+```java
+@Test
+public void exceptionRead() {
+    String fileName = "path/to/demo.xlsx";
+    FastExcel.read(fileName, ExceptionDemoData.class, new DemoExceptionListener()).sheet().doRead();
+}
+```
+
+
+
+### **Reading Without Creating Objects**
+
+#### Overview
+Read data directly using `Map<Integer, String>` without defining entity classes.
+
+#### Sample Listener
+```java
+@Slf4j
+public class NoModelDataListener extends AnalysisEventListener<Map<Integer, String>> {
+    private static final int BATCH_COUNT = 5;
+    private List<Map<Integer, String>> cachedDataList = ListUtils.newArrayListWithExpectedSize(BATCH_COUNT);
+
+    @Override
+    public void invoke(Map<Integer, String> data, AnalysisContext context) {
+        log.info("Parsed one piece of data: {}", JSON.toJSONString(data));
+        cachedDataList.add(data);
+        if (cachedDataList.size() >= BATCH_COUNT) {
+            saveData();
+            cachedDataList.clear();
+        }
+    }
+
+    @Override
+    public void doAfterAllAnalysed(AnalysisContext context) {
+        saveData();
+    }
+
+    private void saveData() {
+        log.info("Stored {} pieces of data", cachedDataList.size());
+    }
+}
+```
+
+#### Reading Code Example
+```java
+@Test
+public void noModelRead() {
+    String fileName = "path/to/demo.xlsx";
+    FastExcel.read(fileName, new NoModelDataListener()).sheet().doRead();
+}
+```

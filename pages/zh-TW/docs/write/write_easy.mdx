@@ -1,0 +1,51 @@
+---
+title: 簡單寫入
+description: 利用fastexcel快速寫入Excel
+---
+## 簡單寫入
+
+### 概述
+使用 FastExcel 進行簡單的 Excel 數據寫入，可以快速地將實體對象寫入 Excel 檔案，是最基本、最常用的寫入方式。
+
+### 示例對象
+
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class DemoData {
+    @ExcelProperty("字串標題")
+    private String string;
+    @ExcelProperty("日期標題")
+    private Date date;
+    @ExcelProperty("數字標題")
+    private Double doubleData;
+    @ExcelIgnore
+    private String ignore; // 忽略的欄位
+}
+```
+
+### 代碼示例
+
+```java
+@Test
+public void simpleWrite() {
+    String fileName = "simpleWrite" + System.currentTimeMillis() + ".xlsx";
+
+    // 寫法1：使用 Lambda 表達式分頁獲取數據
+    FastExcel.write(fileName, DemoData.class)
+        .sheet("模板")
+        .doWrite(() -> data());
+
+    // 寫法2：直接傳遞數據列表
+    FastExcel.write(fileName, DemoData.class)
+        .sheet("模板")
+        .doWrite(data());
+
+    // 寫法3：使用 ExcelWriter 對象
+    try (ExcelWriter excelWriter = FastExcel.write(fileName, DemoData.class).build()) {
+        WriteSheet writeSheet = FastExcel.writerSheet("模板").build();
+        excelWriter.write(data(), writeSheet);
+    }
+}
+```  

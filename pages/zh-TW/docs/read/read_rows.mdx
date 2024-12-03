@@ -1,0 +1,34 @@
+---
+title: fastexcel 讀取excel前多少行
+description: fastexcel 讀取excel前多少行
+---
+
+## FastExcel讀取excel前多少行
+### 概述
+
+在數據分析和處理過程中，快速查看 Excel 檔案的前幾行內容可以幫助我們更好地理解數據結構和內容。本文將介紹如何使用 FastExcel 讀取 Excel 檔案的前 100 行。
+使用numRows方法可以指定讀取的行數，通過設置numRows(100)可以讀取前100行數據。默認情況下，FastExcel 會讀取整個 Excel 檔案的所有數據，通過設置numRows方法可以限制讀取的行數。
+numRows從0開始，0表示不限制行數，即讀取所有行。行數包括表頭行，例如設置numRows(100)表示讀取前100行數據，包括表頭行。
+
+### 1. 所有的Sheet讀取前100行
+#### 代碼
+
+```java
+ EasyExcel.read(fileName, DemoData.class, new PageReadListener<DemoData>(dataList -> {
+            for (DemoData demoData : dataList) {
+                log.info("讀取到一條數據{}", JSON.toJSONString(demoData));
+            }
+        })).numRows(100).sheet().doRead();
+
+```
+### 單個sheet讀取前100行
+
+```java
+ try (ExcelReader excelReader = EasyExcel.read(fileName, DemoData.class, new DemoDataListener()).build()) {
+            // 構建一個sheet 這裡可以指定名字或者no
+            ReadSheet readSheet = EasyExcel.readSheet(0).build();
+            readSheet.setNumRows(100);
+            // 讀取一個sheet
+            excelReader.read(readSheet);
+        }
+```

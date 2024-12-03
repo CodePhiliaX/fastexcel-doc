@@ -1,0 +1,203 @@
+---
+title: Excelのデータ埋め
+description: Excelのデータ埋め
+---
+
+## **シンプルな埋め込み**
+
+### 概要
+テンプレートファイルを基に、オブジェクトまたは Map を使用してExcelにデータを埋め込みます。
+
+#### オブジェクトの例
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class FillData {
+    private String name;
+    private double number;
+    private Date date;
+}
+```
+
+#### サンプルコード
+```java
+@Test
+public void simpleFill() {
+    String templateFileName = "path/to/simple.xlsx";
+
+    // 方法1：オブジェクトを使用して埋め込み
+    FillData fillData = new FillData();
+    fillData.setName("张三");
+    fillData.setNumber(5.2);
+    FastExcel.write("simpleFill.xlsx")
+        .withTemplate(templateFileName)
+        .sheet()
+        .doFill(fillData);
+
+    // 方法2：Mapを使用して埋め込み
+    Map<String, Object> map = new HashMap<>();
+    map.put("name", "张三");
+    map.put("number", 5.2);
+    FastExcel.write("simpleFillMap.xlsx")
+        .withTemplate(templateFileName)
+        .sheet()
+        .doFill(map);
+}
+```
+
+---
+
+## **リストの埋め込み**
+
+### 概要
+複数のデータ項目をテンプレートリストに埋め込み、メモリバッチ処理とファイルキャッシュバッチ埋め込みをサポートします。
+
+#### サンプルコード
+```java
+@Test
+public void listFill() {
+    String templateFileName = "path/to/list.xlsx";
+
+    // 方法1：すべてのデータを一度に埋め込む
+    FastExcel.write("listFill.xlsx")
+        .withTemplate(templateFileName)
+        .sheet()
+        .doFill(data());
+
+    // 方法2：バッチで埋め込む
+    try (ExcelWriter writer = FastExcel.write("listFillBatch.xlsx").withTemplate(templateFileName).build()) {
+        WriteSheet writeSheet = FastExcel.writerSheet().build();
+        writer.fill(data(), writeSheet);
+        writer.fill(data(), writeSheet);
+    }
+}
+```
+
+---
+
+## **複雑な埋め込み**
+
+### 概要
+リストや通常の変数など、さまざまなデータ型をテンプレートに埋め込みます。
+
+#### サンプルコード
+```java
+@Test
+public void complexFill() {
+    String templateFileName = "path/to/complex.xlsx";
+
+    try (ExcelWriter writer = FastExcel.write("complexFill.xlsx").withTemplate(templateFileName).build()) {
+        WriteSheet writeSheet = FastExcel.writerSheet().build();
+
+        // リストデータを埋め込み、forceNewRowを有効にする
+        FillConfig config = FillConfig.builder().forceNewRow(true).build();
+        writer.fill(data(), config, writeSheet);
+
+        // 通常の変数を埋め込む
+        Map<String, Object> map = new HashMap<>();
+        map.put("date", "2024年11月20日");
+        map.put("total", 1000);
+        writer.fill(map, writeSheet);
+    }
+}
+```
+
+---
+
+## **大規模な複雑な埋め込み**
+
+### 概要
+大規模なデータの埋め込みパフォーマンスを最適化し、テンプレートリストが最後の行にあることを確認し、後続データは `WriteTable` を使用して埋め込みます。
+
+#### サンプルコード
+```java
+@Test
+public void complexFillWithTable() {
+    String templateFileName = "path/to/complexFillWithTable.xlsx";
+
+    try (ExcelWriter writer = FastExcel.write("complexFillWithTable.xlsx").withTemplate(templateFileName).build()) {
+        WriteSheet writeSheet = FastExcel.writerSheet().build();
+
+        // リストデータを埋め込む
+        writer.fill(data(), writeSheet);
+
+        // 他の変数を埋め込む
+        Map<String, Object> map = new HashMap<>();
+        map.put("date", "2024年11月20日");
+        writer.fill(map, writeSheet);
+
+        // 統計情報を埋め込む
+        List<List<String>> totalList = new ArrayList<>();
+        totalList.add(Arrays.asList(null, null, null, "統計: 1000"));
+        writer.write(totalList, writeSheet);
+    }
+}
+```
+
+---
+
+## **横方向の埋め込み**
+
+### 概要
+リストデータを横方向に埋め込み、動的列数のシナリオに適しています。
+
+#### サンプルコード
+```java
+@Test
+public void horizontalFill() {
+    String templateFileName = "path/to/horizontal.xlsx";
+
+    try (ExcelWriter writer = FastExcel.write("horizontalFill.xlsx").withTemplate(templateFileName).build()) {
+        WriteSheet writeSheet = FastExcel.writerSheet().build();
+
+        FillConfig config = FillConfig.builder().direction(WriteDirectionEnum.HORIZONTAL).build();
+        writer.fill(data(), config, writeSheet);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("date", "2024年11月20日");
+        writer.fill(map, writeSheet);
+    }
+}
+```
+
+---
+
+## **複数リストの組み合わせ埋め込み**
+
+### 概要
+複数のリストを同時に埋め込み、リスト間をプレフィックスで区別します。
+
+#### サンプルコード
+```java
+@Test
+public void compositeFill() {
+    String templateFileName = "path/to/composite.xlsx";
+
+    try (ExcelWriter writer = FastExcel.write("compositeFill.xlsx").withTemplate(templateFileName).build()) {
+        WriteSheet writeSheet = FastExcel.writerSheet().build();
+
+        // FillWrapperを使用して複数のリストを埋め込む
+        writer.fill(new FillWrapper("data1", data()), writeSheet);
+        writer.fill(new FillWrapper("data2", data()), writeSheet);
+        writer.fill(new FillWrapper("data3", data()), writeSheet);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("date", new Date());
+        writer.fill(map, writeSheet);
+    }
+}
+```
+
+---
+
+## **埋め込みの使用シナリオのまとめ**
+
+| 機能               | 説明                                                                                      | サンプルコード              |
+|--------------------|-------------------------------------------------------------------------------------------|-----------------------|
+| 最もシンプルな埋め込み        | オブジェクトまたは Map を使用してシンプルなデータを埋め込む                                                              | [simpleFill](#1)      |
+| リストの埋め込み           | リストデータをテンプレートに埋め込み、分割埋め込みをサポート                                                        | [listFill](#2)        |
+| 複雑な埋め込み            | 同じテンプレートにリストや通常変数など、さまざまなデータ型を埋め込む                                           | [complexFill](#3)     |
+| 大規模な複雑な埋め込み    | 大規模なデータの埋め込みパフォーマンスを最適化し、テンプレートリストが最後の行にあることを確認し、後続データは `WriteTable` を使用して埋め込む |
+| 横方向の埋め込み            | リストデータを横方向に埋め込み、動的列データに適しています                                                    | [horizontalFill](#5)  |
+| 複数リストの組み合わせ埋め込み      | 複数のリストを同時に埋め込み、リスト間をプレフィックスで区別                                                   | [compositeFill](#6)   |

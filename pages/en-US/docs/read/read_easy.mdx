@@ -1,0 +1,164 @@
+---
+title: Simple Read
+description: Read a simple excel file
+---
+
+
+## Simple Read Excel
+
+## Example 1: Define POJO, Define Listener to Read a Simple Excel File
+### Overview
+
+FastExcel provides a simple way to read Excel files. Users only need to define a POJO class to represent the data structure, and then read the data through FastExcel's listener mechanism.
+
+### Example Object: `DemoData`
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class DemoData {
+    private String string;
+    private Date date;
+    private Double doubleData;
+}
+```
+
+### Data Listener: `DemoDataListener`
+`DemoDataListener` is a custom listener used to process data read from Excel.
+> **Note**: Listeners cannot be managed by Spring and need to be reinstantiated each time an Excel file is read.
+
+```java
+@Slf4j
+public class DemoDataListener implements ReadListener<DemoData> {
+
+    @Override
+    public void invoke(DemoData data, AnalysisContext context) {
+        log.info("Parsed one piece of data:{}", JSON.toJSONString(data));
+    }
+
+    @Override
+    public void doAfterAllAnalysed(AnalysisContext context) {
+        log.info("All data parsing completed!");
+    }
+}
+```
+
+### Reading Code Example
+```java
+@Test
+public void simpleRead() {
+    String fileName = "path/to/demo.xlsx";
+
+    // Method 1: Process data directly with Lambda expression
+    FastExcel.read(fileName, DemoData.class, new PageReadListener<>(dataList -> {
+        for (DemoData demoData : dataList) {
+            log.info("Read one piece of data: {}", JSON.toJSONString(demoData));
+        }
+    })).sheet().doRead();
+
+    // Method 2: Anonymous inner class
+    FastExcel.read(fileName, DemoData.class, new ReadListener<DemoData>() {
+        @Override
+        public void invoke(DemoData data, AnalysisContext context) {
+           log.info("Read one piece of data: {}", JSON.toJSONString(data));
+        }
+        @Override
+        public void doAfterAllAnalysed(AnalysisContext context) { }
+    }).sheet().doRead();
+
+    // Method 3: Custom listener
+    FastExcel.read(fileName, DemoData.class, new DemoDataListener()).sheet().doRead();
+
+    // Method 4: Read multiple sheets
+    try (ExcelReader excelReader = FastExcel.read(fileName, DemoData.class, new DemoDataListener()).build()) {
+        ReadSheet readSheet = FastExcel.readSheet(0).build();
+        excelReader.read(readSheet);
+    }
+}
+```
+
+## Example 2: Read a Simple Excel File without Defining POJO
+
+### Overview
+FastExcel also supports reading Excel files directly without defining a POJO class, by reading data directly as `Map<Integer, String>`.
+
+```java
+@Slf4j
+public class NoModelDataListener extends AnalysisEventListener<Map<Integer, String>> {
+    private static final int BATCH_COUNT = 5;
+    private List<Map<Integer, String>> cachedDataList = new ArrayList<>(BATCH_COUNT);
+
+    @Override
+    public void invoke(Map<Integer, String> data, AnalysisContext context) {
+        log.info("Parsed one piece of data: {}", JSON.toJSONString(data));
+        cachedDataList.add(data);
+        if (cachedDataList.size() >= BATCH_COUNT) {
+            saveData();
+            cachedDataList.clear();
+        }
+    }
+
+    @Override
+    public void doAfterAllAnalysed(AnalysisContext context) {
+        // Ensure all data is processed
+        saveData();
+    }
+
+    private void saveData() {
+        // Actual business processing logic
+        log.info("Stored {} pieces of data", cachedDataList.size());
+    }
+}
+```
+
+## Example 3: Read a Simple Excel File without Defining a Listener
+
+### Overview
+Use the `doReadSync` method to directly read Excel data into a list in memory, which is suitable for scenarios with small amounts of data. The read data can be a list of POJO objects or Map lists.
+
+### Code Example
+#### Read as a list of objects
+
+Assuming there is a POJO class `DemoData` corresponding to the Excel structure.
+
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class DemoData {
+    private String string;
+    private Date date;
+    private Double doubleData;
+}
+Synchronously read to a list of objects
+@Test
+public void synchronousReadToObjectList() {
+    String fileName = "path/to/demo.xlsx";
+
+    // Use FastExcel to synchronously read Excel data into a list of objects
+    List<DemoData> list = FastExcel.read(fileName).head(DemoData.class).sheet().doReadSync();
+
+    // Process the read data list
+    for (DemoData data : list) {
+        log.info("Read data: {}", JSON.toJSONString(data));
+    }
+}
+```
+
+### Read as a list of Maps
+Without using POJO, each row can be read as a Map, with the key as the column index and the value as the cell content.
+
+```java
+@Test
+public void synchronousReadToMapList() {
+    String fileName = "path/to/demo.xlsx";
+
+    // Read directly as a list of Maps
+    List<Map<Integer, String>> list = FastExcel.read(fileName).sheet().doReadSync();
+
+    // Process the read data list
+    for (Map<Integer, String> data : list) {
+        log.info("Read data: {}", JSON.toJSONString(data));
+    }
+}
+```

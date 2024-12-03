@@ -4,43 +4,303 @@ description: Frequently Asked Questions
 ---
 
 #### Feature Limitations
-- **Q:** What features does EasyExcel support? What features are not supported?
-- **A:** EasyExcel supports efficient reading and writing of Excel files, including CSV format support (starting from version 3.0.0-beta1). Unsupported features include concurrent writing to a single file, reading image macros, etc.
+- **Q:** What functions does FastExcel support? What functions are not supported?
+- **A:** FastExcel supports efficient reading and writing operations for Excel files, including support for CSV format (starting from version 3.0.0-beta1). Unsupported functions include concurrent writing to a single file, reading image macros, etc.
 
-#### Writing Operation Choices
-- **Q:** When writing Excel, when should I choose fill mode and when should I choose direct writing?
-- **A:** For complex export formats, template filling is recommended; for simple format scenarios, direct writing is more efficient.
+#### Choosing Write Operations
+- **Q:** When writing to Excel, when should I choose the fill mode and when should I choose direct writing?
+- **A:** For complex formatted export content, it is recommended to use template filling; for simple formatted scenarios, direct writing is more efficient.
 
 #### Lombok Annotations
-- **Q:** What's the purpose of Lombok annotations in entity classes when using EasyExcel?
-- **A:** Common Lombok annotations like `@Getter`, `@Setter`, `@EqualsAndHashCode` are used to automatically generate getter, setter methods and equals/hashCode methods. If you don't want to use these auto-generated methods, you can implement them manually.
+- **Q:** What is the role of Lombok annotations in using FastExcel?
+- **A:** Commonly used Lombok annotations in entity classes such as `@Getter`, `@Setter`, `@EqualsAndHashCode` are used to automatically generate getter, setter methods, equals, and hashCode methods. If you do not want to use these auto-generated methods, you can implement them yourself.
 
-#### Field Mapping
-- **Q:** How to resolve issues where some fields cannot be correctly read or written?
-- **A:** Ensure entity class fields follow camelCase naming conventions, avoid using `@Accessors(chain = true)`, recommend using `@Builder` instead. Also, make sure fields participating in read/write operations are marked with `@ExcelProperty` annotation.
+#### Field Matching
+- **Q:** How to solve the problem of some fields not being read or written correctly?
+- **A:** Ensure that the entity class fields follow the camel case naming convention, avoid using `@Accessors(chain = true)`, and recommend using `@Builder` instead. Also, ensure that the entity class is marked with `@ExcelProperty` annotation for fields involved in reading and writing.
 
 #### Compatibility Issues
-- **Q:** What should I do when encountering compatibility issues with EasyExcel?
-- **A:** Common compatibility issues include `NoSuchMethodException`, `ClassNotFoundException`, `NoClassDefFoundError`, etc., usually caused by jar package conflicts. It's recommended to check and clean up project dependencies, ensuring the EasyExcel version is compatible with other libraries in your project.
+- **Q:** What to do when encountering compatibility issues when using FastExcel?
+- **A:** Common compatibility issues include `NoSuchMethodException`, `ClassNotFoundException`, `NoClassDefFoundError`, etc., which are usually caused by jar conflicts. It is recommended to check and clean up dependencies in the project, ensuring that the FastExcel version used is compatible with other libraries in the project.
 
-#### Production Deployment
-- **Q:** Why does it work locally but fails in production?
-- **A:** Most cases are due to missing font libraries in the production environment. This can be resolved by installing font libraries (like `dejavu-sans-fonts` and `fontconfig`) or enabling memory processing mode.
+#### Online Deployment
+- **Q:** Why are there problems in the online environment when running normally locally?
+- **A:** In most cases, this is due to the lack of necessary font libraries in the online environment. You can solve this problem by installing font libraries (such as `dejavu-sans-fonts` and `fontconfig`) or enabling memory processing mode.
 
 #### Concurrent Reading
-- **Q:** Why shouldn't Listeners be managed by Spring?
-- **A:** Listeners should not be managed by Spring as this would make them singletons, potentially causing data confusion during concurrent file reading. A new Listener instance should be created for each file read operation.
+- **Q:** Why shouldn't the Listener be managed by Spring?
+- **A:** Listeners should not be managed by Spring because this would cause the Listener to become a singleton, which may lead to data confusion issues when reading files concurrently. Each time a file is read, a new Listener instance should be created.
 
 #### Performance Optimization
-- **Q:** What reading strategies does EasyExcel provide for large files over 10MB?
-- **A:** EasyExcel supports default large file processing strategies, as well as customizable high-speed mode and optimizations for high concurrency and extremely large files.
+- **Q:** For large files over 10M, what reading strategies does FastExcel provide?
+- **A:** FastExcel supports default large file processing strategies, as well as customizable high-speed modes and optimization settings for high concurrency and super large files.
 
-#### Writing and Formatting
+#### Writing and Format Setting
 - **Q:** How to set cell formats?
-- **A:** Cell formats can be set using annotations like `@ContentStyle` on entity class properties, for example, number formats, date formats, etc.
+- **A:** You can set cell formats by using annotations like `@ContentStyle` on entity class properties, such as numeric formats, date formats, etc.
 
 #### Export Issues
-- **Q:** What should I do if the exported Excel file can't be opened or needs repair?
-- **A:** This is usually caused by frontend frameworks or backend interceptors modifying the file stream. It's recommended to test local export first, ensure backend logic is correct before investigating frontend and network-related issues.
+- **Q:** How to solve the problem when the exported Excel file cannot be opened or prompts for repair?
+- **A:** This is usually caused by front-end frameworks or back-end interceptors modifying the file stream. It is recommended to test local exports first, ensure the correctness of the back-end logic, and then investigate front-end and network-related issues.
 
-[More content...] 
+#### Large File Reading Optimization
+- **Q:** How does FastExcel optimize memory usage when reading large files?
+- **A:** FastExcel automatically determines the processing method for large files. For files with shared strings exceeding 5MB, a file storage strategy is used to reduce memory usage. You can enable ultra-fast mode by setting the `readCache` parameter, but this will increase memory consumption.
+
+#### Concurrent Processing
+- **Q:** How to efficiently read Excel files in a high-concurrency environment?
+- **A:** In a high-concurrency environment, you can optimize reading performance using `SimpleReadCacheSelector`. By setting parameters such as `maxUseMapCacheSize` and `maxCacheActivateBatchCount`, you can control the cache strategy for shared strings, improve hit rate, and reduce file reading latency.
+
+#### Field Mapping
+- **Q:** How to handle cases where entity class fields do not match Excel column names?
+- **A:** You can use the `@ExcelProperty` annotation to specify the correspondence between entity class fields and Excel column names. For example:
+  ```java
+  @ExcelProperty("Name")
+  private String name;
+  ```
+
+#### Data Validation
+- **Q:** How to perform data validation when reading Excel data?
+- **A:** Data validation logic can be implemented in the `ReadListener`. For example:
+  ```java
+  public class DataValidatorListener extends AnalysisEventListener<DemoData> {
+      @Override
+      public void invoke(DemoData data, AnalysisContext context) {
+          if (data.getName() == null || data.getName().isEmpty()) {
+              throw new RuntimeException("Name cannot be empty");
+          }
+          // Process data
+      }
+  }
+  ```
+
+#### Custom Styles
+- **Q:** How to customize cell styles?
+- **A:** You can customize cell styles by implementing the `WriteHandler` interface. For example:
+  ```java
+  public class CustomCellStyleWriteHandler extends AbstractCellStyleWriteHandler {
+      @Override
+      protected void setCellStyle(Cell cell, Head head, Integer relativeRowIndex) {
+          CellStyle style = cell.getSheet().getWorkbook().createCellStyle();
+          style.setFillForegroundColor(IndexedColors.RED.getIndex());
+          style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+          cell.setCellStyle(style);
+      }
+  }
+  ```
+
+#### Fill Mode
+- **Q:** How to solve the problem of fields not being replaced in fill mode?
+- **A:** Using the `inMemory(true)` parameter ensures correct field replacement. For example:
+  ```java
+  FastExcel.write(fileName, DemoData.class).inMemory(true).sheet("Template").doWrite(fillData());
+  ```
+
+#### CSV Separator
+- **Q:** How to modify the separator of a CSV file?
+- **A:** You can modify the separator of a CSV file by setting `CsvFormat`. For example:
+  ```java
+  try (ExcelReader excelReader = FastExcel.read(fileName, DemoData.class, new DemoDataListener()).build()) {
+      ReadWorkbookHolder readWorkbookHolder = excelReader.analysisContext().readWorkbookHolder();
+      if (readWorkbookHolder instanceof CsvReadWorkbookHolder) {
+          CsvReadWorkbookHolder csvReadWorkbookHolder = (CsvReadWorkbookHolder) readWorkbookHolder;
+          csvReadWorkbookHolder.setCsvFormat(csvReadWorkbookHolder.getCsvFormat().withDelimiter(';'));
+      }
+      ReadSheet readSheet = FastExcel.readSheet(0).build();
+      excelReader.read(readSheet);
+  }
+  ```
+
+#### Error Handling
+- **Q:** How to handle exceptions thrown during the reading process?
+- **A:** Exceptions can be caught and handled in the `ReadListener`. For example:
+  ```java
+  public class ErrorHandlingListener extends AnalysisEventListener<DemoData> {
+      @Override
+      public void invoke(DemoData data, AnalysisContext context) {
+          try {
+              // Process data
+          } catch (Exception e) {
+              // Handle exception
+          }
+      }
+  }
+  ```
+
+#### Dependency Conflict
+- **Q:** How to resolve dependency conflict issues?
+- **A:** Common dependency conflicts include POI, ehcache, commons-io, etc. It is recommended to check the dependency tree in the project, ensure that the versions used are compatible with FastExcel. You can use the Maven `dependency:tree` command to view the dependency tree.
+
+#### Performance Monitoring
+- **Q:** How to monitor the performance of FastExcel?
+- **A:** You can monitor the performance of FastExcel by enabling debug logging. For example:
+  ```java
+  LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+  ch.qos.logback.classic.Logger logger = lc.getLogger("cn.idev.excel");
+  logger.setLevel(Level.DEBUG);
+  ```
+
+#### Multi-Sheet Reading
+- **Q:** How to read Excel files containing multiple sheets?
+- **A:** You can use `MultipleSheetsListener` to handle reading multiple sheets. For example:
+  ```java
+  FastExcel.read(file, MultipleSheetsData.class, new MultipleSheetsListener()).doReadAll();
+  ```
+  Alternatively, you can get information about all sheets before reading:
+  ```java
+  ExcelReader excelReader = FastExcel.read(file, MultipleSheetsData.class, multipleSheetsListener).build();
+  List<ReadSheet> sheets = excelReader.excelExecutor().sheetList();
+  for (ReadSheet readSheet : sheets) {
+      excelReader.read(readSheet);
+  }
+  excelReader.finish();
+  ```
+
+#### Get Total Rows in Excel
+- **Q:** How to get the total number of rows in an Excel file?
+- **A:** You can use `analysisContext.readSheetHolder().getApproximateTotalRowNumber()` method in the listener to get an approximate number of rows. For example:
+  ```java
+  @Override
+  public void doAfterAllAnalysed(AnalysisContext context) {
+      int totalRows = context.readSheetHolder().getApproximateTotalRowNumber();
+      System.out.println("Total rows: " + totalRows);
+  }
+  ```
+
+#### Memory Mode
+- **Q:** How to use memory mode to process Excel files?
+- **A:** Memory mode is suitable for handling smaller files and can significantly improve processing speed. For example:
+  ```java
+  FastExcel.write(fileName, DemoData.class)
+      .inMemory(Boolean.TRUE)
+      .sheet("Template")
+      .doWrite(data());
+  ```
+
+#### Read CSV Files
+- **Q:** How to read CSV files and modify the delimiter?
+- **A:** You can modify the delimiter of a CSV file by setting `CsvFormat`. For example:
+  ```java
+  String fileName = TestFileUtil.getPath() + "demo" + File.separator + "demo.csv";
+  try (ExcelReader excelReader = FastExcel.read(fileName, DemoData.class, new DemoDataListener()).build()) {
+      ReadWorkbookHolder readWorkbookHolder = excelReader.analysisContext().readWorkbookHolder();
+      if (readWorkbookHolder instanceof CsvReadWorkbookHolder) {
+          CsvReadWorkbookHolder csvReadWorkbookHolder = (CsvReadWorkbookHolder) readWorkbookHolder;
+          csvReadWorkbookHolder.setCsvFormat(csvReadWorkbookHolder.getCsvFormat().withDelimiter(';'));
+      }
+      ReadSheet readSheet = FastExcel.readSheet(0).build();
+      excelReader.read(readSheet);
+  }
+  ```
+
+#### Custom Read Listener
+- **Q:** How to customize the read listener?
+- **A:** You can inherit from the `AnalysisEventListener` class and implement your own logic. For example:
+  ```java
+  public class CustomReadListener extends AnalysisEventListener<DemoData> {
+      @Override
+      public void invoke(DemoData data, AnalysisContext context) {
+          // Process data
+      }
+
+      @Override
+      public void doAfterAllAnalysed(AnalysisContext context) {
+          // Operations to be executed after all data is read
+      }
+  }
+  ```
+
+#### Ignore Unannotated Fields During Reading
+- **Q:** How to ignore fields that are not annotated with `@ExcelProperty` during reading?
+- **A:** Add the `@ExcelIgnoreUnannotated` annotation at the top of the class. For example:
+  ```java
+  @Data
+  @ExcelIgnoreUnannotated
+  public class DemoData {
+      @ExcelProperty("Name")
+      private String name;
+  }
+  ```
+
+#### Set Header Style During Export
+- **Q:** How to set the header style during export?
+- **A:** You can customize the header style by implementing the `WriteHandler` interface. For example:
+  ```java
+  public class CustomHeadStyleWriteHandler extends AbstractHeadStyleWriteHandler {
+      @Override
+      protected void setHeadCellStyle(Cell cell, Head head, Integer relativeRowIndex) {
+          CellStyle style = cell.getSheet().getWorkbook().createCellStyle();
+          style.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+          style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+          cell.setCellStyle(style);
+      }
+  }
+  ```
+
+#### Set Cell Data Format During Export
+- **Q:** How to set the data format of a cell during export?
+- **A:** You can set the data format by using the `@ContentStyle` annotation on entity class properties. For example:
+  ```java
+  @ExcelProperty("Amount")
+  @ContentStyle(dataFormat = 4) // 4 corresponds to currency format
+  private Double amount;
+  ```
+
+#### Merge Cells During Export
+- **Q:** How to merge cells during export?
+- **A:** You can customize the logic for merging cells by implementing the `WriteHandler` interface. For example:
+  ```java
+  public class MergeCellWriteHandler implements WriteHandler {
+      @Override
+      public void sheet(Sheet sheet, Map<Integer, List<CellRangeAddress>> mergedRegions, AnalysisContext context) {
+          sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 2)); // Merge from row 1, column 1 to column 3
+      }
+  }
+  ```
+
+#### Set Font During Export
+- **Q:** How to set the font of a cell during export?
+- **A:** You can set the font by creating a `Font` object and applying it to the `CellStyle`. For example:
+  ```java
+  public class CustomFontWriteHandler extends AbstractCellStyleWriteHandler {
+      @Override
+      protected void setCellStyle(Cell cell, Head head, Integer relativeRowIndex) {
+          Workbook workbook = cell.getSheet().getWorkbook();
+          Font font = workbook.createFont();
+          font.setFontName("Arial");
+          font.setBold(true);
+          CellStyle style = workbook.createCellStyle();
+          style.setFont(font);
+          cell.setCellStyle(style);
+      }
+  }
+  ```
+
+#### Handle Null Values During Reading
+- **Q:** How to handle null values during reading?
+- **A:** You can handle null values in the `ReadListener`. For example:
+  ```java
+  public class NullValueHandlerListener extends AnalysisEventListener<DemoData> {
+      @Override
+      public void invoke(DemoData data, AnalysisContext context) {
+          if (data.getName() == null) {
+              data.setName("Default Value");
+          }
+          // Process data
+      }
+  }
+  ```
+
+#### Filter Data During Reading
+- **Q:** How to filter data during reading?
+- **A:** You can implement filtering logic in the `ReadListener`. For example:
+  ```java
+  public class DataFilterListener extends AnalysisEventListener<DemoData> {
+      @Override
+      public void invoke(DemoData data, AnalysisContext context) {
+          if (data.getAmount() > 1000) {
+              // Save or process data
+          }
+      }
+  }
+  ```

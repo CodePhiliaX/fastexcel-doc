@@ -1,3 +1,5 @@
+/** @type {import('nextra').Meta} */
+
 export default {
   index: {
     title: "Home",
@@ -9,7 +11,7 @@ export default {
     },
   },
   docs: {
-    title: "Docs",
+    title: "Documentation",
     type: "page",
   },
   contact: {

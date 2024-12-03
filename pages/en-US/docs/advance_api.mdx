@@ -1,18 +1,310 @@
 ---
 title: Advanced API
-description: Advanced API
+description: Advanced API for FastExcel
 ---
 
+FastExcel provides a set of simple and easy-to-use APIs for handling Excel files, supporting advanced features such as reading, writing, interceptors, custom styles, etc., allowing developers to flexibly handle various complex business scenarios.
+
+
+
 # Core Concepts
+If you need to perform a large amount of detailed reading and writing operations on Excel, you need to know some important concepts and classes in FastExcel, which can provide rich options when you attempt to customize operations.
+- `FastExcel`: Entry class used to initiate various operations
+- `ExcelReaderBuilder`: ExcelWriterBuilder constructs a ReadWorkbook WriteWorkbook, which can be understood as an Excel object, with only one Excel needing to be constructed
+- `ExcelReaderSheetBuilder`: ExcelWriterSheetBuilder constructs a ReadSheet WriteSheet object, which can be understood as a page in Excel, each page needs to be constructed
+- `ReadListener`: Called to handle data after each row is read
+- `WriteHandler`: Called to handle data for each operation including creating cells, creating tables, etc.
 
-If you need to perform extensive or detailed read/write operations on Excel, you need to understand some important concepts and classes in fastexcel. These will provide rich options when you try to customize operations.
+All configurations are inherited, Workbook configurations will be inherited by Sheet, so when setting parameters with FastExcel, the scope before the FastExcel...sheet() method is the entire sheet, and after that it is specific to each sheet
 
-- `EasyExcel`: Entry class, used to start various operations
-- `ExcelReaderBuilder`: Builds a ReadWorkbook/WriteWorkbook, can be understood as an Excel object
-- `ExcelReaderSheetBuilder`: Builds a ReadSheet/WriteSheet object, can be understood as a page in Excel
-- `ReadListener`: Called after each row is read to process data
-- `WriteHandler`: Called for each operation including creating cells, creating tables, etc.
 
-All configurations are inherited, Workbook's configuration will be inherited by Sheet, so when setting parameters in EasyExcel, the scope before the EasyExcel...sheet() method is the entire sheet, after that it's for individual sheets.
+# Entity Class Annotations
 
-[Rest of content translated following the same structure as original...] 
+Entity classes are the foundation of read and write operations. FastExcel provides multiple annotations to help developers easily define fields and formats.
+## **`@ExcelProperty`**
+Defines the Excel column name and the mapped field name. Specific parameters are as follows:
+
+| Name                  | Default Value       | Description                                                                                   |
+|-----------------------|---------------------|-----------------------------------------------------------------------------------------------|
+| value                 | Empty               | Used to match the header in Excel, must match completely. If there are multiple header rows, it will match the last row header. |
+| order                 | Integer.MAX_VALUE   | Higher priority than `value`, will match the order of entities and data in Excel based on the order of `order`. |
+| index                 | -1                  | Higher priority than `value` and `order`, will directly specify which column in Excel to match based on `index`. |
+| converter             | Automatically selected | Specifies which converter the current field uses, will be automatically selected by default. For reading, as long as the `cn.idev.excel.converters.Converter#convertToJavaData(com.idev.excel.converters.ReadConverterContext<?>)` method is implemented, it is sufficient.
+
+## **`@ColumnWidth`**
+Specifies the column width.
+
+## **`@DateTimeFormat`**
+Date conversion, when using `String` to receive Excel date format data, this annotation will be called. Parameters are as follows:
+
+| Name                  | Default Value  | Description                                                             |
+|-----------------------|----------------|-------------------------------------------------------------------------|
+| value                 | Empty          | Write according to the `java.text.SimpleDateFormat` format.            |
+| use1904windowing      | Automatically selected | Excel stores time as a double-precision floating point number starting from 1900, but sometimes the default start date is 1904, so setting this value changes the default start date to 1904.
+
+## **`@NumberFormat`**
+Number conversion, when using `String` to receive Excel number format data, this annotation will be called.
+
+| Name                  | Default Value  | Description                                                             |
+|-----------------------|----------------|-------------------------------------------------------------------------|
+| value                 | Empty          | Write according to the `java.text.DecimalFormat` format.               |
+| roundingMode          | RoundingMode.HALF_UP | Set rounding mode when formatting.
+
+  
+
+# Reading Operations
+
+`ReadWorkbook` and `ReadSheet` have common parameters, if empty, defaults to the parent.
+| Name                  | Default Value   | Description                                                             |
+|-----------------------|-----------------|-------------------------------------------------------------------------|
+| converter             | Empty           | Default loads many converters, here you can add fields that are not supported. |
+| readListener          | Empty           | Can register multiple listeners, will continuously callback methods in the listener when reading Excel. |
+| headRowNumber         | 1               | Number of rows for the header in Excel, default is 1 row.                |
+| head                  | Empty           | Choose one of `head` or `clazz`. Reads the list corresponding to the file header, will match the data based on the list, it is recommended to use class. |
+| clazz                 | Empty           | Choose one of `head` or `clazz`. Reads the class corresponding to the file header, can also use annotations. If neither is specified, all data will be read. |
+| autoTrim              | true            | Automatically trims the header, read data, etc.                         |
+| use1904windowing      | false           | Excel stores time as a double-precision floating point number starting from 1900, but sometimes the default start date is 1904, so setting this value changes the default start date to 1904. |
+| useScientificFormat   | false           | Whether to use scientific notation for large numeric values when converting numbers to text. |
+
+## ReadWorkbook (Understood as an Excel object) Parameters
+| Name                  | Default Value   | Description                                                             |
+|-----------------------|-----------------|-------------------------------------------------------------------------|
+| excelType             | Empty           | The current type of Excel, supports XLS, XLSX, CSV.                     |
+| inputStream           | Empty           | Choose one of `file` or `inputStream`. Reads the file stream, if received as a stream, use only, if not using a stream, it is recommended to use the `file` parameter. Because `inputStream` is used, FastExcel will help create a temporary file, ultimately still `file`. |
+| file                  | Empty           | Choose one of `inputStream` or `file`. Reads the file file.             |
+| mandatoryUseInputStream | false          | Forces the use of `inputStream` to create objects, performance will degrade, but no temporary file will be created. |
+| charset               | Charset#defaultCharset | Only useful for CSV files, uses the encoding when reading the file.     |
+| autoCloseStream       | true            | Automatically closes the read stream.                                    |
+| readCache             | Empty           | Uses memory for less than 5M by default, and uses `EhCache` for more than 5M. It is not recommended to use this parameter. |
+| readCacheSelector     | SimpleReadCacheSelector | Used to select when to use memory to store temporary data and when to use disk to store temporary data. |
+| ignoreEmptyRow        | true            | Ignore empty rows.                                                      |
+| password              | Empty           | Password for reading the file.                                          |
+| xlsxSAXParserFactoryName | Empty         | Specifies the name of the class used for sax reading, for example: `com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl`. |
+| useDefaultListener    | true            | `@since 2.1.4` <br/>By default, `ModelBuildEventListener` will be added to help convert to the object passed in. Setting to `false` will not assist in converting objects, custom listeners will receive a `Map<Integer,CellData>` object. If you still want to receive `class` objects, call the `readListener` method and add custom `beforeListener`, `ModelBuildEventListener`, custom `afterListener`. |
+| extraReadSet          | Empty           | Set of additional content to read, not read by default.                  |
+| readDefaultReturn     | STRING          | `@since 3.2.0`<br/>STRING: Returns an array of Map<Integer, String>, the return value is the content seen in the Excel cell without clicking on the cell.<br/>ACTUAL_DATA: Returns an array of Map<Integer, Object>, the actual stored data, will automatically convert types, Object type can be `BigDecimal`, `Boolean`, `String`, `LocalDateTime`, null. <br/>READ_CELL_DATA: Returns an array of Map<Integer, ReadCellData<?>>, where `?` type refers to ACTUAL_DATA.
+
+## ReadSheet (Just one Sheet in Excel) Parameters
+| Name                  | Default Value   | Description                                                             |
+|-----------------------|-----------------|-------------------------------------------------------------------------|
+| sheetNo               | 0               | Code for the Sheet to be read, recommended to use this to specify which Sheet to read. |
+| sheetName             | Empty           | Match the Sheet based on the name.                                       |
+
+# Writing Operations
+
+## Common Parameters
+`WriteWorkbook`, `WriteSheet`, `WriteTable` all have common parameters, if empty, defaults to the parent.
+| Name                  | Default Value   | Description                                                             |
+|-----------------------|-----------------|-------------------------------------------------------------------------|
+| converter             | Empty           | Default loads many converters, here you can add fields that are not supported. |
+| writeHandler          | Empty           | Write handler. Can implement `WorkbookWriteHandler`, `SheetWriteHandler`, `RowWriteHandler`, `CellWriteHandler`, will be called at different stages of writing to Excel. |
+| relativeHeadRowIndex  | 0               | Number of rows to leave blank above Excel.                               |
+| head                  | Empty           | Choose one of `head` or `clazz`. Reads the list corresponding to the file header, will match the data based on the list, it is recommended to use class. |
+| clazz                 | Empty           | Choose one of `head` or `clazz`. Reads the class corresponding to the file header, can also use annotations. If neither is specified, all data will be read. |
+| autoTrim              | true            | Automatically trims the header, read data, etc.                         |
+| use1904windowing      | false           | Excel stores time as a double-precision floating point number starting from 1900, but sometimes the default start date is 1904, so setting this value changes the default start date to 1904. |
+| useScientificFormat   | false           | Whether to use scientific notation for large numeric values when converting numbers to text. |
+| needHead              | true            | Whether to write the header to Excel.                                    |
+| useDefaultStyle       | true            | Whether to use default styles.                                           |
+| automaticMergeHead    | true            | Automatically merges the header, matching the same fields above, below, left, and right. |
+| excludeColumnIndexes  | Empty           | Excludes the index data from the object.                                 |
+| excludeColumnFieldNames | Empty         | Excludes the field data from the object.                                 |
+| includeColumnIndexes  | Empty           | Only exports the index data from the object.                             |
+| includeColumnFieldNames | Empty         | Only exports the field data from the object.                             |
+| orderByIncludeColumn  | false           | @since 3.3.0 When using the parameters includeColumnFieldNames or includeColumnIndexes, will sort based on the order of the passed collection. |
+| filedCacheLocation    | THREAD_LOCAL    | @since 3.3.0 Parsing class fields will have a cache, previously placed in a global Map, after 3.3.0 it is placed in ThreadLocal by default, meaning the class will be re-parsed every time it is read and written, allowing reflection to modify class annotations, and concurrent scenarios will not affect each other.<br/>THREAD_LOCAL: Default, the class will be cached every time it is read and written, but will not affect each other in the same time.<br/>MEMORY: Placed in global memory, theoretically better performance, but unable to modify exported objects through reflection, exclusion, etc.<br/>NONE: No caching, performance will degrade, consider using when reading and writing at the same time, and need to modify objects using reflection, exclusion, etc.
+
+## WriteWorkbook (Understood as an Excel object) Parameters
+| Name                  | Default Value   | Description                                                             |
+|-----------------------|-----------------|-------------------------------------------------------------------------|
+| excelType             | Empty           | The current type of Excel, supports XLS, XLSX, CSV.                     |
+| outputStream          | Empty           | Choose one of `file` or `outputStream`. Writes the file stream.         |
+| file                  | Empty           | Choose one of `outputStream` or `file`. Writes the file file.           |
+| templateInputStream   | Empty           | Template file stream.                                                    |
+| templateFile          | Empty           | Template file.                                                           |
+| charset               | Charset#defaultCharset | Only useful for CSV files, uses the encoding when writing the file.    |
+| autoCloseStream       | true            | Automatically closes the write stream.                                   |
+| password              | Empty           | Password for reading the file.                                           |
+| inMemory              | false           | Whether to process in memory, by default will generate a temporary file to save memory. In-memory mode is more efficient, but prone to OOM. |
+| writeExcelOnException | false           | If an exception occurs during writing, whether to attempt to write the data to Excel. |
+
+## WriteSheet (Just one Sheet in Excel) Parameters
+| Name | Default Value | Description |
+|-----------------------|-----|---------------------------------|
+| sheetNo | 0 | Code for the Sheet to write to. |
+| sheetName | Empty | Sheet name to write, defaults to `sheetNo`. |
+
+## WriteTable (Consider a Sheet in Excel, a region as a table) Parameters
+| Name                  | Default Value | Description |
+|-----------------------|-----|---------------------------------|
+| tableNo               | 0   | Code for the table to write to. |
+
+# **WriteHandler**
+
+**`WriteHandler`** is an interface provided by FastExcel for intercepting the writing process when writing to an Excel file, allowing developers to customize operations such as setting cell styles, merging cells, adding hyperlinks, inserting comments, etc.
+By implementing `WriteHandler`, developers can have fine-grained control over the writing process to meet complex business requirements.
+
+---
+
+## **WriteHandler Interface Categories**
+
+FastExcel provides the following WriteHandler interfaces for handling different writing scenarios:
+
+| Interface Name         | Description                                                                 |
+|------------------------|------------------------------------------------------------------------------|
+| **CellWriteHandler**   | Interceptor at the cell level, allows custom operations on cell data and styles. |
+| **RowWriteHandler**    | Interceptor at the row level, used to perform additional operations after row data is written. |
+| **SheetWriteHandler**  | Interceptor at the sheet level, can be used to set sheet-level properties (such as freeze panes, dropdowns, etc.). |
+
+---
+
+## **Steps to Implement WriteHandler**
+
+1. **Implement the corresponding `WriteHandler` interface**:
+   - Choose the appropriate interface (`CellWriteHandler`, `RowWriteHandler`, or `SheetWriteHandler`).
+   - Implement the methods in the interface and define custom logic in them.
+
+2. **Register the WriteHandler**:
+   - Register your custom WriteHandler when calling `FastExcel.write()` using `.registerWriteHandler()`.
+
+---
+
+## **CellWriteHandler Example: Setting Cell Styles**
+
+### Functionality: Set the background color to yellow and font color to blue for all content cells.
+```java
+@Slf4j
+public class CustomCellStyleHandler implements CellWriteHandler {
+
+    @Override
+    public void afterCellDispose(CellWriteHandlerContext context) {
+        // Ensure only content cells (not headers) are processed
+        if (BooleanUtils.isNotTrue(context.getHead())) {
+            WriteCellData<?> cellData = context.getFirstCellData();
+            WriteCellStyle style = cellData.getOrCreateStyle();
+
+            // Set background color to yellow
+            style.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+            style.setFillPatternType(FillPatternType.SOLID_FOREGROUND);
+
+            // Set font color to blue
+            WriteFont font = new WriteFont();
+            font.setColor(IndexedColors.BLUE.getIndex());
+            style.setWriteFont(font);
+
+            log.info("Style set: Row {}, Column {}", context.getRowIndex(), context.getColumnIndex());
+        }
+    }
+}
+```
+
+### Register and Use
+```java
+@Test
+public void customCellStyleWrite() {
+    String fileName = "customCellStyleWrite.xlsx";
+
+    FastExcel.write(fileName, DemoData.class)
+        .registerWriteHandler(new CustomCellStyleHandler())
+        .sheet("Custom Style")
+        .doWrite(data());
+}
+```
+
+---
+
+## **RowWriteHandler Example: Inserting Comments**
+
+### Functionality: Insert a comment at the first row, second column of the header.
+```java
+@Slf4j
+public class CommentRowWriteHandler implements RowWriteHandler {
+
+    @Override
+    public void afterRowDispose(RowWriteHandlerContext context) {
+        if (BooleanUtils.isTrue(context.getHead())) {
+            Sheet sheet = context.getWriteSheetHolder().getSheet();
+            Drawing<?> drawing = sheet.createDrawingPatriarch();
+
+            // Create a comment
+            Comment comment = drawing.createCellComment(new XSSFClientAnchor(0, 0, 0, 0, (short) 1, 0, (short) 2, 1));
+            comment.setString(new XSSFRichTextString("This is a comment"));
+            sheet.getRow(0).getCell(1).setCellComment(comment);
+
+            log.info("Comment inserted at first row, second column");
+        }
+    }
+}
+```
+
+### Register and Use
+```java
+@Test
+public void commentWrite() {
+    String fileName = "commentWrite.xlsx";
+
+    FastExcel.write(fileName, DemoData.class)
+        .registerWriteHandler(new CommentRowWriteHandler())
+        .sheet("Insert Comment")
+        .doWrite(data());
+}
+```
+
+---
+
+## **SheetWriteHandler Example: Adding Dropdowns**
+
+### Functionality: Add a dropdown to the first column of the first two rows.
+```java
+@Slf4j
+public class DropdownSheetWriteHandler implements SheetWriteHandler {
+
+    @Override
+    public void afterSheetCreate(SheetWriteHandlerContext context) {
+        Sheet sheet = context.getWriteSheetHolder().getSheet();
+
+        // Create dropdown area
+        CellRangeAddressList range = new CellRangeAddressList(1, 2, 0, 0);
+        DataValidationHelper helper = sheet.getDataValidationHelper();
+        DataValidationConstraint constraint = helper.createExplicitListConstraint(new String[]{"Option 1", "Option 2"});
+        DataValidation validation = helper.createValidation(constraint, range);
+        sheet.addValidationData(validation);
+
+        log.info("Dropdown added to the first column of the first two rows");
+    }
+}
+```
+
+### Register and Use
+```java
+@Test
+public void dropdownWrite() {
+    String fileName = "dropdownWrite.xlsx";
+
+    FastExcel.write(fileName, DemoData.class)
+        .registerWriteHandler(new DropdownSheetWriteHandler())
+        .sheet("Add Dropdown")
+        .doWrite(data());
+}
+```
+
+---
+
+## **Summary**
+
+| WriteHandler Type    | Use Case                          | Example                   |
+|----------------------|-----------------------------------|---------------------------|
+| **CellWriteHandler** | Customizing cell styles, content, merging, etc. | Setting background color, font, etc. |
+| **RowWriteHandler**  | Inserting comments, row-level styles | Inserting comments        |
+| **SheetWriteHandler**| Adding freeze panes, dropdowns, etc. | Adding dropdowns, setting freeze panes |
+
+# **ReadListener**
+
+**`ReadListener`** is an interface provided by FastExcel for processing each row of data when reading an Excel file.
+It is one of the core components of FastExcel, allowing developers to implement custom logic to handle data rows, process headers, and even execute specific operations after reading is complete.
+
+---
+
+## **Key Methods of ReadListener**
+
+`ReadListener` is a generic interface, with the generic type being the type of object to be

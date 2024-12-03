@@ -5,18 +5,145 @@ description: Contribution Guide
 
 # Contributing to fastexcel
 
-fastexcel welcomes every user and developer in the community to become a contributor. Whether reporting issues, improving documentation, submitting code, or providing technical support, your participation will help make fastexcel better.
+fastexcel welcomes every user and developer in the community to become a contributor. Whether it's reporting issues, improving documentation, submitting code, or providing technical support, your participation will help fastexcel become better.
 
 ---
 
 ## Reporting Issues
 
-We encourage users to provide feedback while using fastexcel. You can submit issues through [NEW ISSUE](https://github.com/CodePhiliaX/fastexcel/issues/new/choose).
+We encourage users to provide feedback at any time while using fastexcel. You can submit issues via [NEW ISSUE](https://github.com/CodePhiliaX/fastexcel/issues/new/choose).
 
 ### High-Quality Issue Reports
 
-To improve communication efficiency, before submitting an issue:  
-1. **Search Existing Issues**: Check if your issue has already been reported. If it exists, please comment and add detailed information to the existing issue rather than creating a new one.  
-2. **Use Issue Template**: The issue template is located at [ISSUE TEMPLATE](./.github/ISSUE_TEMPLATE). Please follow the template requirements to ensure accurate and complete issue description.
+To improve communication efficiency, please do the following before submitting an issue:  
+1. **Search for existing issues**: Check if your issue has already been reported. If it exists, please comment with additional details under the existing issue instead of creating a new one.  
+2. **Use the issue template**: The issue template is located at [ISSUE TEMPLATE](./.github/ISSUE_TEMPLATE). Please fill it out according to the template requirements to ensure accurate and complete issue descriptions.
 
-[Rest of content follows the same structure as original, translated to English...] 
+The following situations are suitable for submitting new issues:
+- Bug reports
+- New feature requests
+- Performance issues
+- Feature proposals or designs
+- Documentation improvements
+- Test coverage optimization
+- Need for technical support
+- Other project-related issues
+
+> **Note**: Do not include sensitive information in the issue, such as passwords, keys, server addresses, or private data.
+
+---
+
+## Contributing Code and Documentation
+
+All improvements to fastexcel can be achieved through Pull Requests (PRs). Whether it's fixing bugs, optimizing code, enhancing features, or improving documentation, all contributions are welcome!
+
+### Areas You Can Contribute To
+- Fixing typos
+- Bug fixes
+- Removing redundant code
+- Adding test cases
+- Enhancing features
+- Adding comments to improve code readability
+- Optimizing code structure
+- Improving or completing documentation
+
+**Principle**: **Any PR that contributes to project improvement is worth encouraging!**
+
+Before submitting a PR, please familiarize yourself with the following guidelines:
+1. [Workspace Preparation](#workspace-preparation)
+2. [Branch Definition](#branch-definition)
+3. [Commit Rules](#commit-rules)
+4. [PR Description](#pr-description)
+
+---
+
+### Workspace Preparation
+
+Ensure you have a GitHub account and complete the local development environment setup by following these steps:
+1. **Fork the repository**: Click the `Fork` button on fastexcel's [GitHub page](https://github.com/CodePhiliaX/fastexcel) to copy the project to your GitHub account, for example: `https://github.com/<your-username>/fastexcel`.
+2. **Clone the repository**: Run the following command to clone the forked project to your local machine:
+   ```bash
+   git clone git@github.com:<your-username>/fastexcel.git
+   ```
+3. **Set up the upstream repository**: Set the official repository as `upstream` for easy synchronization:
+   ```bash
+   git remote add upstream git@github.com:CodePhiliaX/fastexcel.git
+   git remote set-url --push upstream no-pushing
+   ```
+   Running `git remote -v` can check if the configuration is correct.
+
+---
+
+### Branch Definition
+
+In fastexcel, all contributions should be based on the `main` development branch. Additionally, there are the following branch types:
+- **release branches**: Used for version releases (e.g., `0.6.0`, `0.6.1`).
+- **feature branches**: Used for developing larger features.
+- **hotfix branches**: Used for fixing critical bugs.
+
+When submitting a PR, ensure the changes are based on the `main` branch.
+
+---
+
+### Commit Rules
+
+#### Commit Message
+Ensure the commit message is clear and descriptive, following this format:
+- **docs**: Update documentation, for example, `docs: Update PR submission guide`.
+- **feature**: New feature, for example, `feature: Support concurrent writing`.
+- **bugfix**: Fix bug, for example, `bugfix: Fix null pointer exception`.
+- **refactor**: Refactor code, for example, `refactor: Optimize data processing logic`.
+- **test**: Add or improve tests, for example, `test: Add unit tests`.
+
+Avoid using vague commit messages like:
+- ~~Fix issue~~
+- ~~Update code~~
+
+If you need help, refer to [How to Write a Git Commit Message](http://chris.beams.io/posts/git-commit/).
+
+#### Commit Content
+Each commit should contain complete and reviewable changes, ensuring:
+- Avoid overly large changes in a single commit.
+- Each commit content is independent and can pass CI tests.
+
+Also, ensure the correct Git user information is configured when committing:
+```bash
+git config --get user.name
+git config --get user.email
+```
+
+---
+
+### PR Description
+
+To help reviewers quickly understand the content and purpose of the PR, please use the [PR template](./.github/PULL_REQUEST_TEMPLATE.md). A detailed description will greatly improve code review efficiency.
+
+---
+
+## Contributing Test Cases
+
+Any contribution of test cases is encouraged, especially unit tests. It is recommended to create `XXXTest.java` files in the corresponding module's `test` directory, preferably using the JUnit5 framework.
+
+---
+
+## Other Ways to Contribute
+
+In addition to directly contributing code, the following methods are also valuable support for fastexcel:
+- Answering other users' questions.
+- Helping review others' PRs.
+- Providing improvement suggestions.
+- Writing technical blogs to promote fastexcel.
+- Sharing project-related knowledge in the community.
+
+---
+
+## Code Style
+
+Please follow the [Alibaba Java Coding Guidelines](https://alibaba.github.io/Alibaba-Java-Coding-Guidelines/) for coding.  
+You can choose to install the following plugins (not mandatory) to help check the code style:
+- **IntelliJ IDEA Plugin**: [Installation Guide](https://github.com/alibaba/p3c/blob/master/idea-plugin/README.md)
+- **Eclipse Plugin**: [Installation Guide](https://github.com/alibaba/p3c/blob/master/eclipse-plugin/README.md)
+
+---
+
+**Finally, thank you for your support to fastexcel! Every contribution is our driving force for progress.**

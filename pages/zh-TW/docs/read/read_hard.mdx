@@ -1,0 +1,371 @@
+---
+title: 複雜讀取
+description: 複雜的讀取操作
+---
+
+## 複雜讀取 Excel 檔案指南
+### 概述
+
+本指南介紹如何使用 FastExcel 完成多場景 Excel 複雜讀取。涉及的場景包括：按列名或下標讀取、多 Sheet 讀取、日期和數字格式轉換、多行表頭解析、讀取額外資訊（如批註、超連結、合併儲存格）、處理公式和異常等。
+
+### **按列名或列下標讀取**
+
+#### 概述
+您可以通過指定列名或列下標來讀取 Excel 資料。這使得與動態生成的 Excel 檔案互動更加靈活。
+
+#### 示例程式碼
+#### 示例物件：`IndexOrNameData`
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class IndexOrNameData {
+    @ExcelProperty(index = 2)
+    private Double doubleData;
+
+    @ExcelProperty("字符串標題")
+    private String string;
+
+    @ExcelProperty("日期標題")
+    private Date date;
+}
+```
+
+#### 監聽器
+與基礎讀取相同，僅需要修改泛型為 `IndexOrNameData`。
+
+#### 讀取程式碼範例
+```java
+@Test
+public void indexOrNameRead() {
+    String fileName = "path/to/demo.xlsx";
+
+    // 指定列名或列下標讀取
+    FastExcel.read(fileName, IndexOrNameData.class, new DemoDataListener()).sheet().doRead();
+}
+```
+
+
+### **讀取多個 Sheet**
+
+#### 概述
+可以讀取 Excel 檔案中的多個 Sheet，且同一個 Sheet 不可重複讀取。
+
+#### 示例物件與監聽器
+與基礎讀取相同。
+
+#### 讀取程式碼範例
+```java
+@Test
+public void repeatedRead() {
+    String fileName = "path/to/demo.xlsx";
+
+    // 讀取全部 Sheet
+    FastExcel.read(fileName, DemoData.class, new DemoDataListener()).doReadAll();
+
+    // 讀取指定 Sheet
+    try (ExcelReader excelReader = FastExcel.read(fileName).build()) {
+        ReadSheet sheet1 = FastExcel.readSheet(0).head(DemoData.class).registerReadListener(new DemoDataListener()).build();
+        ReadSheet sheet2 = FastExcel.readSheet(1).head(DemoData.class).registerReadListener(new DemoDataListener()).build();
+        excelReader.read(sheet1, sheet2);
+    }
+}
+```
+
+
+
+### **日期、數字、自定義格式轉換**
+
+#### 示例物件：`ConverterData`
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class ConverterData {
+    @ExcelProperty(converter = CustomStringStringConverter.class)
+    private String string;
+
+    @DateTimeFormat("yyyy年MM月dd日HH時mm分ss秒")
+    private String date;
+
+    @NumberFormat("#.##%")
+    private String doubleData;
+}
+```
+
+#### 自定義轉換器
+```java
+public class CustomStringStringConverter implements Converter<String> {
+    @Override
+    public Class<?> supportJavaTypeKey() {
+        return String.class;
+    }
+
+    @Override
+    public CellDataTypeEnum supportExcelTypeKey() {
+        return CellDataTypeEnum.STRING;
+    }
+
+    @Override
+    public String convertToJavaData(ReadConverterContext<?> context) {
+        return "自定義：" + context.getReadCellData().getStringValue();
+    }
+
+    @Override
+    public WriteCellData<?> convertToExcelData(WriteConverterContext<String> context) {
+        return new WriteCellData<>(context.getValue());
+    }
+}
+```
+
+#### 讀取程式碼範例
+```java
+@Test
+public void converterRead() {
+    String fileName = "path/to/demo.xlsx";
+
+    // 自定義格式讀取
+    FastExcel.read(fileName, ConverterData.class, new DemoDataListener())
+        .registerConverter(new CustomStringStringConverter())
+        .sheet().doRead();
+}
+```
+
+### **多行表頭讀取**
+
+### 概述
+通過設置 `headRowNumber` 參數或根據實體類的表頭註解自動解析多行表頭。
+
+#### 讀取程式碼範例
+```java
+@Test
+public void complexHeaderRead() {
+    String fileName = "path/to/demo.xlsx";
+
+    FastExcel.read(fileName, DemoData.class, new DemoDataListener())
+        .sheet()
+        // 設置多行表頭的行數，默認為 1
+        .headRowNumber(2)
+        .doRead();
+}
+```
+
+
+
+### **同步返回資料**
+
+#### 概述
+同步讀取 Excel 資料，直接返回資料列表。適用於小資料量場景，不推薦大資料量使用。
+
+#### 讀取程式碼範例
+```java
+@Test
+public void synchronousRead() {
+    String fileName = "path/to/demo.xlsx";
+
+    // 返回實體物件的列表
+    List<DemoData> list = FastExcel.read(fileName).head(DemoData.class).sheet().doReadSync();
+    for (DemoData data : list) {
+        log.info("讀取到資料: {}", JSON.toJSONString(data));
+    }
+
+    // 返回 Map 列表，鍵為列索引，值為儲存格內容
+    List<Map<Integer, String>> listMap = FastExcel.read(fileName).sheet().doReadSync();
+    for (Map<Integer, String> data : listMap) {
+        log.info("讀取到資料: {}", JSON.toJSONString(data));
+    }
+}
+```
+
+
+
+### **讀取表頭資料**
+
+#### 概述
+可以通過重寫監聽器的 `invokeHead` 方法獲取表頭資訊。
+
+#### 示例監聽器
+```java
+@Slf4j
+public class DemoHeadDataListener extends AnalysisEventListener<DemoData> {
+    @Override
+    public void invokeHead(Map<Integer, ReadCellData<?>> headMap, AnalysisContext context) {
+        log.info("解析到表頭資料: {}", JSON.toJSONString(headMap));
+    }
+
+    @Override
+    public void invoke(DemoData data, AnalysisContext context) {}
+
+    @Override
+    public void doAfterAllAnalysed(AnalysisContext context) {}
+}
+```
+
+#### 讀取程式碼範例
+```java
+@Test
+public void headerRead() {
+    String fileName = "path/to/demo.xlsx";
+    FastExcel.read(fileName, DemoData.class, new DemoHeadDataListener()).sheet().doRead();
+}
+```
+
+
+
+### **額外資訊讀取（批註、超連結、合併儲存格）**
+
+#### 概述
+通過設置 `extraRead` 參數讀取額外資訊，如批註、超連結、合併儲存格。
+
+#### 示例監聽器
+```java
+@Slf4j
+public class DemoExtraListener implements ReadListener<DemoExtraData> {
+    @Override
+    public void invoke(DemoExtraData data, AnalysisContext context) {}
+
+    @Override
+    public void doAfterAllAnalysed(AnalysisContext context) {}
+
+    @Override
+    public void extra(CellExtra extra, AnalysisContext context) {
+        log.info("讀取到額外資訊: {}", JSON.toJSONString(extra));
+        switch (extra.getType()) {
+            case COMMENT:
+                log.info("批註資訊: {}", extra.getText());
+                break;
+            case HYPERLINK:
+                log.info("超連結資訊: {}", extra.getText());
+                break;
+            case MERGE:
+                log.info("合併儲存格範圍: {} - {}", extra.getFirstRowIndex(), extra.getLastRowIndex());
+                break;
+            default:
+                log.warn("未知的額外資訊類型");
+        }
+    }
+}
+```
+
+#### 讀取程式碼範例
+```java
+@Test
+public void extraRead() {
+    String fileName = "path/to/demo.xlsx";
+
+    FastExcel.read(fileName, DemoExtraData.class, new DemoExtraListener())
+        .extraRead(CellExtraTypeEnum.COMMENT) // 讀取批註
+        .extraRead(CellExtraTypeEnum.HYPERLINK) // 讀取超連結
+        .extraRead(CellExtraTypeEnum.MERGE) // 讀取合併儲存格
+        .sheet().doRead();
+}
+```
+
+
+### **讀取公式和儲存格類型**
+
+#### 概述
+使用 `CellData` 類型接收儲存格資料以支持公式和多種儲存格格式。
+
+#### 示例物件
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class CellDataReadDemoData {
+    private CellData<String> string;
+    private CellData<Date> date;
+    private CellData<Double> doubleData;
+    private CellData<String> formulaValue;
+}
+```
+
+#### 讀取程式碼範例
+```java
+@Test
+public void cellDataRead() {
+    String fileName = "path/to/demo.xlsx";
+
+    FastExcel.read(fileName, CellDataReadDemoData.class, new DemoDataListener()).sheet().doRead();
+}
+```
+
+
+### **異常處理**
+
+#### 概述
+通過重寫監聽器的 `onException` 方法處理資料轉換或其他讀取異常。
+
+#### 示例監聽器
+```java
+@Slf4j
+public class DemoExceptionListener extends AnalysisEventListener<ExceptionDemoData> {
+    @Override
+    public void onException(Exception exception, AnalysisContext context) {
+        log.error("解析失敗: {}", exception.getMessage());
+        if (exception instanceof ExcelDataConvertException) {
+            ExcelDataConvertException ex = (ExcelDataConvertException) exception;
+            log.error("第 {} 行, 第 {} 列解析異常, 資料: {}", ex.getRowIndex(), ex.getColumnIndex(), ex.getCellData());
+        }
+    }
+
+    @Override
+    public void invoke(ExceptionDemoData data, AnalysisContext context) {}
+
+    @Override
+    public void doAfterAllAnalysed(AnalysisContext context) {}
+}
+```
+
+#### 讀取程式碼範例
+```java
+@Test
+public void exceptionRead() {
+    String fileName = "path/to/demo.xlsx";
+    FastExcel.read(fileName, ExceptionDemoData.class, new DemoExceptionListener()).sheet().doRead();
+}
+```
+
+
+
+### **不建立物件的讀取**
+
+#### 概述
+通過 `Map<Integer, String>` 直接讀取資料，而無需定義實體類。
+
+#### 示例監聽器
+```java
+@Slf4j
+public class NoModelDataListener extends AnalysisEventListener<Map<Integer, String>> {
+    private static final int BATCH_COUNT = 5;
+    private List<Map<Integer, String>> cachedDataList = ListUtils.newArrayListWithExpectedSize(BATCH_COUNT);
+
+    @Override
+    public void invoke(Map<Integer, String> data, AnalysisContext context) {
+        log.info("解析到一條資料: {}", JSON.toJSONString(data));
+        cachedDataList.add(data);
+        if (cachedDataList.size() >= BATCH_COUNT) {
+            saveData();
+            cachedDataList.clear();
+        }
+    }
+
+    @Override
+    public void doAfterAllAnalysed(AnalysisContext context) {
+        saveData();
+    }
+
+    private void saveData() {
+        log.info("儲存 {} 條資料", cachedDataList.size());
+    }
+}
+```
+
+#### 讀取程式碼範例
+```java
+@Test
+public void noModelRead() {
+    String fileName = "path/to/demo.xlsx";
+    FastExcel.read(fileName, new NoModelDataListener()).sheet().doRead();
+}
+```

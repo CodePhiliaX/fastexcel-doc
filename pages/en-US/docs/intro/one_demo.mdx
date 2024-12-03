@@ -1,0 +1,65 @@
+---
+title: First Simple Example
+description: First Simple Example
+---
+
+
+## Simple Example: Read Excel File
+
+Here is an example of reading an Excel document:
+```java
+// Implement the ReadListener interface to set the data reading operation
+public class DemoDataListener implements ReadListener<DemoData> {
+    @Override
+    public void invoke(DemoData data, AnalysisContext context) {
+        System.out.println("Parsed a piece of data" + JSON.toJSONString(data));
+    }
+
+    @Override
+    public void doAfterAllAnalysed(AnalysisContext context) {
+        System.out.println("All data parsing is completed!");
+    }
+}
+
+public static void main(String[] args) {
+    String fileName = "demo.xlsx";
+    // Read the Excel file
+    FastExcel.read(fileName, DemoData.class, new DemoDataListener()).sheet().doRead();
+}
+```
+
+## Simple Example: Create Excel File
+
+Here is a simple example of creating an Excel document:
+```java
+// Sample data class
+public class DemoData {
+    @ExcelProperty("String Title")
+    private String string;
+    @ExcelProperty("Date Title")
+    private Date date;
+    @ExcelProperty("Number Title")
+    private Double doubleData;
+    @ExcelIgnore
+    private String ignore;
+}
+
+// Populate the data to be written
+private static List<DemoData> data() {
+    List<DemoData> list = new ArrayList<>();
+    for (int i = 0; i < 10; i++) {
+        DemoData data = new DemoData();
+        data.setString("String" + i);
+        data.setDate(new Date());
+        data.setDoubleData(0.56);
+        list.add(data);
+    }
+    return list;
+}
+
+public static void main(String[] args) {
+    String fileName = "demo.xlsx";
+    // Create a sheet named "Template" and write data to it
+    FastExcel.write(fileName, DemoData.class).sheet("Template").doWrite(data());
+}
+```

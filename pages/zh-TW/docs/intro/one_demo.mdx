@@ -1,0 +1,65 @@
+---
+title: 第一個簡單示例
+description: 第一個簡單示例
+---
+
+
+## 簡單示例：讀取 Excel 檔案
+
+以下是讀取 Excel 文件的範例：
+```java
+// 實現 ReadListener 接口，設置讀取數據的操作
+public class DemoDataListener implements ReadListener<DemoData> {
+    @Override
+    public void invoke(DemoData data, AnalysisContext context) {
+        System.out.println("解析到一條數據" + JSON.toJSONString(data));
+    }
+
+    @Override
+    public void doAfterAllAnalysed(AnalysisContext context) {
+        System.out.println("所有數據解析完成！");
+    }
+}
+
+public static void main(String[] args) {
+    String fileName = "demo.xlsx";
+    // 讀取 Excel 文件
+    FastExcel.read(fileName, DemoData.class, new DemoDataListener()).sheet().doRead();
+}
+```
+
+## 簡單示例：創建 Excel 檔案
+
+以下是一個創建 Excel 文件的簡單例子：
+```java
+// 示例数据类
+public class DemoData {
+    @ExcelProperty("字符串標題")
+    private String string;
+    @ExcelProperty("日期標題")
+    private Date date;
+    @ExcelProperty("數字標題")
+    private Double doubleData;
+    @ExcelIgnore
+    private String ignore;
+}
+
+// 填充要寫入的數據
+private static List<DemoData> data() {
+    List<DemoData> list = new ArrayList<>();
+    for (int i = 0; i < 10; i++) {
+        DemoData data = new DemoData();
+        data.setString("字符串" + i);
+        data.setDate(new Date());
+        data.setDoubleData(0.56);
+        list.add(data);
+    }
+    return list;
+}
+
+public static void main(String[] args) {
+    String fileName = "demo.xlsx";
+    // 創建一個名為“模板”的 sheet 頁，並寫入數據
+    FastExcel.write(fileName, DemoData.class).sheet("模板").doWrite(data());
+}
+```

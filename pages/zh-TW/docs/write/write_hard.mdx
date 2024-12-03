@@ -1,0 +1,517 @@
+---
+title: 複雜寫入
+description: 通過複雜寫入操作，實現對數據的批量寫入、數據的更新等操作。
+---
+
+## 概述
+複雜寫入功能通過支持指定列順序、動態列頭、合併單元格及自定義樣式等特性，滿足多樣化的 Excel 數據導出需求。
+
+## **根據參數只導出指定列**
+
+### 概述
+通過設置列名集合動態選擇要導出的列，支持忽略列或僅導出特定列。
+
+#### 代碼示例
+```java
+@Test
+public void excludeOrIncludeWrite() {
+    String fileName = "excludeOrIncludeWrite" + System.currentTimeMillis() + ".xlsx";
+
+    // 忽略指定列
+    Set<String> excludeColumns = Set.of("date");
+    FastExcel.write(fileName, DemoData.class)
+        .excludeColumnFiledNames(excludeColumns)
+        .sheet("模板")
+        .doWrite(data());
+
+    // 僅導出指定列
+    Set<String> includeColumns = Set.of("date");
+    FastExcel.write(fileName, DemoData.class)
+        .includeColumnFiledNames(includeColumns)
+        .sheet("模板")
+        .doWrite(data());
+}
+```
+
+
+
+## **指定寫入的列順序**
+
+### 概述
+通過 `@ExcelProperty` 注解的 `index` 屬性指定列順序。
+
+#### 示例對象
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class IndexData {
+    @ExcelProperty(value = "字符串標題", index = 0)
+    private String string;
+    @ExcelProperty(value = "日期標題", index = 1)
+    private Date date;
+    @ExcelProperty(value = "數字標題", index = 3)
+    private Double doubleData; // 第二列留空
+}
+```
+
+#### 代碼示例
+```java
+@Test
+public void indexWrite() {
+    String fileName = "indexWrite" + System.currentTimeMillis() + ".xlsx";
+    FastExcel.write(fileName, IndexData.class)
+        .sheet("模板")
+        .doWrite(data());
+}
+```
+
+
+## **複雜頭寫入**
+
+### 概述
+支持設置多級表頭，通過 `@ExcelProperty` 注解指定主標題和子標題。
+
+#### 示例對象
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class ComplexHeadData {
+    @ExcelProperty({"主標題", "字符串標題"})
+    private String string;
+    @ExcelProperty({"主標題", "日期標題"})
+    private Date date;
+    @ExcelProperty({"主標題", "數字標題"})
+    private Double doubleData;
+}
+```
+
+#### 代碼示例
+```java
+@Test
+public void complexHeadWrite() {
+    String fileName = "complexHeadWrite" + System.currentTimeMillis() + ".xlsx";
+    FastExcel.write(fileName, ComplexHeadData.class)
+        .sheet("模板")
+        .doWrite(data());
+}
+```
+
+
+
+## **分批多次寫入**
+
+### 概述
+分批寫入數據到同一個 Sheet 或多個 Sheet，可實現大數據量的分頁寫入。
+
+#### 代碼示例
+```java
+@Test
+public void repeatedWrite() {
+    String fileName = "repeatedWrite" + System.currentTimeMillis() + ".xlsx";
+
+    // 方法1：寫入同一個 Sheet
+    try (ExcelWriter excelWriter = FastExcel.write(fileName, DemoData.class).build()) {
+        WriteSheet writeSheet = FastExcel.writerSheet("模板").build();
+        for (int i = 0; i < 5; i++) {
+            excelWriter.write(data(), writeSheet);
+        }
+    }
+
+    // 方法2：寫入多個 Sheet
+    try (ExcelWriter excelWriter = FastExcel.write(fileName, DemoData.class).build()) {
+        for (int i = 0; i < 5; i++) {
+            WriteSheet writeSheet = FastExcel.writerSheet(i, "模板" + i).build();
+            excelWriter.write(data(), writeSheet);
+        }
+    }
+}
+```
+
+
+
+## **自定義格式寫入**
+
+### 概述
+支持日期、數字或其他自定義格式，通過註解實現。
+
+#### 示例對象
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class ConverterData {
+    @ExcelProperty(value = "字符串標題", converter = CustomStringStringConverter.class)
+    private String string;
+
+    @DateTimeFormat("yyyy年MM月dd日HH時mm分ss秒")
+    @ExcelProperty("日期標題")
+    private Date date;
+
+    @NumberFormat("#.##%")
+    @ExcelProperty("數字標題")
+    private Double doubleData;
+}
+```
+
+#### 代碼示例
+```java
+@Test
+public void converterWrite() {
+    String fileName = "converterWrite" + System.currentTimeMillis() + ".xlsx";
+    FastExcel.write(fileName, ConverterData.class)
+        .sheet("模板")
+        .doWrite(data());
+}
+```
+
+
+
+## **自定義樣式**
+
+### 註解形式
+
+#### 概述
+通過實體類中的註解設置單元格樣式，包括字體、背景顏色、行高等。
+
+#### 示例對象
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+// 設置頭部背景為紅色
+@HeadStyle(fillPatternType = FillPatternTypeEnum.SOLID_FOREGROUND, fillForegroundColor = 10)
+// 設置頭部字體大小為20
+@HeadFontStyle(fontHeightInPoints = 20)
+// 設置內容背景為綠色
+@ContentStyle(fillPatternType = FillPatternTypeEnum.SOLID_FOREGROUND, fillForegroundColor = 17)
+// 設置內容字體大小為20
+@ContentFontStyle(fontHeightInPoints = 20)
+public class DemoStyleData {
+    // 單獨設置某列的頭部和內容樣式
+    @HeadStyle(fillPatternType = FillPatternTypeEnum.SOLID_FOREGROUND, fillForegroundColor = 14)
+    @HeadFontStyle(fontHeightInPoints = 30)
+    @ContentStyle(fillPatternType = FillPatternTypeEnum.SOLID_FOREGROUND, fillForegroundColor = 40)
+    @ContentFontStyle(fontHeightInPoints = 30)
+    @ExcelProperty("字符串標題")
+    private String string;
+
+    @ExcelProperty("日期標題")
+    private Date date;
+
+    @ExcelProperty("數字標題")
+    private Double doubleData;
+}
+```
+
+#### 示例代碼
+```java
+@Test
+public void annotationStyleWrite() {
+    String fileName = "annotationStyleWrite" + System.currentTimeMillis() + ".xlsx";
+
+    FastExcel.write(fileName, DemoStyleData.class)
+        .sheet("樣式模板")
+        .doWrite(data());
+}
+```
+
+
+
+### **攔截器形式**
+
+####  概述
+通過實現攔截器接口 `WriteHandler` 動態設置樣式，適用於複雜的樣式邏輯。
+
+#### 示例 1：使用已有策略
+通過 `HorizontalCellStyleStrategy` 為表頭和內容分別設置樣式。
+
+#### 示例代碼
+```java
+@Test
+public void handlerStyleWrite() {
+    String fileName = "handlerStyleWrite" + System.currentTimeMillis() + ".xlsx";
+
+    // 定義表頭樣式
+    WriteCellStyle headStyle = new WriteCellStyle();
+    headStyle.setFillForegroundColor(IndexedColors.RED.getIndex()); // 紅色背景
+    WriteFont headFont = new WriteFont();
+    headFont.setFontHeightInPoints((short) 20); // 字體大小為20
+    headStyle.setWriteFont(headFont);
+
+    // 定義內容樣式
+    WriteCellStyle contentStyle = new WriteCellStyle();
+    contentStyle.setFillForegroundColor(IndexedColors.GREEN.getIndex()); // 綠色背景
+    contentStyle.setFillPatternType(FillPatternType.SOLID_FOREGROUND);
+    WriteFont contentFont = new WriteFont();
+    contentFont.setFontHeightInPoints((short) 20);
+    contentStyle.setWriteFont(contentFont);
+
+    // 使用策略設置樣式
+    HorizontalCellStyleStrategy styleStrategy =
+        new HorizontalCellStyleStrategy(headStyle, contentStyle);
+
+    FastExcel.write(fileName, DemoData.class)
+        .registerWriteHandler(styleStrategy)
+        .sheet("樣式模板")
+        .doWrite(data());
+}
+```
+
+
+
+#### 示例 2：完全自定義攔截器
+如果已有策略無法滿足需求，可以實現 `CellWriteHandler` 接口對樣式進行完全自定義控制。
+
+#### 自定義攔截器
+```java
+@Slf4j
+public class CustomCellStyleWriteHandler implements CellWriteHandler {
+
+    @Override
+    public void afterCellDispose(CellWriteHandlerContext context) {
+        // 僅設置內容單元格的樣式
+        if (BooleanUtils.isNotTrue(context.getHead())) {
+            WriteCellData<?> cellData = context.getFirstCellData();
+            WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
+
+            // 設置背景顏色為黃色
+            writeCellStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+            writeCellStyle.setFillPatternType(FillPatternType.SOLID_FOREGROUND);
+
+            // 設置字體為藍色
+            WriteFont writeFont = new WriteFont();
+            writeFont.setColor(IndexedColors.BLUE.getIndex());
+            writeFont.setFontHeightInPoints((short) 14); // 字體大小為14
+            writeCellStyle.setWriteFont(writeFont);
+
+            log.info("已自定義單元格樣式: 行 {}, 列 {}", context.getRowIndex(), context.getColumnIndex());
+        }
+    }
+}
+```
+
+#### 示例代碼
+```java
+@Test
+public void customCellStyleWrite() {
+    String fileName = "customCellStyleWrite" + System.currentTimeMillis() + ".xlsx";
+
+    FastExcel.write(fileName, DemoData.class)
+        .registerWriteHandler(new CustomCellStyleWriteHandler())
+        .sheet("自定義樣式")
+        .doWrite(data());
+}
+```
+
+
+
+#### 示例 3：結合 `POI` 樣式自定義
+直接操作 POI 的 `CellStyle`，適合對樣式精確控制。
+
+#### 示例代碼
+```java
+@Test
+public void poiStyleWrite() {
+    String fileName = "poiStyleWrite" + System.currentTimeMillis() + ".xlsx";
+
+    FastExcel.write(fileName, DemoData.class)
+        .registerWriteHandler(new CellWriteHandler() {
+            @Override
+            public void afterCellDispose(CellWriteHandlerContext context) {
+                if (BooleanUtils.isNotTrue(context.getHead())) {
+                    Cell cell = context.getCell();
+                    Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
+
+                    // 創建並設置樣式
+                    CellStyle cellStyle = workbook.createCellStyle();
+                    cellStyle.setFillForegroundColor(IndexedColors.LIGHT_ORANGE.getIndex());
+                    cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                    cell.setCellStyle(cellStyle);
+                }
+            }
+        })
+        .sheet("POI樣式")
+        .doWrite(data());
+}
+```
+
+
+
+### **應用場景說明**
+
+| 場景                             | 建議使用方法                 | 示例            |
+|----------------------------------|-----------------------------|-----------------|
+| 簡單樣式設置                     | 註解形式                   | 示例 1          |
+| 不同列或行動態設置樣式            | 使用已有策略               | 示例 2-1        |
+| 複雜條件控制樣式                  | 自定義攔截器               | 示例 2-2        |
+| 精確控制單元格樣式                | POI 自定義                 | 示例 3          |
+
+
+
+
+## **圖片導出**
+
+### 概述
+支持通過文件、流、字節數組、URL 等多種方式導出圖片。
+
+#### 示例對象
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+@ContentRowHeight(100)
+@ColumnWidth(25)
+public class ImageDemoData {
+    private File file;
+    private InputStream inputStream;
+    @ExcelProperty(converter = StringImageConverter.class)
+    private String string;
+    private byte[] byteArray;
+    private URL url;
+}
+```
+
+#### 代碼示例
+```java
+@Test
+public void imageWrite() throws Exception {
+    String fileName = "imageWrite" + System.currentTimeMillis() + ".xlsx";
+    String imagePath = "path/to/image.jpg";
+
+    List<ImageDemoData> list = new ArrayList<>();
+    ImageDemoData data = new ImageDemoData();
+    data.setFile(new File(imagePath));
+    data.setByteArray(Files.readAllBytes(Paths.get(imagePath)));
+    data.setUrl(new URL("https://example.com/image.jpg"));
+    list.add(data);
+
+    FastExcel.write(fileName, ImageDemoData.class)
+        .sheet()
+        .doWrite(list);
+}
+```
+
+
+
+## **超鏈接、備註、公式寫入**
+
+### 概述
+支持單元格超鏈接、添加備註及設置公式內容。
+
+#### 示例對象
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class WriteCellDemoData {
+    private WriteCellData<String> hyperlink;
+    private WriteCellData<String> commentData;
+    private WriteCellData<String> formulaData;
+}
+```
+
+#### 代碼示例
+```java
+@Test
+public void writeCellDataWrite() {
+    String fileName = "writeCellDataWrite" + System.currentTimeMillis() + ".xlsx";
+    WriteCellDemoData data = new WriteCellDemoData();
+
+    // 設置超鏈接
+    data.setHyperlink(new WriteCellData<>("點擊訪問").hyperlink("https://example.com"));
+
+    // 設置備註
+    data.setCommentData(new WriteCellData<>("備註信息"));
+
+    // 設置公式
+    data.setFormulaData(new WriteCellData<>("=SUM(A1:A10)"));
+
+    FastExcel.write(fileName, WriteCellDemoData.class)
+        .sheet("模板")
+        .doWrite(Collections.singletonList(data));
+}
+```
+
+
+
+## **動態頭寫入**
+
+### 概述
+實時生成表頭，用於動態數據或國際化場景。
+
+### 代碼示例
+```java
+@Test
+public void dynamicHeadWrite() {
+    String fileName = "dynamicHeadWrite" + System.currentTimeMillis() + ".xlsx";
+
+    List<List<String>> head = Arrays.asList(
+        Collections.singletonList("動態字符串標題"),
+        Collections.singletonList("動態數字標題"),
+        Collections.singletonList("動態日期標題")
+    );
+
+    FastExcel.write(fileName)
+        .head(head)
+        .sheet("模板")
+        .doWrite(data());
+}
+```
+
+
+## **插入批註**
+
+### 概述
+通過攔截器在特定單元格添加批註，適用於標註說明或特殊提示。
+
+### 自定義批註攔截器
+```java
+@Slf4j
+public class CommentWriteHandler implements RowWriteHandler {
+
+    @Override
+    public void afterRowDispose(RowWriteHandlerContext context) {
+        if (BooleanUtils.isTrue(context.getHead())) {
+            Sheet sheet = context.getWriteSheetHolder().getSheet();
+            Drawing<?> drawingPatriarch = sheet.createDrawingPatriarch();
+            // 在第一行第二列創建批註
+            Comment comment = drawingPatriarch.createCellComment(
+                new XSSFClientAnchor(0, 0, 0, 0, (short) 1, 0, (short) 2, 1));
+            comment.setString(new XSSFRichTextString("批註內容"));
+            sheet.getRow(0).getCell(1).setCellComment(comment);
+        }
+    }
+}
+```
+
+### 示例代碼
+```java
+@Test
+public void commentWrite() {
+    String fileName = "commentWrite" + System.currentTimeMillis() + ".xlsx";
+
+    FastExcel.write(fileName, DemoData.class)
+        .inMemory(Boolean.TRUE) // 批註必須啟用內存模式
+        .registerWriteHandler(new CommentWriteHandler())
+        .sheet("批註示例")
+        .doWrite(data());
+}
+```
+
+
+
+## **根據模板寫入**
+
+### 概述
+支持使用已有的模板文件，在模板上填充數據，適用於規範化輸出。
+
+### 示例代碼
+```java
+@Test
+public void templateWrite() {
+    String templateFileName = "path/to/template.xlsx";
+    String fileName = "templateWrite" + System.currentTimeMillis() + ".xlsx";
+
+    FastExcel.write(fileName, DemoData

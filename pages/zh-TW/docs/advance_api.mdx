@@ -3,16 +3,126 @@ title: 進階API
 description: 高級API
 ---
 
-# 核心概念
+FastExcel 提供了一套簡單易用的 API 來處理 Excel 檔案，支持讀、寫、攔截器、自定義樣式等高級特性，讓開發者可以靈活處理各種複雜的業務場景。
 
-如果你需要對 excel 進行大量或者詳細的讀寫操作，你需要知道一些 fastexcel 中比較重要的概念和類。它們在你嘗試自定義操作時，能夠提供豐富的選項。
 
-- `EasyExcel`：入口類，用於構建開始各種操作
-- `ExcelReaderBuilder`：構建出一個 ReadWorkbook WriteWorkbook，可以理解成一個excel對象
-- `ExcelReaderSheetBuilder`：構建出一個 ReadSheet WriteSheet對象，可以理解成excel裡面的一頁
-- `ReadListener`：在每一行讀取完畢後都會調用ReadListener來處理數據
-- `WriteHandler`：在每一個操作包括創建單元格、創建表格等都會調用WriteHandler來處理數據
 
-所有配置都是繼承的，Workbook的配置會被Sheet繼承，所以在用EasyExcel設置參數的時候，在EasyExcel...sheet()方法之前作用域是整個sheet,之後針對單個sheet。
+# 核心概念 
+如果你需要對 Excel 進行大量或者詳細的讀寫操作，你需要知道一些 fastexcel 中比較重要的概念和類。它們在你嘗試自定義操作時，能夠提供豐富的選項。
+- `FastExcel`：入口類，用於構建開始各種操作
+- `ExcelReaderBuilder`：ExcelWriterBuilder 構建出一個 ReadWorkbook WriteWorkbook，可以理解成一個 excel 對象，一個 excel 只要構建一個
+- `ExcelReaderSheetBuilder`：ExcelWriterSheetBuilder 構建出一個 ReadSheet WriteSheet對象，可以理解成 excel 裡面的一頁，每一頁都要構建一個
+- `ReadListener`：在每一行讀取完畢後都會調用 ReadListener 來處理數據
+- `WriteHandler`：在每一個操作包括創建單元格、創建表格等都會調用 WriteHandler 來處理數據
 
-[其餘內容與原文相同，僅轉換為繁體中文...] 
+所有配置都是繼承的，Workbook 的配置會被 Sheet 繼承，所以在用 FastExcel 設置參數的時候，在 FastExcel...sheet() 方法之前作用域是整個 sheet，之後針對單個 sheet
+
+
+# 實體類註釋  
+
+實體類是讀寫操作的基礎。FastExcel 提供了多種註釋，幫助開發者輕鬆定義字段和格式。
+## **`@ExcelProperty`**
+定義 Excel 列名和映射的字段名。 具體參數如下：
+
+| 名稱                  | 默認值               | 描述                                                                                                                                                  |
+|---------------------|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| value           | 空                 | 用於匹配 excel 中的頭，必須全匹配，如果有多行頭，會匹配最後一行頭                                                                                                                  |
+| order           | Integer.MAX_VALUE | 優先級高於 `value`，會根據 `order` 的順序來匹配實體和 excel 中數據的順序                                                                                                         |
+| index           | &#45;1            | 優先級高於 `value` 和 `order`，會根據 `index` 直接指定到 excel 中具體的哪一列                                                                                                    |
+| converter           | 自動選擇              | 指定當前字段用什麼轉換器，默認會自動選擇。讀的情況下只要實現 `cn.idev.excel.converters.Converter#convertToJavaData(com.idev.excel.converters.ReadConverterContext<?>)` 方法即可 |
+
+## **`@ColumnWidth`**
+指定列寬。
+
+## **`@DateTimeFormat`**
+日期轉換，用`String`去接收 excel 日期格式的數據會調用這個註釋，參數如下：
+
+| 名稱                  | 默認值  | 描述                                                             |
+|---------------------|------|----------------------------------------------------------------|
+| value           | 空    | 參照 `java.text.SimpleDateFormat`書寫即可                             |
+| use1904windowing           | 自動選擇 | excel 中時間是存儲 1900 年起的一個雙精度浮點數，但是有時候默認開始日期是 1904，所以設置這個值改成默認 1904 年開始 |
+
+## **`@NumberFormat`**
+
+數字轉換，用`String`去接收 excel 數字格式的數據會調用這個註釋。
+
+| 名稱                  | 默認值  | 描述                          |
+|---------------------|------|-----------------------------|
+| value           | 空    | 參照 `java.text.DecimalFormat`書寫即可 |
+| roundingMode           | RoundingMode.HALF_UP | 格式化的時候設置捨入模式                    |
+
+  
+
+# 讀操作
+
+`ReadWorkbook`,`ReadSheet` 都會有的參數，如果為空，默認使用上級。
+| 名稱                  | 默認值   | 描述                                                       |
+|---------------------|-------|----------------------------------------------------------|
+| converter           | 空     | 默認加載了很多轉換器，這裡可以加入不支持的字段                                  |
+| readListener           | 空     | 可以註冊多個監聽器，讀取 excel 的時候會不斷的回調監聽器中的方法                        |
+| headRowNumber           | 1     | excel 中頭的行數，默認 1 行                                          |
+| head           | 空     | 與 `clazz` 二選一。讀取文件頭對應的列表，會根據列表匹配數據，建議使用 class               |
+| clazz           | 空     | 與 `head` 二選一。讀取文件的頭對應的 class，也可以使用註解。如果兩個都不指定，則會讀取全部數據      |
+| autoTrim           | true  | 會對頭、讀取數據等進行自動 trim                                        |
+| use1904windowing           | false | excel 中時間是存儲 1900 年起的一個雙精度浮點數，但是有時候默認開始日期是 1904，所以設置這個值改成默認 1904 年開始 |
+| useScientificFormat           | false | 數字轉文本的時候在較大的數值的是否是否採用科學計數法                               |
+## ReadWorkbook（理解成 excel 對象）參數
+| 名稱                  | 默認值                                                     | 描述                                                                                                                                                                                                                                                                                                                           |
+|---------------------|---------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| excelType           | 空                                                       | 當前 excel 的類型,支持 XLS、XLSX、CSV                                                                                                                                                                                                                                                                                                    |
+| inputStream           | 空                                                       | 與 `file` 二選一。讀取文件的流，如果接收到的是流就只用，不用流建議使用 `file` 參數。因為使用了 `inputStream` FastExcel 會幫忙創建臨時文件，最終還是 `file`                                                                                                                                                                                                                               |
+| file           | 空                                                       | 與 `inputStream` 二選一。讀取文件的文件。                                                                                                                                                                                                                                                                                                   |
+| mandatoryUseInputStream           | false                                                   | 強制使用  `inputStream` 來創建對象，性能會變差，但是不會創建臨文件。                                                                                                                                                                                                                                                                                   |
+| charset           | Charset#defaultCharset                 | 只有 csv 文件有用，讀取文件的時候使用的編碼                                                                                                                                                                                                                                                                                                       |
+| autoCloseStream           | true                                                    | 自動關閉讀取的流。                                                                                                                                                                                                                                                                                                                    |
+| readCache           | 空                                                       | 默認小於 5M 用 內存，超過 5M 會使用 `EhCache`,這裡不建議使用這個參數。                                                                                                                                                                                                                                                                                    |
+| readCacheSelector           | SimpleReadCacheSelector | 用於選擇什麼時候用內存去存儲臨時數據，什麼時候用磁盤存儲臨時數據                                                                                                                                                                                                                                                                                             |
+| ignoreEmptyRow           | true                                                    | 忽略空的行                                                                                                                                                                                                                                                                                                                        |
+| password           | 空                                                       | 讀取文件的密碼                                                                                                                                                                                                                                                                                                                      |
+| xlsxSAXParserFactoryName           | 空                                                       | 指定 sax 讀取使用的 class 的名稱，例如：`com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl`                                                                                                                                                                                                                                         |
+| useDefaultListener           | true                                                    | `@since 2.1.4` <br/>默認會加入 `ModelBuildEventListener` 來幫忙轉換成傳入 `class` 的對象，設置成 `false` 後將不會協助轉換對象，自定義的監聽器會接收到 `Map<Integer,CellData>` 對象，如果還想繼續接聽到 `class` 對象，請調用 `readListener` 方法，加入自定義的 `beforeListener`、 `ModelBuildEventListener`、 自定義的 `afterListener`即可。                                                                             |
+| extraReadSet           | 空                                                       | 額外需要讀取內容的 set，默認不讀取這些數據                                                                                                                                                                                                                                                                                                       |
+| readDefaultReturn           | STRING                                                       | `@since 3.2.0`<br/>STRING:會返回一個 Map&lt;IntegerString&gt; 的數組，返回值就是你在 excel 裡面不點擊單元格看到的內容<br/>   ACTUAL_DATA：會返回一個 Map&lt;Integer,Object&gt; 的數組，返回實際上存儲的數據，會幫自動轉換類型，Object 類型為 `BigDecimal`、`Boolean`、`String`、`LocalDateTime`、null，中的一個，<br/>READ_CELL_DATA: 會返回一個 Map&lt;Integer,ReadCellData&lt;?&gt;&gt; 的數組,其中`?`類型參照 ACTUAL_DATA的 |
+
+## ReadSheet（就是 excel 的一個 Sheet）參數
+| 名稱                  | 默認值 | 描述                                  |
+|---------------------|-----|---------------------------------|
+| sheetNo | 0 | 需要讀取 Sheet 的編碼，建議使用這個來指定讀取哪個 Sheet            |
+| sheetName | 空 | 根據名字去匹配 Sheet                     |
+
+# 寫操作
+
+## 通用參數
+`WriteWorkbook`,`WriteSheet` ,`WriteTable`都會有的參數，如果為空，默認使用上級。
+| 名稱                  | 默認值   | 描述                                                                                                                                                                                                                                                                                  |
+|---------------------|-------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| converter           | 空     | 默認加載了很多轉換器，這裡可以加入不支持的字段                                                                                                                                                                                                                                                             |
+| writeHandler           | 空     | 寫的處理器。可以實現`WorkbookWriteHandler`,`SheetWriteHandler`,`RowWriteHandler`,`CellWriteHandler`，在寫入 excel 的不同階段會調用                                                                                                                                                                          |
+| relativeHeadRowIndex           | 0     | 寫入到 excel 和上面空開幾行                                                                                                                                                                                                                                                                     |
+| head           | 空     | 與 `clazz` 二選一。讀取文件頭對應的列表，會根據列表匹配數據，建議使用 class                                                                                                                                                                                                                                          |
+| clazz           | 空     | 與 `head` 二選一。讀取文件的頭對應的 class，也可以使用註解。如果兩個都不指定，則會讀取全部數據                                                                                                                                                                                                                                 |
+| autoTrim           | true  | 會對頭、讀取數據等進行自動 trim                                                                                                                                                                                                                                                                   |
+| use1904windowing           | false | excel 中時間是存儲 1900 年起的一個雙精度浮點數，但是有時候默認開始日期是 1904，所以設置這個值改成默認 1904 年開始                                                                                                                                                                                                                      |
+| useScientificFormat           | false | 數字轉文本的時候在較大的數值的是否是否採用科學計數法                                                                                                                                                                                                                                                          |
+| needHead           | true  | 是否需要寫入頭到 excel                                                                                                                                                                                                                                                                       |
+| useDefaultStyle           | true  | 是否使用默認的樣式                                                                                                                                                                                                                                                                           |
+| automaticMergeHead           | true  | 自動合並頭，頭中相同的字段上下左右都會去嘗試匹配                                                                                                                                                                                                                                                            |
+| excludeColumnIndexes           | 空     | 需要排除對象中的 index 的數據                                                                                                                                                                                                                                                                    |
+| excludeColumnFieldNames           | 空     | 需要排除對象中的字段的數據                                                                                                                                                                                                                                                                       |
+| includeColumnIndexes           | 空     | 只要導出對象中的 index 的數據                                                                                                                                                                                                                                                                    |
+| includeColumnFieldNames           | 空     | 只要導出對象中的字段的數據                                                                                                                                                                                                                                                                       |
+| orderByIncludeColumn           | false | @since 3.3.0 在使用了參數 includeColumnFieldNames 或者 includeColumnIndexes 的時候，會根據傳入集合的順序排序                                                                                                                                                                                                  |
+| filedCacheLocation           | THREAD_LOCAL | @since 3.3.0 解析 class 的 field 會有緩存，以前全局放到 Map 里面，3.3.0 以後默認放到 ThreadLocal ，也就是說每次讀寫都會重新解析 class，可以反射修改 class 的註解，並發場景不會相互影響。<br/>  THREAD_LOCAL：默認，每次讀寫都會緩存，但是不是同一次不會影響<br/>  MEMORY：放到全局的內存里面，理論上性能會更好，但是無法通過反射、排除等方法修改導出的對象<br/> NONE：不緩存，性能會變差，涉及到讀的同時要寫，而且還要反射、排除等方法去修改對象的情況下可以考慮使用。<br/> |
+
+## WriteWorkbook（理解成 excel 對象）參數
+| 名稱                  | 默認值                    | 描述                                       |
+|---------------------|------------------------|------------------------------------------|
+| excelType           | 空                      | 當前 excel 的類型,支持 XLS、XLSX、CSV                |
+| outputStream           | 空                      | 與 `file` 二選一。寫入文件的流                        |
+| file           | 空                      | 與 `outputStream` 二選一。寫入的文件                 |
+| templateInputStream           | 空                      | 模板的文件流                                   |
+| templateFile           | 空                      | 模板文件                                     |
+| charset           | Charset#defaultCharset | 只有 csv 文件有用，寫入文件的時候使用的編碼                   |
+| autoCloseStream           | true                   | 自動關閉寫入的流。                                |
+| password           | 空                      | 讀取文件的密碼                                  |
+| inMemory           | false                  | 是否在

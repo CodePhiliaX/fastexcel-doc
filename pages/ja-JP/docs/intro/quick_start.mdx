@@ -1,0 +1,79 @@
+---
+title: インストールと設定
+description: FastExcelのインストールと設定のクイックスタート
+---
+
+## インストール
+
+以下の表は、各バージョンの fastexcel ベースライブラリが要求する Java 言語の最低バージョンを示しています：
+
+| バージョン | jdkバージョンのサポート範囲 | 備考                             |
+|--------|:---------------:|----------------------------------|
+| 1.0.0+ | jdk8 - jdk21     | 現在のmasterブランチはeasyexcelと完全互換です |
+
+最新バージョンの fastexcel を使用することを強くお勧めします。最新バージョンには、パフォーマンスの最適化、バグ修正、新機能が含まれており、使用がより便利になります。
+
+> fastexcel は基礎として poi を使用しているため、4以上のバージョンを使用し、プロジェクトに poi 関連のコンポーネントがすでにある場合は、poi 関連の jar パッケージを手動で除外する必要があります。
+
+### Maven
+プロジェクトのビルドに Maven を使用している場合は、`pom.xml` ファイルに以下の設定を追加してください：
+```xml
+<dependency>
+    <groupId>cn.idev.excel</groupId>
+    <artifactId>fastexcel</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+### Gradle
+プロジェクトのビルドに Gradle を使用している場合は、`build.gradle` ファイルに以下の設定を追加してください：
+```gradle
+dependencies {
+    implementation 'cn.idev.excel:fastexcel:1.0.0'
+}
+```
+## easyexcel と fastexcel の違い
+_ 1. fastexcel はすべての easyexcel の機能をサポートしていますが、性能が向上し、安定性が高いです。
+_ 2. fastexcel と easyexcel の API は完全に同じであり、シームレスに切り替えることができます。
+_ 3. fastexcel は継続的に更新され、バグが修正され、パフォーマンスが最適化され、新機能が追加されます。
+
+## easyexcel から fastexcel へのアップグレード方法
+
+### 1. 依存関係の変更
+easyexcel の依存関係を fastexcel の依存関係に置き換えてください。以下のように：
+```xml
+<!-- easyexcel の依存関係 -->
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>easyexcel</artifactId>
+    <version>xxxx</version>
+</dependency>
+```
+を以下に置き換えてください：
+```xml
+<dependency>
+    <groupId>cn.idev.excel</groupId>
+    <artifactId>fastexcel</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+### 2. コードの変更
+easyexcel のパッケージ名を fastexcel のパッケージ名に置き換えてください。以下のように：
+```java
+// easyexcel のパッケージ名を fastexcel のパッケージ名に置き換える
+import com.alibaba.excel.**;
+```
+を以下に置き換えてください：
+```java
+import cn.idev.excel.**;
+```
+### 3. コードを変更せずに fastexcel に依存
+何らかの理由でコードを変更したくない場合は、直接 fastexcel に依存し、`pom.xml` ファイルで fastexcel に依存してください。
+easyexcel と fastexcel は共存できますが、長期的には fastexcel に置き換えることをお勧めします。
+
+### 4. 将来的に FastExcel クラスを使用することをお勧めします
+互換性を考慮して EasyExcel クラスを残していますが、将来的には FastExcel クラスを使用することをお勧めします。FastExcel クラスには EasyExcel クラスのすべての機能が含まれており、新機能は将来的には FastExcel クラスにのみ追加されます。
+
+## 更新
+
+最新バージョンを取得するには、[FastExcel](https://github.com/CodePhiliaX/fastexcel) を訪れてください。

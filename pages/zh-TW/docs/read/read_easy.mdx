@@ -1,0 +1,164 @@
+---
+title: 簡單讀取
+description: 簡單讀取一個excel文件
+---
+
+
+## 簡單讀取 Excel
+
+## 示例一：定義pojo、定義監聽器讀取一個簡單的 Excel 文件
+### 概述
+
+FastExcel 提供了一種簡單的方式來讀取 Excel 文件。用戶只需定義一個 POJO 類來表示數據結構，然後通過 FastExcel 的監聽器機制讀取數據。
+
+### 示例對象：`DemoData`
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class DemoData {
+    private String string;
+    private Date date;
+    private Double doubleData;
+}
+```
+
+### 數據監聽器：`DemoDataListener`
+`DemoDataListener` 是一個自定義監聽器，用於處理從 Excel 中讀取的數據。
+> **注意**：監聽器不能被 Spring 管理，每次讀取 Excel 文件時需要重新實例化。
+
+```java
+@Slf4j
+public class DemoDataListener implements ReadListener<DemoData> {
+
+    @Override
+    public void invoke(DemoData data, AnalysisContext context) {
+        log.info("解析到一條數據:{}", JSON.toJSONString(data));
+    }
+
+    @Override
+    public void doAfterAllAnalysed(AnalysisContext context) {
+        log.info("所有數據解析完成！");
+    }
+}
+```
+
+### 讀取程式碼示例
+```java
+@Test
+public void simpleRead() {
+    String fileName = "path/to/demo.xlsx";
+
+    // 使用方式1：Lambda表達式直接處理數據
+    FastExcel.read(fileName, DemoData.class, new PageReadListener<>(dataList -> {
+        for (DemoData demoData : dataList) {
+            log.info("讀取到一條數據: {}", JSON.toJSONString(demoData));
+        }
+    })).sheet().doRead();
+
+    // 使用方式2：匿名內部類
+    FastExcel.read(fileName, DemoData.class, new ReadListener<DemoData>() {
+        @Override
+        public void invoke(DemoData data, AnalysisContext context) {
+           log.info("讀取到一條數據: {}", JSON.toJSONString(data));
+        }
+        @Override
+        public void doAfterAllAnalysed(AnalysisContext context) { }
+    }).sheet().doRead();
+
+    // 使用方式3：自定義監聽器
+    FastExcel.read(fileName, DemoData.class, new DemoDataListener()).sheet().doRead();
+
+    // 使用方式4：多 Sheet 讀取
+    try (ExcelReader excelReader = FastExcel.read(fileName, DemoData.class, new DemoDataListener()).build()) {
+        ReadSheet readSheet = FastExcel.readSheet(0).build();
+        excelReader.read(readSheet);
+    }
+}
+```
+
+## 示例二：不定義POJO讀取一個簡單的 Excel 文件
+
+### 概述
+FastExcel 還支持不定義 POJO 類直接讀取 Excel 文件，通過 `Map<Integer, String>` 直接讀取數據。
+
+```java
+@Slf4j
+public class NoModelDataListener extends AnalysisEventListener<Map<Integer, String>> {
+    private static final int BATCH_COUNT = 5;
+    private List<Map<Integer, String>> cachedDataList = new ArrayList<>(BATCH_COUNT);
+
+    @Override
+    public void invoke(Map<Integer, String> data, AnalysisContext context) {
+        log.info("解析到一條數據: {}", JSON.toJSONString(data));
+        cachedDataList.add(data);
+        if (cachedDataList.size() >= BATCH_COUNT) {
+            saveData();
+            cachedDataList.clear();
+        }
+    }
+
+    @Override
+    public void doAfterAllAnalysed(AnalysisContext context) {
+        // 確保全部數據被處理
+        saveData();
+    }
+
+    private void saveData() {
+        // 實際業務處理邏輯
+        log.info("存儲 {} 條數據", cachedDataList.size());
+    }
+}
+```
+
+## 示例三：不定義監聽器讀取一個簡單的 Excel 文件
+
+### 概述
+使用 doReadSync 方法直接將 Excel 數據讀取為內存中的列表，這種方法適用於數據量較小的場景。讀取的數據可以是 POJO 對象列表或 Map 列表。
+
+### 示例程式碼
+#### 讀取為對象列表
+
+假設有一個與 Excel 結構對應的 POJO 類 DemoData。
+
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class DemoData {
+    private String string;
+    private Date date;
+    private Double doubleData;
+}
+同步讀取為對象列表
+@Test
+public void synchronousReadToObjectList() {
+    String fileName = "path/to/demo.xlsx";
+
+    // 使用 FastExcel 同步讀取 Excel 數據為對象列表
+    List<DemoData> list = FastExcel.read(fileName).head(DemoData.class).sheet().doReadSync();
+
+    // 處理讀取的數據列表
+    for (DemoData data : list) {
+        log.info("讀取到的數據: {}", JSON.toJSONString(data));
+    }
+}
+```
+
+### 讀取為 Map 列表
+在不使用 POJO 情況下，可以將每一行讀取為 Map，鍵為列索引，值為單元格內容。
+
+```java
+@Test
+public void synchronousReadToMapList() {
+    String fileName = "path/to/demo.xlsx";
+
+    // 直接讀取為 Map 列表
+    List<Map<Integer, String>> list = FastExcel.read(fileName).sheet().doReadSync();
+
+    // 處理讀取的數據列表
+    for (Map<Integer, String> data : list) {
+        log.info("讀取到的數據: {}", JSON.toJSONString(data));
+    }
+}
+```

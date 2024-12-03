@@ -1,0 +1,477 @@
+---
+title: 複雑な書き込み
+description: 複雑な書き込み操作により、データの一括書き込み、データの更新などを実現します。
+---
+
+## 概要
+複雑な書き込み機能は、列の順序の指定、動的な列ヘッダー、セルの結合、カスタムスタイルなどの機能をサポートし、多様なExcelデータエクスポート要件を満たします。
+
+## **パラメータに基づいて特定の列のみをエクスポート**
+
+### 概要
+列名のコレクションを設定して、エクスポートする列を動的に選択し、列を無視するか特定の列のみをエクスポートすることができます。
+
+#### コード例
+```java
+@Test
+public void excludeOrIncludeWrite() {
+    String fileName = "excludeOrIncludeWrite" + System.currentTimeMillis() + ".xlsx";
+
+    // 指定列を無視
+    Set<String> excludeColumns = Set.of("date");
+    FastExcel.write(fileName, DemoData.class)
+        .excludeColumnFiledNames(excludeColumns)
+        .sheet("テンプレート")
+        .doWrite(data());
+
+    // 指定列のみをエクスポート
+    Set<String> includeColumns = Set.of("date");
+    FastExcel.write(fileName, DemoData.class)
+        .includeColumnFiledNames(includeColumns)
+        .sheet("テンプレート")
+        .doWrite(data());
+}
+```
+
+
+
+## **書き込む列の順序を指定**
+
+### 概要
+`@ExcelProperty`アノテーションの`index`属性を使用して列の順序を指定します。
+
+#### サンプルオブジェクト
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class IndexData {
+    @ExcelProperty(value = "文字列タイトル", index = 0)
+    private String string;
+    @ExcelProperty(value = "日付タイトル", index = 1)
+    private Date date;
+    @ExcelProperty(value = "数字タイトル", index = 3)
+    private Double doubleData; // 2番目の列は空白
+}
+```
+
+#### コード例
+```java
+@Test
+public void indexWrite() {
+    String fileName = "indexWrite" + System.currentTimeMillis() + ".xlsx";
+    FastExcel.write(fileName, IndexData.class)
+        .sheet("テンプレート")
+        .doWrite(data());
+}
+```
+
+
+## **複雑なヘッダーの書き込み**
+
+### 概要
+複数レベルのヘッダーをサポートし、`@ExcelProperty`アノテーションを使用してメインタイトルとサブタイトルを指定します。
+
+#### サンプルオブジェクト
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class ComplexHeadData {
+    @ExcelProperty({"メインタイトル", "文字列タイトル"})
+    private String string;
+    @ExcelProperty({"メインタイトル", "日付タイトル"})
+    private Date date;
+    @ExcelProperty({"メインタイトル", "数字タイトル"})
+    private Double doubleData;
+}
+```
+
+#### コード例
+```java
+@Test
+public void complexHeadWrite() {
+    String fileName = "complexHeadWrite" + System.currentTimeMillis() + ".xlsx";
+    FastExcel.write(fileName, ComplexHeadData.class)
+        .sheet("テンプレート")
+        .doWrite(data());
+}
+```
+
+
+
+## **バッチで複数回書き込み**
+
+### 概要
+同じシートまたは複数のシートにデータをバッチで書き込み、大量のデータをページごとに書き込むことができます。
+
+#### コード例
+```java
+@Test
+public void repeatedWrite() {
+    String fileName = "repeatedWrite" + System.currentTimeMillis() + ".xlsx";
+
+    // 方法1：同じシートに書き込む
+    try (ExcelWriter excelWriter = FastExcel.write(fileName, DemoData.class).build()) {
+        WriteSheet writeSheet = FastExcel.writerSheet("テンプレート").build();
+        for (int i = 0; i < 5; i++) {
+            excelWriter.write(data(), writeSheet);
+        }
+    }
+
+    // 方法2：複数のシートに書き込む
+    try (ExcelWriter excelWriter = FastExcel.write(fileName, DemoData.class).build()) {
+        for (int i = 0; i < 5; i++) {
+            WriteSheet writeSheet = FastExcel.writerSheet(i, "テンプレート" + i).build();
+            excelWriter.write(data(), writeSheet);
+        }
+    }
+}
+```
+
+
+
+## **カスタムフォーマットの書き込み**
+
+### 概要
+日付、数字、または他のカスタムフォーマットをサポートし、アノテーションを使用して実装します。
+
+#### サンプルオブジェクト
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class ConverterData {
+    @ExcelProperty(value = "文字列タイトル", converter = CustomStringStringConverter.class)
+    private String string;
+
+    @DateTimeFormat("yyyy年MM月dd日HH時mm分ss秒")
+    @ExcelProperty("日付タイトル")
+    private Date date;
+
+    @NumberFormat("#.##%")
+    @ExcelProperty("数字タイトル")
+    private Double doubleData;
+}
+```
+
+#### コード例
+```java
+@Test
+public void converterWrite() {
+    String fileName = "converterWrite" + System.currentTimeMillis() + ".xlsx";
+    FastExcel.write(fileName, ConverterData.class)
+        .sheet("テンプレート")
+        .doWrite(data());
+}
+```
+
+
+
+## **カスタムスタイル**
+
+### アノテーション形式
+
+#### 概要
+エンティティクラス内のアノテーションを使用してセルのスタイルを設定し、フォント、背景色、行の高さなどを指定します。
+
+#### サンプルオブジェクト
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+// ヘッダーの背景色を赤に設定
+@HeadStyle(fillPatternType = FillPatternTypeEnum.SOLID_FOREGROUND, fillForegroundColor = 10)
+// ヘッダーのフォントサイズを20に設定
+@HeadFontStyle(fontHeightInPoints = 20)
+// コンテンツの背景色を緑に設定
+@ContentStyle(fillPatternType = FillPatternTypeEnum.SOLID_FOREGROUND, fillForegroundColor = 17)
+// コンテンツのフォントサイズを20に設定
+@ContentFontStyle(fontHeightInPoints = 20)
+public class DemoStyleData {
+    // 特定の列のヘッダーとコンテンツのスタイルを個別に設定
+    @HeadStyle(fillPatternType = FillPatternTypeEnum.SOLID_FOREGROUND, fillForegroundColor = 14)
+    @HeadFontStyle(fontHeightInPoints = 30)
+    @ContentStyle(fillPatternType = FillPatternTypeEnum.SOLID_FOREGROUND, fillForegroundColor = 40)
+    @ContentFontStyle(fontHeightInPoints = 30)
+    @ExcelProperty("文字列タイトル")
+    private String string;
+
+    @ExcelProperty("日付タイトル")
+    private Date date;
+
+    @ExcelProperty("数字タイトル")
+    private Double doubleData;
+}
+```
+
+#### サンプルコード
+```java
+@Test
+public void annotationStyleWrite() {
+    String fileName = "annotationStyleWrite" + System.currentTimeMillis() + ".xlsx";
+
+    FastExcel.write(fileName, DemoStyleData.class)
+        .sheet("スタイルテンプレート")
+        .doWrite(data());
+}
+```
+
+
+
+### **インターセプター形式**
+
+#### 概要
+`WriteHandler`インターフェースを実装してスタイルを動的に設定し、複雑なスタイルロジックに適用します。
+
+#### サンプル1：既存の戦略を使用
+`HorizontalCellStyleStrategy`を使用してヘッダーとコンテンツにそれぞれスタイルを設定します。
+
+#### サンプルコード
+```java
+@Test
+public void handlerStyleWrite() {
+    String fileName = "handlerStyleWrite" + System.currentTimeMillis() + ".xlsx";
+
+    // ヘッダースタイルを定義
+    WriteCellStyle headStyle = new WriteCellStyle();
+    headStyle.setFillForegroundColor(IndexedColors.RED.getIndex()); // 赤色の背景
+    WriteFont headFont = new WriteFont();
+    headFont.setFontHeightInPoints((short) 20); // フォントサイズ20
+    headStyle.setWriteFont(headFont);
+
+    // コンテンツスタイルを定義
+    WriteCellStyle contentStyle = new WriteCellStyle();
+    contentStyle.setFillForegroundColor(IndexedColors.GREEN.getIndex()); // 緑色の背景
+    contentStyle.setFillPatternType(FillPatternType.SOLID_FOREGROUND);
+    WriteFont contentFont = new WriteFont();
+    contentFont.setFontHeightInPoints((short) 20);
+    contentStyle.setWriteFont(contentFont);
+
+    // 戦略を使用してスタイルを設定
+    HorizontalCellStyleStrategy styleStrategy =
+        new HorizontalCellStyleStrategy(headStyle, contentStyle);
+
+    FastExcel.write(fileName, DemoData.class)
+        .registerWriteHandler(styleStrategy)
+        .sheet("スタイルテンプレート")
+        .doWrite(data());
+}
+```
+
+
+
+#### サンプル2：完全にカスタムされたインターセプター
+既存の戦略が要件を満たさない場合は、`CellWriteHandler`インターフェースを実装してスタイルを完全にカスタマイズします。
+
+#### カスタムインターセプター
+```java
+@Slf4j
+public class CustomCellStyleWriteHandler implements CellWriteHandler {
+
+    @Override
+    public void afterCellDispose(CellWriteHandlerContext context) {
+        // コンテンツセルのスタイルのみを設定
+        if (BooleanUtils.isNotTrue(context.getHead())) {
+            WriteCellData<?> cellData = context.getFirstCellData();
+            WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
+
+            // 背景色を黄色に設定
+            writeCellStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+            writeCellStyle.setFillPatternType(FillPatternType.SOLID_FOREGROUND);
+
+            // フォントを青色に設定
+            WriteFont writeFont = new WriteFont();
+            writeFont.setColor(IndexedColors.BLUE.getIndex());
+            writeFont.setFontHeightInPoints((short) 14); // フォントサイズ14
+            writeCellStyle.setWriteFont(writeFont);
+
+            log.info("セルのスタイルをカスタマイズしました: 行 {}, 列 {}", context.getRowIndex(), context.getColumnIndex());
+        }
+    }
+}
+```
+
+#### サンプルコード
+```java
+@Test
+public void customCellStyleWrite() {
+    String fileName = "customCellStyleWrite" + System.currentTimeMillis() + ".xlsx";
+
+    FastExcel.write(fileName, DemoData.class)
+        .registerWriteHandler(new CustomCellStyleWriteHandler())
+        .sheet("カスタムスタイル")
+        .doWrite(data());
+}
+```
+
+
+
+#### サンプル3：`POI`スタイルのカスタマイズ
+POIの`CellStyle`を直接操作し、スタイルを正確に制御します。
+
+#### サンプルコード
+```java
+@Test
+public void poiStyleWrite() {
+    String fileName = "poiStyleWrite" + System.currentTimeMillis() + ".xlsx";
+
+    FastExcel.write(fileName, DemoData.class)
+        .registerWriteHandler(new CellWriteHandler() {
+            @Override
+            public void afterCellDispose(CellWriteHandlerContext context) {
+                if (BooleanUtils.isNotTrue(context.getHead())) {
+                    Cell cell = context.getCell();
+                    Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
+
+                    // スタイルを作成して設定
+                    CellStyle cellStyle = workbook.createCellStyle();
+                    cellStyle.setFillForegroundColor(IndexedColors.LIGHT_ORANGE.getIndex());
+                    cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                    cell.setCellStyle(cellStyle);
+                }
+            }
+        })
+        .sheet("POIスタイル")
+        .doWrite(data());
+}
+```
+
+
+
+### **適用シナリオの説明**
+
+| シナリオ                             | 推奨される使用方法                 | サンプル            |
+|----------------------------------|-----------------------------|-----------------|
+| シンプルなスタイル設定                     | アノテーション形式                   | サンプル1          |
+| 異なる列または行に動的にスタイルを設定            | 既存の戦略を使用               | サンプル2-1        |
+| 複雑な条件によるスタイル制御                  | カスタムインターセプター               | サンプル2-2        |
+| セルのスタイルを精密に制御                | POIカスタム                 | サンプル3          |
+
+
+
+
+## **画像のエクスポート**
+
+### 概要
+ファイル、ストリーム、バイト配列、URLなど、さまざまな方法で画像をエクスポートできます。
+
+#### サンプルオブジェクト
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+@ContentRowHeight(100)
+@ColumnWidth(25)
+public class ImageDemoData {
+    private File file;
+    private InputStream inputStream;
+    @ExcelProperty(converter = StringImageConverter.class)
+    private String string;
+    private byte[] byteArray;
+    private URL url;
+}
+```
+
+#### コード例
+```java
+@Test
+public void imageWrite() throws Exception {
+    String fileName = "imageWrite" + System.currentTimeMillis() + ".xlsx";
+    String imagePath = "path/to/image.jpg";
+
+    List<ImageDemoData> list = new ArrayList<>();
+    ImageDemoData data = new ImageDemoData();
+    data.setFile(new File(imagePath));
+    data.setByteArray(Files.readAllBytes(Paths.get(imagePath)));
+    data.setUrl(new URL("https://example.com/image.jpg"));
+    list.add(data);
+
+    FastExcel.write(fileName, ImageDemoData.class)
+        .sheet()
+        .doWrite(list);
+}
+```
+
+
+
+## **ハイパーリンク、コメント、数式の書き込み**
+
+### 概要
+セルにハイパーリンクを設定したり、コメントを追加したり、数式の内容を設定したりすることができます。
+
+#### サンプルオブジェクト
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class WriteCellDemoData {
+    private WriteCellData<String> hyperlink;
+    private WriteCellData<String> commentData;
+    private WriteCellData<String> formulaData;
+}
+```
+
+#### コード例
+```java
+@Test
+public void writeCellDataWrite() {
+    String fileName = "writeCellDataWrite" + System.currentTimeMillis() + ".xlsx";
+    WriteCellDemoData data = new WriteCellDemoData();
+
+    // ハイパーリンクを設定
+    data.setHyperlink(new WriteCellData<>("クリックしてアクセス").hyperlink("https://example.com"));
+
+    // コメントを設定
+    data.setCommentData(new WriteCellData<>("コメント情報"));
+
+    // 数式を設定
+    data.setFormulaData(new WriteCellData<>("=SUM(A1:A10)"));
+
+    FastExcel.write(fileName, WriteCellDemoData.class)
+        .sheet("テンプレート")
+        .doWrite(Collections.singletonList(data));
+}
+```
+
+
+
+## **動的ヘッダーの書き込み**
+
+### 概要
+動的な表ヘッダーをリアルタイムに生成し、動的データや国際化シナリオに適用します。
+
+#### コード例
+```java
+@Test
+public void dynamicHeadWrite() {
+    String fileName = "dynamicHeadWrite" + System.currentTimeMillis() + ".xlsx";
+
+    List<List<String>> head = Arrays.asList(
+        Collections.singletonList("動的文字列タイトル"),
+        Collections.singletonList("動的数字タイトル"),
+        Collections.singletonList("動的日付タイトル")
+    );
+
+    FastExcel.write(fileName).head(head)
+        .sheet("テンプレート")
+        .doWrite(data());
+}
+```
+
+
+## **コメントの挿入**
+
+### 概要
+特定のセルにコメントを追加するために、インターセプターを使用します。説明や特別なヒントを付けるために適用されます。
+
+### カスタムコメントインターセプター
+```java
+@Slf4j
+public class CommentWriteHandler implements RowWriteHandler {
+
+    @Override
+    public void afterRowDispose(RowWriteHandlerContext context) {
+        if (BooleanUtils.isTrue(context.getHead())) {
+            Sheet sheet = context.getWriteSheetHolder().getSheet();
+            Drawing<?> drawingPatriarch = sheet.createDrawingPatri

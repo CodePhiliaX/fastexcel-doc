@@ -1,0 +1,15 @@
+---
+title: ExcelをPDFに変換する
+description: FastExcel ExcelをPDFに変換する
+---
+
+## ExcelをPDFに変換する
+
+### 概要
+FastExcelはExcelファイルをPDFファイルに変換する機能をサポートしています。FastExcelはExcelをPDFに変換する際にApache POIとitext-pdfに依存しています。itext-pdfのライセンスに制約があるため、ご利用の際はitext-pdfのライセンスに準拠していることを確認してください。
+今後、FastExcelはさらに多くのPDF変換機能をサポートする予定です。itext-pdfを置き換えます。
+
+#### サンプルコード
+```java
+FastExcel.convertToPdf(new File("excelFile"),new File("pdfFile"),null,null);
+```

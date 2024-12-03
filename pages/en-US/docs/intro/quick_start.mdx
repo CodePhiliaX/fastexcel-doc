@@ -1,0 +1,79 @@
+---
+title: Installation and Configuration
+description: Get started with FastExcel installation and configuration
+---
+
+## Installation
+
+The table below lists the minimum Java version requirements for various versions of the FastExcel core library:
+
+| Version | JDK Version Support | Remarks                                   |
+|---------|:-------------------:|-------------------------------------------|
+| 1.0.0+ | jdk8 - jdk21 | Currently on the master branch, fully compatible with EasyExcel |
+
+We strongly recommend using the latest version of FastExcel, as performance optimizations, bug fixes, and new features in the latest version will make your usage more convenient.
+
+> Since FastExcel uses Apache POI as the underlying package, if you are using version 4 or higher and already have POI-related components in your project, you need to manually exclude the POI-related JAR files.
+
+### Maven
+If you are using Maven for project building, add the following configuration to your `pom.xml` file:
+```xml
+<dependency>
+    <groupId>cn.idev.excel</groupId>
+    <artifactId>fastexcel</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+### Gradle
+If you are using Gradle for project building, add the following configuration to your `build.gradle` file:
+```gradle
+dependencies {
+    implementation 'cn.idev.excel:fastexcel:1.0.0'
+}
+```
+## Differences Between EasyExcel and FastExcel
+_ 1. FastExcel supports all EasyExcel features, but FastExcel has better performance and stability.
+_ 2. FastExcel has the same API as EasyExcel and can be seamlessly switched.
+_ 3. FastExcel will continue to be updated, fixing bugs, optimizing performance, and adding new features.
+
+## How to Upgrade from EasyExcel to FastExcel
+
+### 1. Modify Dependencies
+Replace the EasyExcel dependency with the FastExcel dependency as follows:
+```xml
+<!-- EasyExcel dependency -->
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>easyexcel</artifactId>
+    <version>xxxx</version>
+</dependency>
+```
+Replace it with
+```xml
+<dependency>
+    <groupId>cn.idev.excel</groupId>
+    <artifactId>fastexcel</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+### 2. Modify Code
+Replace the EasyExcel package name with the FastExcel package name as follows:
+```java
+// Replace the EasyExcel package name with the FastExcel package name
+import com.alibaba.excel.**;
+```
+Replace it with
+```java
+import cn.idev.excel.**;
+```
+### 3. Directly Depend on FastExcel Without Modifying Code
+If for various reasons you do not want to modify the code, you can directly depend on FastExcel and then directly depend on FastExcel in the `pom.xml` file.
+EasyExcel and FastExcel can coexist, but it is recommended to replace EasyExcel with FastExcel in the long run.
+
+### 4. Recommend Using FastExcel Class in the Future
+For compatibility reasons, the EasyExcel class has been retained, but it is recommended to use the FastExcel class in the future. The FastExcel class is the entry class of FastExcel, which includes all the functions of the EasyExcel class, and new features will only be added to the FastExcel class in the future.
+
+## Updates
+
+Visit [FastExcel](https://github.com/CodePhiliaX/fastexcel) to get the latest version.

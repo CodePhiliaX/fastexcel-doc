@@ -1,0 +1,167 @@
+---
+title: 簡単な読み取り
+description: 簡単なExcelファイルの読み取り
+---
+
+
+## 簡単な Excel の読み取り
+
+## 例1：POJOの定義、リスナーを使用して簡単な Excel ファイルを読み取る
+### 概要
+
+FastExcel は Excel ファイルを読み取る簡単な方法を提供します。ユーザーはデータ構造を表す POJO クラスを定義し、FastExcel のリスナーメカニズムを使用してデータを読み取るだけです。
+
+### サンプルオブジェクト：`DemoData`
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class DemoData {
+    private String string;
+    private Date date;
+    private Double doubleData;
+}
+```
+
+### データリスナー：`DemoDataListener`
+`DemoDataListener` は Excel から読み取ったデータを処理するためのカスタムリスナーです。
+> **注意**：リスナーは Spring によって管理されないため、Excel ファイルを読み取るたびに再インスタンス化する必要があります。
+
+```java
+@Slf4j
+public class DemoDataListener implements ReadListener<DemoData> {
+
+    @Override
+    public void invoke(DemoData data, AnalysisContext context) {
+        log.info("データを解析しました:{}", JSON.toJSONString(data));
+    }
+
+    @Override
+    public void doAfterAllAnalysed(AnalysisContext context) {
+        log.info("すべてのデータの解析が完了しました！");
+    }
+}
+```
+
+### 読み取りコードの例
+```java
+@Test
+public void simpleRead() {
+    String fileName = "path/to/demo.xlsx";
+
+    // 方法1：Lambda式を使用してデータを直接処理する
+    FastExcel.read(fileName, DemoData.class, new PageReadListener<>(dataList -> {
+        for (DemoData demoData : dataList) {
+            log.info("データを読み取りました: {}", JSON.toJSONString(demoData));
+        }
+    })).sheet().doRead();
+
+    // 方法2：匿名クラスを使用
+    FastExcel.read(fileName, DemoData.class, new ReadListener<DemoData>() {
+        @Override
+        public void invoke(DemoData data, AnalysisContext context) {
+           log.info("データを読み取りました: {}", JSON.toJSONString(data));
+        }
+        @Override
+        public void doAfterAllAnalysed(AnalysisContext context) { }
+    }).sheet().doRead();
+
+    // 方法3：カスタムリスナーを使用
+    FastExcel.read(fileName, DemoData.class, new DemoDataListener()).sheet().doRead();
+
+    // 方法4：複数のシートを読み取る
+    try (ExcelReader excelReader = FastExcel.read(fileName, DemoData.class, new DemoDataListener()).build()) {
+        ReadSheet readSheet = FastExcel.readSheet(0).build();
+        excelReader.read(readSheet);
+    }
+}
+```
+
+## 例2：POJOを定義せずに簡単な Excel ファイルを読み取る
+
+### 概要
+FastExcel は POJO クラスを定義せずに直接 Excel ファイルを読み取ることもサポートしており、`Map<Integer, String>` を使用してデータを直接読み取ります。
+
+```java
+@Slf4j
+public class NoModelDataListener extends AnalysisEventListener<Map<Integer, String>> {
+    private static final int BATCH_COUNT = 5;
+    private List<Map<Integer, String>> cachedDataList = new ArrayList<>(BATCH_COUNT);
+
+    @Override
+    public void invoke(Map<Integer, String> data, AnalysisContext context) {
+        log.info("データを解析しました: {}", JSON.toJSONString(data));
+        cachedDataList.add(data);
+        if (cachedDataList.size() >= BATCH_COUNT) {
+            saveData();
+            cachedDataList.clear();
+        }
+    }
+
+    @Override
+    public void doAfterAllAnalysed(AnalysisContext context) {
+        // すべてのデータが処理されることを確認
+        saveData();
+    }
+
+    private void saveData() {
+        // 実際のビジネスロジック
+        log.info("{}件のデータを保存しました", cachedDataList.size());
+    }
+}
+```
+
+## 例3：リスナーを定義せずに簡単な Excel ファイルを読み取る
+
+### 概要
+`doReadSync` メソッドを使用して Excel データを直接メモリ内のリストとして読み取り、これはデータ量が少ない場合に適しています。読み取られたデータは、POJO オブジェクトのリストまたは Map のリストとして取得できます。
+
+### コード例
+#### オブジェクトリストとして読み取る
+
+Excel 構造に対応する DemoData という POJO クラスがあると仮定します。
+
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class DemoData {
+    private String string;
+    private Date date;
+    private Double doubleData;
+}
+```
+
+同期的にオブジェクトリストに読み取る
+```java
+@Test
+public void synchronousReadToObjectList() {
+    String fileName = "path/to/demo.xlsx";
+
+    // FastExcel を使用して Excel データをオブジェクトリストに同期的に読み取る
+    List<DemoData> list = FastExcel.read(fileName).head(DemoData.class).sheet().doReadSync();
+
+    // 読み取ったデータリストを処理
+    for (DemoData data : list) {
+        log.info("読み取ったデータ: {}", JSON.toJSONString(data));
+    }
+}
+```
+
+### Map リストとして読み取る
+POJO を使用しない場合、各行を Map として読み取り、キーは列インデックス、値はセルの内容となります。
+
+```java
+@Test
+public void synchronousReadToMapList() {
+    String fileName = "path/to/demo.xlsx";
+
+    // Map リストとして直接読み取る
+    List<Map<Integer, String>> list = FastExcel.read(fileName).sheet().doReadSync();
+
+    // 読み取ったデータリストを処理
+    for (Map<Integer, String> data : list) {
+        log.info("読み取ったデータ: {}", JSON.toJSONString(data));
+    }
+}
+```

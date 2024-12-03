@@ -1,0 +1,371 @@
+---
+title: 複雑な読み取り
+description: 複雑な読み取り操作
+---
+
+## 複雑な Excel ファイルの読み取りガイド
+### 概要
+
+このガイドでは、FastExcel を使用して複数のシナリオで Excel の複雑な読み取りを行う方法について説明します。対象となるシナリオには、列名またはインデックスでの読み取り、複数のシートの読み取り、日付や数字の形式変換、複数行のヘッダーの解析、追加情報の読み取り（コメント、ハイパーリンク、セルの結合）、式や例外の処理などが含まれます。
+
+### **列名または列インデックスでの読み取り**
+
+#### 概要
+Excel データを読み取る際に、列名または列インデックスを指定することができます。これにより、動的に生成された Excel ファイルとの柔軟な対話が可能となります。
+
+#### コード例
+#### 対象オブジェクト: `IndexOrNameData`
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class IndexOrNameData {
+    @ExcelProperty(index = 2)
+    private Double doubleData;
+
+    @ExcelProperty("String Title")
+    private String string;
+
+    @ExcelProperty("Date Title")
+    private Date date;
+}
+```
+
+#### リスナー
+基本的な読み取りと同様ですが、ジェネリックを `IndexOrNameData` に変更するだけです。
+
+#### 読み取りコード例
+```java
+@Test
+public void indexOrNameRead() {
+    String fileName = "path/to/demo.xlsx";
+
+    // 列名または列インデックスでの読み取り
+    FastExcel.read(fileName, IndexOrNameData.class, new DemoDataListener()).sheet().doRead();
+}
+```
+
+
+### **複数のシートの読み取り**
+
+#### 概要
+Excel ファイル内の複数のシートを読み取ることができますが、同じシートを繰り返し読み取ることはできません。
+
+#### 対象オブジェクトとリスナー
+基本的な読み取りと同様です。
+
+#### 読み取りコード例
+```java
+@Test
+public void repeatedRead() {
+    String fileName = "path/to/demo.xlsx";
+
+    // すべてのシートを読み取る
+    FastExcel.read(fileName, DemoData.class, new DemoDataListener()).doReadAll();
+
+    // 特定のシートを読み取る
+    try (ExcelReader excelReader = FastExcel.read(fileName).build()) {
+        ReadSheet sheet1 = FastExcel.readSheet(0).head(DemoData.class).registerReadListener(new DemoDataListener()).build();
+        ReadSheet sheet2 = FastExcel.readSheet(1).head(DemoData.class).registerReadListener(new DemoDataListener()).build();
+        excelReader.read(sheet1, sheet2);
+    }
+}
+```
+
+
+
+### **日付、数字、カスタム形式の変換**
+
+#### 対象オブジェクト: `ConverterData`
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class ConverterData {
+    @ExcelProperty(converter = CustomStringStringConverter.class)
+    private String string;
+
+    @DateTimeFormat("yyyy年MM月dd日HH時mm分ss秒")
+    private String date;
+
+    @NumberFormat("#.##%")
+    private String doubleData;
+}
+```
+
+#### カスタムコンバーター
+```java
+public class CustomStringStringConverter implements Converter<String> {
+    @Override
+    public Class<?> supportJavaTypeKey() {
+        return String.class;
+    }
+
+    @Override
+    public CellDataTypeEnum supportExcelTypeKey() {
+        return CellDataTypeEnum.STRING;
+    }
+
+    @Override
+    public String convertToJavaData(ReadConverterContext<?> context) {
+        return "カスタム：" + context.getReadCellData().getStringValue();
+    }
+
+    @Override
+    public WriteCellData<?> convertToExcelData(WriteConverterContext<String> context) {
+        return new WriteCellData<>(context.getValue());
+    }
+}
+```
+
+#### 読み取りコード例
+```java
+@Test
+public void converterRead() {
+    String fileName = "path/to/demo.xlsx";
+
+    // カスタム形式で読み取り
+    FastExcel.read(fileName, ConverterData.class, new DemoDataListener())
+        .registerConverter(new CustomStringStringConverter())
+        .sheet().doRead();
+}
+```
+
+### **複数行のヘッダーの読み取り**
+
+### 概要
+`headRowNumber` パラメータを設定するか、エンティティクラスのヘッダーアノテーションに基づいて複数行のヘッダーを自動解析できます。
+
+#### 読み取りコード例
+```java
+@Test
+public void complexHeaderRead() {
+    String fileName = "path/to/demo.xlsx";
+
+    FastExcel.read(fileName, DemoData.class, new DemoDataListener())
+        .sheet()
+        // ヘッダーの行数を設定（デフォルトは 1）
+        .headRowNumber(2)
+        .doRead();
+}
+```
+
+
+
+### **同期的なデータの返却**
+
+#### 概要
+Excel データを同期的に読み取り、データリストを直接返します。小規模なデータの場合に適しており、大規模なデータの使用は推奨されません。
+
+#### 読み取りコード例
+```java
+@Test
+public void synchronousRead() {
+    String fileName = "path/to/demo.xlsx";
+
+    // エンティティオブジェクトのリストを返す
+    List<DemoData> list = FastExcel.read(fileName).head(DemoData.class).sheet().doReadSync();
+    for (DemoData data : list) {
+        log.info("データを読み取りました: {}", JSON.toJSONString(data));
+    }
+
+    // Map リストを返す。キーは列インデックスで、値はセルの内容
+    List<Map<Integer, String>> listMap = FastExcel.read(fileName).sheet().doReadSync();
+    for (Map<Integer, String> data : listMap) {
+        log.info("データを読み取りました: {}", JSON.toJSONString(data));
+    }
+}
+```
+
+
+
+### **ヘッダーデータの読み取り**
+
+#### 概要
+リスナーの `invokeHead` メソッドをオーバーライドしてヘッダー情報を取得できます。
+
+#### サンプルリスナー
+```java
+@Slf4j
+public class DemoHeadDataListener extends AnalysisEventListener<DemoData> {
+    @Override
+    public void invokeHead(Map<Integer, ReadCellData<?>> headMap, AnalysisContext context) {
+        log.info("ヘッダーデータを解析しました: {}", JSON.toJSONString(headMap));
+    }
+
+    @Override
+    public void invoke(DemoData data, AnalysisContext context) {}
+
+    @Override
+    public void doAfterAllAnalysed(AnalysisContext context) {}
+}
+```
+
+#### 読み取りコード例
+```java
+@Test
+public void headerRead() {
+    String fileName = "path/to/demo.xlsx";
+    FastExcel.read(fileName, DemoData.class, new DemoHeadDataListener()).sheet().doRead();
+}
+```
+
+
+
+### **追加情報の読み取り（コメント、ハイパーリンク、セルの結合）**
+
+#### 概要
+`extraRead` パラメータを設定して、コメント、ハイパーリンク、セルの結合などの追加情報を読み取ることができます。
+
+#### サンプルリスナー
+```java
+@Slf4j
+public class DemoExtraListener implements ReadListener<DemoExtraData> {
+    @Override
+    public void invoke(DemoExtraData data, AnalysisContext context) {}
+
+    @Override
+    public void doAfterAllAnalysed(AnalysisContext context) {}
+
+    @Override
+    public void extra(CellExtra extra, AnalysisContext context) {
+        log.info("追加情報を読み取りました: {}", JSON.toJSONString(extra));
+        switch (extra.getType()) {
+            case COMMENT:
+                log.info("コメント情報: {}", extra.getText());
+                break;
+            case HYPERLINK:
+                log.info("ハイパーリンク情報: {}", extra.getText());
+                break;
+            case MERGE:
+                log.info("セルの結合範囲: {} - {}", extra.getFirstRowIndex(), extra.getLastRowIndex());
+                break;
+            default:
+                log.warn("未知の追加情報タイプ");
+        }
+    }
+}
+```
+
+#### 読み取りコード例
+```java
+@Test
+public void extraRead() {
+    String fileName = "path/to/demo.xlsx";
+
+    FastExcel.read(fileName, DemoExtraData.class, new DemoExtraListener())
+        .extraRead(CellExtraTypeEnum.COMMENT) // コメントを読み取る
+        .extraRead(CellExtraTypeEnum.HYPERLINK) // ハイパーリンクを読み取る
+        .extraRead(CellExtraTypeEnum.MERGE) // セルの結合を読み取る
+        .sheet().doRead();
+}
+```
+
+
+### **式とセルのタイプの読み取り**
+
+#### 概要
+`CellData` 型を使用してセルデータを受け取り、式や複数のセル形式をサポートします。
+
+#### サンプルオブジェクト
+```java
+@Getter
+@Setter
+@EqualsAndHashCode
+public class CellDataReadDemoData {
+    private CellData<String> string;
+    private CellData<Date> date;
+    private CellData<Double> doubleData;
+    private CellData<String> formulaValue;
+}
+```
+
+#### 読み取りコード例
+```java
+@Test
+public void cellDataRead() {
+    String fileName = "path/to/demo.xlsx";
+
+    FastExcel.read(fileName, CellDataReadDemoData.class, new DemoDataListener()).sheet().doRead();
+}
+```
+
+
+### **例外処理**
+
+#### 概要
+リスナーの `onException` メソッドをオーバーライドして、データ変換やその他の読み取り例外を処理できます。
+
+#### サンプルリスナー
+```java
+@Slf4j
+public class DemoExceptionListener extends AnalysisEventListener<ExceptionDemoData> {
+    @Override
+    public void onException(Exception exception, AnalysisContext context) {
+        log.error("解析に失敗しました: {}", exception.getMessage());
+        if (exception instanceof ExcelDataConvertException) {
+            ExcelDataConvertException ex = (ExcelDataConvertException) exception;
+            log.error("第 {} 行、第 {} 列で解析エラーが発生しました。データ: {}", ex.getRowIndex(), ex.getColumnIndex(), ex.getCellData());
+        }
+    }
+
+    @Override
+    public void invoke(ExceptionDemoData data, AnalysisContext context) {}
+
+    @Override
+    public void doAfterAllAnalysed(AnalysisContext context) {}
+}
+```
+
+#### 読み取りコード例
+```java
+@Test
+public void exceptionRead() {
+    String fileName = "path/to/demo.xlsx";
+    FastExcel.read(fileName, ExceptionDemoData.class, new DemoExceptionListener()).sheet().doRead();
+}
+```
+
+
+
+### **オブジェクトを作成せずに読み取る**
+
+#### 概要
+`Map<Integer, String>` を使用してデータを直接読み取り、エンティティクラスを定義する必要がありません。
+
+#### サンプルリスナー
+```java
+@Slf4j
+public class NoModelDataListener extends AnalysisEventListener<Map<Integer, String>> {
+    private static final int BATCH_COUNT = 5;
+    private List<Map<Integer, String>> cachedDataList = ListUtils.newArrayListWithExpectedSize(BATCH_COUNT);
+
+    @Override
+    public void invoke(Map<Integer, String> data, AnalysisContext context) {
+        log.info("データを1件解析しました: {}", JSON.toJSONString(data));
+        cachedDataList.add(data);
+        if (cachedDataList.size() >= BATCH_COUNT) {
+            saveData();
+            cachedDataList.clear();
+        }
+    }
+
+    @Override
+    public void doAfterAllAnalysed(AnalysisContext context) {
+        saveData();
+    }
+
+    private void saveData() {
+        log.info("データを {} 件保存しました", cachedDataList.size());
+    }
+}
+```
+
+#### 読み取りコード例
+```java
+@Test
+public void noModelRead() {
+    String fileName = "path/to/demo.xlsx";
+    FastExcel.read(fileName, new NoModelDataListener()).sheet().doRead();
+}
+```

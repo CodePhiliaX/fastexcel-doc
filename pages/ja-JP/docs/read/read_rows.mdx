@@ -1,0 +1,34 @@
+---
+title: FastExcelでExcelファイルの最初の行を読み取る方法
+description: FastExcelでExcelファイルの最初の行を読み取る方法
+---
+
+## FastExcelでExcelファイルの最初の行を読み取る方法
+### 概要
+
+データ分析や処理の過程で、Excelファイルの最初の数行を素早く確認することは、データ構造や内容をよりよく理解するのに役立ちます。この記事では、FastExcelを使用してExcelファイルの最初の100行を読み取る方法について説明します。
+`numRows`メソッドを使用して読み取る行数を指定でき、`numRows(100)`を設定することで最初の100行を読み取ることができます。デフォルトでは、FastExcelはExcelファイル全体のすべてのデータを読み取りますが、`numRows`メソッドを設定することで読み取る行数を制限できます。
+`numRows`は0から始まり、0は行数を制限しないことを示します。つまり、すべての行を読み取ります。たとえば、`numRows(100)`を設定すると、最初の100行のデータ（ヘッダー行を含む）を読み取ります。
+
+### 1. すべてのシートから最初の100行を読み取る
+#### コード
+
+```java
+ EasyExcel.read(fileName, DemoData.class, new PageReadListener<DemoData>(dataList -> {
+            for (DemoData demoData : dataList) {
+                log.info("読み取ったデータ: {}", JSON.toJSONString(demoData));
+            }
+        })).numRows(100).sheet().doRead();
+
+```
+### 単一のシートから最初の100行を読み取る
+
+```java
+ try (ExcelReader excelReader = EasyExcel.read(fileName, DemoData.class, new DemoDataListener()).build()) {
+            // シートを構築します。ここで名前または番号を指定できます
+            ReadSheet readSheet = EasyExcel.readSheet(0).build();
+            readSheet.setNumRows(100);
+            // シートを読み取ります
+            excelReader.read(readSheet);
+        }
+```

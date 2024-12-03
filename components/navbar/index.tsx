@@ -10,6 +10,8 @@ const Navbar = () => {
   const { locale = "zh-CN" } = router;
   const { t } = useTranslation();
 
+  const isZhCN = locale === "zh-CN";
+
   return (
     <nav className={styles.navbar}>
       <div className={styles.navContent}>
@@ -39,7 +41,7 @@ const Navbar = () => {
             Github
           </a>
           <a
-            href="https://chat2db.ai"
+            href={isZhCN ? "https://chat2db-ai.com" : "https://chat2db.ai"}
             target="_blank"
             rel="noopener noreferrer"
             className={styles.navLink}

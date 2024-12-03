@@ -1,0 +1,103 @@
+---
+title: Integration of FastExcel with Spring Boot
+description: Integration of FastExcel with Spring Boot
+---
+
+## Guide to Integrating FastExcel with Spring
+### Overview
+
+This guide explains how to integrate and use FastExcel to process Excel files uploaded by users within the Spring framework. By creating RESTful API endpoints, users can upload Excel files using HTTP requests, and the server-side will use FastExcel to parse the data.
+
+### 1. Environment Dependencies
+#### Maven Dependencies
+Make sure to include the necessary dependencies in the pom.xml file:
+
+```xml
+<dependency>
+    <groupId>cn.idev.excel</groupId>
+    <artifactId>fastexcel</artifactId>
+    <version>1.0.0</version> <!-- Make sure to use the latest version -->
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter</artifactId>
+</dependency>
+```
+
+### 2. Creating Upload Endpoint
+#### Model Class
+First, define a model class to map the Excel data:
+
+```java
+@Getter
+@Setter
+@ToString
+public class UploadData {
+    private String string;
+    private Date date;
+    private Double doubleData;
+}
+```
+
+#### Data Listener
+Create a listener to handle each row of data:
+
+```java
+@Slf4j
+public class UploadDataListener extends AnalysisEventListener<UploadData> {
+    private final List<UploadData> list = new ArrayList<>();
+
+    @Override
+    public void invoke(UploadData data, AnalysisContext context) {
+        log.info("Parsed data: {}", JSON.toJSONString(data));
+        list.add(data);
+    }
+
+    @Override
+    public void doAfterAllAnalysed(AnalysisContext context) {
+        log.info("All data parsed!");
+        // Data storage operations can be performed here, such as saving to a database
+    }
+}
+```
+
+#### Spring Controller
+Create a controller to handle file upload requests:
+
+```java
+@RestController
+@RequestMapping("/excel")
+public class ExcelController {
+
+    @PostMapping("/upload")
+    public ResponseEntity<String> upload(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body("Please select a file to upload!");
+        }
+
+        try {
+            FastExcel.read(file.getInputStream(), UploadData.class, new UploadDataListener()).sheet().doRead();
+            return ResponseEntity.ok("File uploaded and processed successfully!");
+        } catch (IOException e) {
+            log.error("Failed to process the file", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to process the file!");
+        }
+    }
+}
+```
+
+### 4. Handling Complex Scenarios
+#### Multi-Template Parsing
+By defining multiple different model classes and processing methods within the same listener, support for multi-template parsing can be extended as needed.
+
+#### Exception Handling
+To improve user experience and ensure program robustness, exception handling logic should be added during data processing. Detailed exception handling can be implemented by overriding the onException method in a custom listener.
+
+#### Real-World Application
+In practical scenarios, parsed data may need to be stored in a database. Database interaction logic can be implemented in the doAfterAllAnalysed method to ensure data persistence.
+
+By following this approach, you can effectively integrate FastExcel with the Spring framework to securely and efficiently handle various Excel file upload and parsing requirements in business systems.

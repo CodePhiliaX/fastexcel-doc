@@ -1,0 +1,102 @@
+---
+title: fastexcel與springboot整合
+description: fastexcel與springboot整合
+---
+
+## FastExcel 與 Spring 集成指南
+### 概述
+
+本指南介紹如何在 Spring 框架中集成和使用 FastExcel 來處理使用者上傳的 Excel 檔案。通過建立 RESTful API 介面，使用者可以使用 HTTP 請求上傳 Excel 檔案，伺服器端使用 FastExcel 解析資料。
+
+### 1. 環境依賴
+#### Maven 依賴
+確保在 pom.xml 檔案中包括必要的依賴項：
+
+```xml
+<dependency>
+    <groupId>cn.idev.excel</groupId>
+    <artifactId>fastexcel</artifactId>
+    <version>1.0.0</version> <!-- 請確保使用最新版本 -->
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter</artifactId>
+</dependency>
+```
+
+### 2. 建立上傳介面
+#### 模型類別
+首先，定義一個用於映射 Excel 資料的模型類別：
+
+```java
+@Getter
+@Setter
+@ToString
+public class UploadData {
+    private String string;
+    private Date date;
+    private Double doubleData;
+}
+```
+#### 資料監聽器
+建立一個監聽器來處理每一行資料：
+
+```java
+@Slf4j
+public class UploadDataListener extends AnalysisEventListener<UploadData> {
+    private final List<UploadData> list = new ArrayList<>();
+
+    @Override
+    public void invoke(UploadData data, AnalysisContext context) {
+        log.info("解析到一條資料: {}", JSON.toJSONString(data));
+        list.add(data);
+    }
+
+    @Override
+    public void doAfterAllAnalysed(AnalysisContext context) {
+        log.info("所有資料解析完成！");
+        // 在此處可以進行資料的存儲操作，如保存到資料庫
+    }
+}
+```
+
+#### Spring 控制器
+建立一個控制器來處理檔案上傳請求：
+
+```java
+@RestController
+@RequestMapping("/excel")
+public class ExcelController {
+
+    @PostMapping("/upload")
+    public ResponseEntity<String> upload(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body("請選擇一個檔案上傳！");
+        }
+
+        try {
+            FastExcel.read(file.getInputStream(), UploadData.class, new UploadDataListener()).sheet().doRead();
+            return ResponseEntity.ok("檔案上傳並處理成功！");
+        } catch (IOException e) {
+            log.error("檔案處理失敗", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("檔案處理失敗！");
+        }
+    }
+}
+```
+
+### 4. 處理複雜場景
+#### 多模板解析
+通過在同一個監聽器中定義多個不同的模型類別和處理方法，可以根據需要擴展支援多模板解析。
+
+#### 异常处理
+為了改善使用者體驗並保證程式健壯性，需要在資料處理過程中加入異常處理邏輯，可以在自定義監聽器中重寫 onException 方法進行詳細的異常處理。
+
+#### 實際應用
+在實際場景中，解析的資料可能需要存儲到資料庫中。可以在 doAfterAllAnalysed 方法中實現資料庫互動邏輯，確保資料的持久化。
+
+通過這種方式，您可以靈活地將 FastExcel 與 Spring 框架結合，在業務系統中安全、有效地處理各種 Excel 檔案上傳和解析需求。

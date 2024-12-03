@@ -1,17 +1,13 @@
 export default {
-  index: {
-    title: "Introduction",
-    theme: {
-      layout: "full",
-    },
-  },
-  quick_start: "Quick Start",
-  write: "Write Excel",
+  index: "Introduction",
+  intro: "Getting Started",
   read: "Read Excel",
+  write: "Write Excel",
   fill: "Fill Excel",
-  bug: "Report Bug",
+  converter_file: "File Type Conversion",
+  bug: "Report a Bug",
   FAQ: "FAQ",
   advance_api: "Advanced API",
   best_practices: "Best Practices",
   contribution: "Contribution Guide",
-}; 
+};

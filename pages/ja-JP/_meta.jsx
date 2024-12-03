@@ -1,7 +1,9 @@
+/** @type {import('nextra').Meta} */
+
 export default {
   index: {
     title: "ホーム",
-    description: "FastExcel 让Excel处理更简单",
+    description: "FastExcel で Excel の処理を簡単に行う",
     type: "page",
     theme: {
       layout: "raw",
@@ -17,4 +19,3 @@ export default {
     type: "page",
   },
 };
-

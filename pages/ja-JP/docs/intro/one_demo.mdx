@@ -1,0 +1,65 @@
+---
+title: 最初のシンプルな例
+description: 最初のシンプルな例
+---
+
+
+## シンプルな例：Excel ファイルの読み取り
+
+以下は Excel ドキュメントを読み取る例です：
+```java
+// ReadListener インターフェースを実装し、データの読み取り操作を設定します
+public class DemoDataListener implements ReadListener<DemoData> {
+    @Override
+    public void invoke(DemoData data, AnalysisContext context) {
+        System.out.println("1つのデータが解析されました" + JSON.toJSONString(data));
+    }
+
+    @Override
+    public void doAfterAllAnalysed(AnalysisContext context) {
+        System.out.println("すべてのデータの解析が完了しました！");
+    }
+}
+
+public static void main(String[] args) {
+    String fileName = "demo.xlsx";
+    // Excel ファイルを読み取る
+    FastExcel.read(fileName, DemoData.class, new DemoDataListener()).sheet().doRead();
+}
+```
+
+## シンプルな例：Excel ファイルの作成
+
+以下は Excel ドキュメントを作成する簡単な例です：
+```java
+// サンプルデータクラス
+public class DemoData {
+    @ExcelProperty("文字列タイトル")
+    private String string;
+    @ExcelProperty("日付タイトル")
+    private Date date;
+    @ExcelProperty("数値タイトル")
+    private Double doubleData;
+    @ExcelIgnore
+    private String ignore;
+}
+
+// 書き込むデータを準備
+private static List<DemoData> data() {
+    List<DemoData> list = new ArrayList<>();
+    for (int i = 0; i < 10; i++) {
+        DemoData data = new DemoData();
+        data.setString("文字列" + i);
+        data.setDate(new Date());
+        data.setDoubleData(0.56);
+        list.add(data);
+    }
+    return list;
+}
+
+public static void main(String[] args) {
+    String fileName = "demo.xlsx";
+    // "テンプレート"という名前のシートを作成し、データを書き込む
+    FastExcel.write(fileName, DemoData.class).sheet("テンプレート").doWrite(data());
+}
+```

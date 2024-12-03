@@ -1,0 +1,102 @@
+---
+title: FastExcel と SpringBoot の統合
+description: FastExcel と SpringBoot の統合
+---
+
+## FastExcel と Spring の統合ガイド
+### 概要
+
+このガイドでは、Spring フレームワークで FastExcel を統合して使用し、ユーザーがアップロードしたExcelファイルを処理する方法について説明します。RESTful API インターフェースを作成することで、ユーザーはHTTPリクエストを使用してExcelファイルをアップロードし、サーバーサイドでFastExcelを使用してデータを解析できます。
+
+### 1. 環境依存
+#### Maven 依存性
+pom.xml ファイルに必要な依存関係が含まれていることを確認してください：
+
+```xml
+<dependency>
+    <groupId>cn.idev.excel</groupId>
+    <artifactId>fastexcel</artifactId>
+    <version>1.0.0</version> <!-- 最新バージョンを使用してください -->
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter</artifactId>
+</dependency>
+```
+
+### 2. アップロードインターフェースの作成
+#### モデルクラス
+まず、Excelデータをマッピングするためのモデルクラスを定義します：
+
+```java
+@Getter
+@Setter
+@ToString
+public class UploadData {
+    private String string;
+    private Date date;
+    private Double doubleData;
+}
+```
+#### データリスナー
+各行のデータを処理するためのリスナーを作成します：
+
+```java
+@Slf4j
+public class UploadDataListener extends AnalysisEventListener<UploadData> {
+    private final List<UploadData> list = new ArrayList<>();
+
+    @Override
+    public void invoke(UploadData data, AnalysisContext context) {
+        log.info("データを1件解析しました: {}", JSON.toJSONString(data));
+        list.add(data);
+    }
+
+    @Override
+    public void doAfterAllAnalysed(AnalysisContext context) {
+        log.info("すべてのデータの解析が完了しました！");
+        // ここでデータの保存などの操作を行うことができます
+    }
+}
+```
+
+#### Spring コントローラー
+ファイルアップロードリクエストを処理するためのコントローラーを作成します：
+
+```java
+@RestController
+@RequestMapping("/excel")
+public class ExcelController {
+
+    @PostMapping("/upload")
+    public ResponseEntity<String> upload(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body("ファイルを選択してください！");
+        }
+
+        try {
+            FastExcel.read(file.getInputStream(), UploadData.class, new UploadDataListener()).sheet().doRead();
+            return ResponseEntity.ok("ファイルのアップロードと処理が成功しました！");
+        } catch (IOException e) {
+            log.error("ファイルの処理に失敗しました", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ファイルの処理に失敗しました！");
+        }
+    }
+}
+```
+
+### 4. 複雑なシナリオの処理
+#### 複数のテンプレート解析
+同じリスナー内で複数の異なるモデルクラスと処理メソッドを定義することで、必要に応じて複数のテンプレート解析をサポートできます。
+
+#### 例外処理
+ユーザーエクスペリエンスを向上させ、プログラムの堅牢性を確保するために、データ処理中に例外処理ロジックを追加する必要があります。詳細な例外処理を行うには、カスタムリスナーで onException メソッドをオーバーライドします。
+
+#### 実際の適用
+実際のシナリオでは、解析されたデータをデータベースに保存する必要があるかもしれません。データの永続化を確実にするために、doAfterAllAnalysed メソッドでデータベースとのやり取りロジックを実装できます。
+
+この方法により、FastExcel を Spring フレームワークと柔軟に組み合わせ、さまざまなExcelファイルのアップロードと解析要件を安全かつ効果的に処理できます。

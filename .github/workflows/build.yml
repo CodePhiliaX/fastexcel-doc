@@ -42,5 +42,5 @@ jobs:
 
       - name: Deploy to server
         run: |
-          scp deploy.tar.gz package.json package-lock.json root@${{ secrets.SERVER_IP }}:/root/fastexcel-doc
+          scp deploy.tar.gz package.json root@${{ secrets.SERVER_IP }}:/root/fastexcel-doc
           ssh root@${{ secrets.SERVER_IP }} "cd /root/fastexcel-doc && rm -rf .next && tar -xzvf deploy.tar.gz --warning=no-unknown-keyword && pm2 restart fastexcel-doc"

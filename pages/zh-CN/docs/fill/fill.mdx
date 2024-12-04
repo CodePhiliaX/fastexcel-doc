@@ -8,6 +8,10 @@ description: 填充Excel
 ### 概述
 基于模板文件，通过对象或 Map 填充数据到 Excel 中。
 
+### 示例填充模板
+![img](/images/docs/fill/simpleFill_file.jpg)
+### 示例填充结果
+![img](/images/docs/fill/simpleFill_result.jpg)
 #### 示例对象
 ```java
 @Getter
@@ -53,6 +57,11 @@ public void simpleFill() {
 ### 概述
 填充多个数据项到模板列表中，支持内存批量操作和文件缓存分批填充。
 
+### 示例填充模板
+![img](/images/docs/fill/listFill_file.jpg)
+### 示例填充结果
+![img](/images/docs/fill/listFill_result.jpg)
+
 #### 示例代码
 ```java
 @Test
@@ -80,6 +89,11 @@ public void listFill() {
 
 ### 概述
 在模板中填充多种数据类型，包括列表和普通变量。
+
+### 示例填充模板
+![img](/images/docs/fill/complexFill_file.jpg)
+### 示例填充结果
+![img](/images/docs/fill/complexFill_result.jpg)
 
 #### 示例代码
 ```java
@@ -109,6 +123,11 @@ public void complexFill() {
 
 ### 概述
 优化大数据量填充性能，确保模板列表在最后一行，后续数据通过 `WriteTable` 填充。
+
+### 示例填充模板
+![img](/images/docs/fill/complexFillWithTable_file.jpg)
+### 示例填充结果
+![img](/images/docs/fill/complexFillWithTable_result.jpg)
 
 #### 示例代码
 ```java
@@ -142,6 +161,11 @@ public void complexFillWithTable() {
 ### 概述
 将列表数据横向填充，适用于动态列数场景。
 
+### 示例填充模板
+![img](/images/docs/fill/horizontalFill_file.jpg)
+### 示例填充结果
+![img](/images/docs/fill/horizontalFill_result.jpg)
+
 #### 示例代码
 ```java
 @Test
@@ -167,6 +191,11 @@ public void horizontalFill() {
 
 ### 概述
 支持多个列表同时填充，列表之间通过前缀区分。
+
+### 示例填充模板
+![img](/images/docs/fill/compositeFill_file.jpg)
+### 示例填充结果
+![img](/images/docs/fill/compositeFill_result.jpg)
 
 #### 示例代码
 ```java

@@ -1,11 +1,11 @@
 ---
-title: シンプルな書き込み
-description: FastExcelを使用してExcelに高速に書き込む
+title: 簡単な書き込み
+description: FastExcelを使用してExcelに素早く書き込む
 ---
-## シンプルな書き込み
+## 簡単な書き込み
 
 ### 概要
-FastExcelを使用してシンプルなExcelデータの書き込みを行うと、エンティティオブジェクトを素早くExcelファイルに書き込むことができます。これは、最も基本的で一般的な書き込み方法です。
+FastExcelを使用して、エンティティオブジェクトをExcelファイルに素早く書き込むことができます。これは、最も基本的で一般的な書き込み方法です。
 
 ### サンプルオブジェクト
 
@@ -32,7 +32,7 @@ public class DemoData {
 public void simpleWrite() {
     String fileName = "simpleWrite" + System.currentTimeMillis() + ".xlsx";
 
-    // 方法1：Lambda式を使用してデータをページングして取得
+    // 方法1：Lambda式を使用してデータをページングで取得
     FastExcel.write(fileName, DemoData.class)
         .sheet("テンプレート")
         .doWrite(() -> data());

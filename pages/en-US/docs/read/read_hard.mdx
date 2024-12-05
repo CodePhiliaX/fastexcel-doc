@@ -6,12 +6,12 @@ description: Complex reading operations
 ## Complex Reading Excel File Guide
 ### Overview
 
-This guide introduces how to use FastExcel to complete complex Excel reading in various scenarios. The scenarios include reading by column name or index, reading multiple sheets, converting date and number formats, parsing multi-row headers, reading additional information (such as comments, hyperlinks, merged cells), handling formulas, and exceptions.
+This guide introduces how to use FastExcel to accomplish complex reading of Excel files in various scenarios. The scenarios include reading by column name or index, reading multiple sheets, converting date and number formats, parsing multiple row headers, reading additional information (such as comments, hyperlinks, merged cells), handling formulas, and exceptions.
 
 ### **Reading by Column Name or Index**
 
 #### Overview
-You can read Excel data by specifying column names or column indexes. This makes it more flexible to interact with dynamically generated Excel files.
+You can read Excel data by specifying column names or column indexes, making it more flexible to interact with dynamically generated Excel files.
 
 #### Sample Code
 #### Sample Object: `IndexOrNameData`
@@ -131,10 +131,11 @@ public void converterRead() {
 }
 ```
 
-### **Multi-Row Header Reading**
+
+### **Reading Multiple Row Headers**
 
 #### Overview
-By setting the `headRowNumber` parameter or automatically parsing multi-row headers based on header annotations in the entity class.
+By setting the `headRowNumber` parameter or automatically parsing multiple row headers based on annotations in the entity class.
 
 #### Reading Code Example
 ```java
@@ -144,7 +145,7 @@ public void complexHeaderRead() {
 
     FastExcel.read(fileName, DemoData.class, new DemoDataListener())
         .sheet()
-        // Set the number of rows for multi-row headers, default is 1
+        // Set the number of rows for multiple row headers, default is 1
         .headRowNumber(2)
         .doRead();
 }

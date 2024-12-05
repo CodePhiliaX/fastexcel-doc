@@ -6,15 +6,15 @@ description: 複雑な読み取り操作
 ## 複雑な Excel ファイルの読み取りガイド
 ### 概要
 
-このガイドでは、FastExcel を使用して複数のシナリオで Excel の複雑な読み取りを行う方法について説明します。対象となるシナリオには、列名またはインデックスでの読み取り、複数のシートの読み取り、日付や数字の形式変換、複数行のヘッダーの解析、追加情報の読み取り（コメント、ハイパーリンク、セルの結合）、数式や例外の処理などが含まれます。
+このガイドでは、FastExcel を使用して複数のシナリオで Excel の複雑な読み取りを行う方法について説明します。対象となるシナリオには、列名またはインデックスでの読み取り、複数のシートの読み取り、日付や数値の形式変換、複数行のヘッダーの解析、追加情報の読み取り（コメント、ハイパーリンク、セルの結合）、式や例外の処理などが含まれます。
 
 ### **列名または列インデックスでの読み取り**
 
 #### 概要
-Excel データを列名または列インデックスで指定して読み取ることができます。これにより、動的に生成された Excel ファイルと柔軟にやり取りできます。
+Excel データを読み取る際に、列名または列インデックスを指定することができます。これにより、動的に生成された Excel ファイルと柔軟にやり取りすることができます。
 
 #### コード例
-#### 対象オブジェクト：`IndexOrNameData`
+#### 対象オブジェクト: `IndexOrNameData`
 ```java
 @Getter
 @Setter
@@ -40,7 +40,7 @@ public class IndexOrNameData {
 public void indexOrNameRead() {
     String fileName = "path/to/demo.xlsx";
 
-    // 列名または列インデックスで読み取り
+    // 列名または列インデックスを指定して読み取り
     FastExcel.read(fileName, IndexOrNameData.class, new DemoDataListener()).sheet().doRead();
 }
 ```
@@ -49,7 +49,7 @@ public void indexOrNameRead() {
 ### **複数のシートの読み取り**
 
 #### 概要
-Excel ファイル内の複数のシートを読み取ることができますが、同じシートを繰り返し読み取ることはできません。
+Excel ファイル内の複数のシートを読み取ることができます。同じシートは繰り返し読み取ることはできません。
 
 #### 対象オブジェクトとリスナー
 基本的な読み取りと同様です。
@@ -74,9 +74,9 @@ public void repeatedRead() {
 
 
 
-### **日付、数字、カスタム形式の変換**
+### **日付、数値、カスタム形式の変換**
 
-#### 対象オブジェクト：`ConverterData`
+#### 対象オブジェクト: `ConverterData`
 ```java
 @Getter
 @Setter
@@ -152,7 +152,7 @@ public void complexHeaderRead() {
 
 
 
-### **同期的なデータの返却**
+### **同期的にデータを返す**
 
 #### 概要
 Excel データを同期的に読み取り、データリストを直接返します。データ量が少ない場合に適しており、大量のデータには推奨されません。
@@ -262,10 +262,10 @@ public void extraRead() {
 ```
 
 
-### **数式とセルの種類の読み取り**
+### **式とセルタイプの読み取り**
 
 #### 概要
-`CellData` タイプを使用してセルデータを受け取り、数式やさまざまなセル形式をサポートします。
+`CellData` タイプを使用してセルデータを受け取り、式やさまざまなセル形式をサポートします。
 
 #### 対象オブジェクト
 ```java
@@ -305,7 +305,7 @@ public class DemoExceptionListener extends AnalysisEventListener<ExceptionDemoDa
         log.error("解析に失敗しました: {}", exception.getMessage());
         if (exception instanceof ExcelDataConvertException) {
             ExcelDataConvertException ex = (ExcelDataConvertException) exception;
-            log.error("第 {} 行、第 {} 列の解析エラー、データ: {}", ex.getRowIndex(), ex.getColumnIndex(), ex.getCellData());
+            log.error("第 {} 行、第 {} 列で解析エラーが発生しました、データ: {}", ex.getRowIndex(), ex.getColumnIndex(), ex.getCellData());
         }
     }
 
@@ -328,7 +328,7 @@ public void exceptionRead() {
 
 
 
-### **オブジェクトを作成しない読み取り**
+### **オブジェクトを作成せずに読み取る**
 
 #### 概要
 エンティティクラスを定義せずに、`Map<Integer, String>` を使用してデータを直接読み取ることができます。
@@ -356,7 +356,7 @@ public class NoModelDataListener extends AnalysisEventListener<Map<Integer, Stri
     }
 
     private void saveData() {
-        log.info("データを {} 件保存しました", cachedDataList.size());
+        log.info("{} 件のデータを保存しました", cachedDataList.size());
     }
 }
 ```

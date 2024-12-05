@@ -34,7 +34,7 @@ public class IndexOrNameData {
 #### 監聽器
 與基礎讀取相同，僅需要修改泛型為 `IndexOrNameData`。
 
-#### 讀取程式碼示例
+#### 讀取程式碼範例
 ```java
 @Test
 public void indexOrNameRead() {
@@ -54,7 +54,7 @@ public void indexOrNameRead() {
 #### 示例物件與監聽器
 與基礎讀取相同。
 
-#### 讀取程式碼示例
+#### 讀取程式碼範例
 ```java
 @Test
 public void repeatedRead() {
@@ -118,7 +118,7 @@ public class CustomStringStringConverter implements Converter<String> {
 }
 ```
 
-#### 讀取程式碼示例
+#### 讀取程式碼範例
 ```java
 @Test
 public void converterRead() {
@@ -134,9 +134,9 @@ public void converterRead() {
 ### **多行表頭讀取**
 
 ### 概述
-通過設置 `headRowNumber` 參數或根據實體類的表頭註解自動解析多行表頭。
+通過設置 `headRowNumber` 參數或根據實體類的表頭註釋自動解析多行表頭。
 
-#### 讀取程式碼示例
+#### 讀取程式碼範例
 ```java
 @Test
 public void complexHeaderRead() {
@@ -157,7 +157,7 @@ public void complexHeaderRead() {
 #### 概述
 同步讀取 Excel 資料，直接返回資料列表。適用於小資料量場景，不推薦大資料量使用。
 
-#### 讀取程式碼示例
+#### 讀取程式碼範例
 ```java
 @Test
 public void synchronousRead() {
@@ -201,7 +201,7 @@ public class DemoHeadDataListener extends AnalysisEventListener<DemoData> {
 }
 ```
 
-#### 讀取程式碼示例
+#### 讀取程式碼範例
 ```java
 @Test
 public void headerRead() {
@@ -247,7 +247,7 @@ public class DemoExtraListener implements ReadListener<DemoExtraData> {
 }
 ```
 
-#### 讀取程式碼示例
+#### 讀取程式碼範例
 ```java
 @Test
 public void extraRead() {
@@ -280,7 +280,7 @@ public class CellDataReadDemoData {
 }
 ```
 
-#### 讀取程式碼示例
+#### 讀取程式碼範例
 ```java
 @Test
 public void cellDataRead() {
@@ -317,7 +317,7 @@ public class DemoExceptionListener extends AnalysisEventListener<ExceptionDemoDa
 }
 ```
 
-#### 讀取程式碼示例
+#### 讀取程式碼範例
 ```java
 @Test
 public void exceptionRead() {
@@ -361,7 +361,7 @@ public class NoModelDataListener extends AnalysisEventListener<Map<Integer, Stri
 }
 ```
 
-#### 讀取程式碼示例
+#### 讀取程式碼範例
 ```java
 @Test
 public void noModelRead() {

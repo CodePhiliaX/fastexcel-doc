@@ -5,18 +5,18 @@ description: 快速開始使用 FastExcel 安裝與配置
 
 ## 安裝
 
-下表列出了各版本 fastexcel 基礎庫對 Java 語言版本最低要求的情況：
+下表列出了各版本 FastExcel 基礎庫對 Java 語言版本最低要求的情況：
 
 | 版本   | jdk版本支持範圍 | 備註                             |
 |--------|:---------------:|----------------------------------|
 | 1.0.0+ | jdk8 - jdk21     | 目前的master分支，完全兼容easyexcel |
 
-我們強烈建議您使用最新版本的 fastexcel，因為最新版本中的性能優化、BUG修復和新功能都會讓您的使用更加方便。
+我們強烈建議您使用最新版本的 FastExcel，因為最新版本中的性能優化、BUG修復和新功能都會讓您的使用更加方便。
 
-> 因為 fastexcel 底層使用 poi 作為基礎包，如果您使用 4+ 以上的版本，並且專案中已經有 poi 相關組件，需要您手動排除 poi 的相關 jar 包。
+> 當前 FastExcel 底層使用 poi 作為基礎包，如果您的項目中已經有 poi 相關組件，需要您手動排除 poi 的相關 jar 包。
 
 ### Maven
-如果您使用 Maven 進行專案構建，請在 `pom.xml` 文件中引入以下配置：
+如果您使用 Maven 進行項目構建，請在 `pom.xml` 文件中引入以下配置：
 ```xml
 <dependency>
     <groupId>cn.idev.excel</groupId>
@@ -25,21 +25,21 @@ description: 快速開始使用 FastExcel 安裝與配置
 </dependency>
 ```
 ### Gradle
-如果您使用 Gradle 進行專案構建，請在 `build.gradle` 文件中引入以下配置：
+如果您使用 Gradle 進行項目構建，請在 `build.gradle` 文件中引入以下配置：
 ```gradle
 dependencies {
     implementation 'cn.idev.excel:fastexcel:1.0.0'
 }
 ```
-## easyexcel 與 fastexcel 的區別
-_ 1. fastexcel 支持所有 easyexcel 的功能，但是 fastexcel 的性能更好，更穩定。
-_ 2. fastexcel 與 easyexcel 的 API 完全一致，可以無縫切換。
-_ 3. fastexcel 會持續的更新，修復 bug，優化性能，增加新功能。
+## EasyExcel 與 FastExcel 的區別
+_ 1. FastExcel 支持所有 EasyExcel 的功能，但是 FastExcel 的性能更好，更穩定。
+_ 2. FastExcel 與 EasyExcel 的 API 完全一致，可以無縫切換。
+_ 3. FastExcel 會持續的更新，修復 bug，優化性能，增加新功能。
 
-## easyexcel 如何升級到 fastexcel
+## EasyExcel 如何升級到 FastExcel
 
 ### 1. 修改依賴
-將 easyexcel 的依賴替換為 fastexcel 的依賴，如下：
+將 EasyExcel 的依賴替換為 FastExcel 的依賴，如下：
 ```xml
 <!-- easyexcel 依賴 -->
 <dependency>
@@ -57,22 +57,22 @@ _ 3. fastexcel 會持續的更新，修復 bug，優化性能，增加新功能�
 </dependency>
 ```
 
-### 2. 修改程式碼
-將 easyexcel 的包名替換為 fastexcel 的包名，如下：
+### 2. 修改代碼
+將 EasyExcel 的包名替換為 FastExcel 的包名，如下：
 ```java
-// 將 easyexcel 的包名替換為 fastexcel 的包名
+// 將 easyexcel 的包名替換為 FastExcel 的包名
 import com.alibaba.excel.**;
 ```
 替換為
 ```java
 import cn.idev.excel.**;
 ```
-### 3. 不修改程式碼直接依賴 fastexcel
-如果由於種種原因您不想修改程式碼，可以直接依賴 fastexcel，然後在 `pom.xml` 文件中直接依賴 fastexcel。
-easyexcel 與 fastexcel 可以共存，但是長期建議替換為 fastexcel。
+### 3. 不修改代碼直接依賴 FastExcel
+如果由於種種原因您不想修改代碼，可以直接依賴 FastExcel ，然後在 `pom.xml` 文件中直接依賴 FastExcel。
+EasyExcel 與 FastExcel 可以共存，但是長期建議替換為 FastExcel。
 
 ### 4. 建議以後使用 FastExcel 類
-為了兼容性考慮保留了 EasyExcel 類，但是建議以後使用 FastExcel 類，FastExcel 類是 fastexcel 的入口類，功能包含了 EasyExcel 類的所有功能，以後新特性僅在 FastExcel 類中添加。
+為了兼容性考慮保留了 EasyExcel 類，但是建議以後使用 FastExcel 類，FastExcel 類是類，FastExcel 的入口類，功能包含了 EasyExcel 類的所有功能，以後新特性僅在 FastExcel 類中添加。
 
 
 

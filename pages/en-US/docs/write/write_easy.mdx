@@ -1,11 +1,11 @@
 ---
 title: Simple Write
-description: Quickly write to Excel using FastExcel
+description: Quickly write Excel using FastExcel
 ---
 ## Simple Write
 
 ### Overview
-Using FastExcel for simple Excel data writing allows you to quickly write entity objects to Excel files, which is the most basic and commonly used way of writing.
+Using FastExcel for simple Excel data writing, you can quickly write entity objects to Excel files, which is the most basic and commonly used way of writing.
 
 ### Sample Object
 
@@ -32,7 +32,7 @@ public class DemoData {
 public void simpleWrite() {
     String fileName = "simpleWrite" + System.currentTimeMillis() + ".xlsx";
 
-    // Method 1: Using Lambda expression to paginate data
+    // Method 1: Using Lambda expression to page through data
     FastExcel.write(fileName, DemoData.class)
         .sheet("Template")
         .doWrite(() -> data());

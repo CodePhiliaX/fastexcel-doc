@@ -12,12 +12,12 @@ Here is an example of reading an Excel document:
 public class DemoDataListener implements ReadListener<DemoData> {
     @Override
     public void invoke(DemoData data, AnalysisContext context) {
-        System.out.println("Data read: " + JSON.toJSONString(data));
+        System.out.println("Read one piece of data" + JSON.toJSONString(data));
     }
 
     @Override
     public void doAfterAllAnalysed(AnalysisContext context) {
-        System.out.println("All data parsed!");
+        System.out.println("All data has been parsed!");
     }
 }
 
@@ -32,7 +32,7 @@ public static void main(String[] args) {
 
 Here is a simple example of creating an Excel document:
 ```java
-// Sample data class
+// Example data class
 public class DemoData {
     @ExcelProperty("String Title")
     private String string;
@@ -59,7 +59,7 @@ private static List<DemoData> data() {
 
 public static void main(String[] args) {
     String fileName = "demo.xlsx";
-    // Create a sheet named "Template" and write data to it
+    // Create a sheet named "Template" and write data into it
     FastExcel.write(fileName, DemoData.class).sheet("Template").doWrite(data());
 }
 ```

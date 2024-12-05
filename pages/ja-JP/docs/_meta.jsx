@@ -1,6 +1,6 @@
 export default {
   index: "紹介",
-  intro: "はじめに",
+  intro: "入門",
   read: "Excelを読む",
   write: "Excelに書き込む",
   fill: "Excelに書き込む",

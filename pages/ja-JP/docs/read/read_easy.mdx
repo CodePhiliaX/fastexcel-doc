@@ -6,7 +6,7 @@ description: 簡単なExcelファイルの読み取り
 
 ## 簡単な Excel の読み取り
 
-## 例1：POJOの定義、リスナーを使用して簡単な Excel ファイルを読み取る
+## 例1：POJOの定義、リスナーを使って簡単な Excel ファイルを読み取る
 ### 概要
 
 FastExcel は Excel ファイルを読み取る簡単な方法を提供します。ユーザーはデータ構造を表す POJO クラスを定義し、FastExcel のリスナーメカニズムを使用してデータを読み取るだけです。
@@ -114,12 +114,12 @@ public class NoModelDataListener extends AnalysisEventListener<Map<Integer, Stri
 ## 例3：リスナーを定義せずに簡単な Excel ファイルを読み取る
 
 ### 概要
-doReadSync メソッドを使用して Excel データを直接メモリ内のリストとして読み取り、これはデータ量が少ない場合に適しています。読み取られたデータは、POJO オブジェクトのリストまたは Map のリストとして取得できます。
+doReadSync メソッドを使用して Excel データを直接メモリ内のリストとして読み取り、これはデータ量が少ない場合に適しています。読み取られたデータは、POJO オブジェクトのリストまたは Map のリストになります。
 
-### サンプルコード
+### コード例
 #### オブジェクトリストとして読み取る
 
-Excel 構造に対応する DemoData という POJO クラスがあると仮定します。
+Excel 構造に対応する DemoData という POJO クラスがあるとします。
 
 ```java
 @Getter
@@ -130,7 +130,10 @@ public class DemoData {
     private Date date;
     private Double doubleData;
 }
+```
+
 同期的にオブジェクトリストとして読み取る
+```java
 @Test
 public void synchronousReadToObjectList() {
     String fileName = "path/to/demo.xlsx";

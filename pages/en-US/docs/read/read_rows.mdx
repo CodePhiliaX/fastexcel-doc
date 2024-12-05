@@ -1,27 +1,27 @@
 ---
-title: Read the first few rows of an Excel file with FastExcel
-description: Learn how to read the first few rows of an Excel file using FastExcel
+title: Reading the first few rows of an Excel file with FastExcel
+description: Reading the first few rows of an Excel file with FastExcel
 ---
 
-## Reading the First Few Rows of an Excel File with FastExcel
+## Reading the first few rows of an Excel file with FastExcel
 ### Overview
 
-When analyzing and processing data, quickly viewing the first few rows of an Excel file can help us better understand the data structure and content. This article will introduce how to use FastExcel to read the first 100 rows of an Excel file.
-By using the numRows method, you can specify the number of rows to read. Setting numRows(100) will read the first 100 rows of data. By default, FastExcel reads all data in the Excel file, but you can limit the number of rows read by setting the numRows method.
-The row count starts from 0, where 0 indicates no limit on the number of rows to read, meaning it will read all rows. For example, setting numRows(100) will read the first 100 rows of data, including the header row.
+In the process of data analysis and processing, quickly viewing the contents of the first few rows of an Excel file can help us better understand the data structure and content. This article will introduce how to use FastExcel to read the first 100 rows of an Excel file.
+By using the numRows method, you can specify the number of rows to read. Setting numRows(100) allows you to read the first 100 rows of data. By default, FastExcel reads all data in the entire Excel file, but you can limit the number of rows read by setting the numRows method.
+The row count starts from 0, where 0 indicates no limit on the number of rows to read, meaning all rows will be read. The row count includes the header row. For example, setting numRows(100) means reading the first 100 rows of data, including the header row.
 
-### 1. Read the First 100 Rows of All Sheets
+### 1. Reading the first 100 rows of all sheets
 #### Code
 
 ```java
 EasyExcel.read(fileName, DemoData.class, new PageReadListener<DemoData>(dataList -> {
     for (DemoData demoData : dataList) {
-        log.info("Read one piece of data {}", JSON.toJSONString(demoData));
+        log.info("Read one piece of data: {}", JSON.toJSONString(demoData));
     }
 })).numRows(100).sheet().doRead();
 ```
 
-### Read the First 100 Rows of a Single Sheet
+### Reading the first 100 rows of a single sheet
 
 ```java
 try (ExcelReader excelReader = EasyExcel.read(fileName, DemoData.class, new DemoDataListener()).build()) {

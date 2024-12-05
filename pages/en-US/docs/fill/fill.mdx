@@ -6,14 +6,14 @@ description: Fill Excel
 ## **Simple Fill**
 
 ### Overview
-Fill data into Excel based on a template file using objects or Maps.
+Fill data into Excel based on a template file using objects or Map.
 
-### Sample Fill Templates
-![img](/images/docs/fill/simpleFill_file.jpg)
-### Sample Fill Results
-![img](/images/docs/fill/simpleFill_result.jpg)
-
+### Example Fill Template
+![img](/images/docs/fill/simpleFill_file.png)
+### Example Fill Result
+![img](/images/docs/fill/simpleFill_result.png)
 #### Sample Object
+
 ```java
 @Getter
 @Setter
@@ -57,10 +57,11 @@ public void simpleFill() {
 
 ### Overview
 Fill multiple data items into a template list, supporting in-memory batch operations and file cache batch filling.
-### Sample Fill Templates
-![img](/images/docs/fill/listFill_file.jpg)
-### Sample Fill Results
-![img](/images/docs/fill/listFill_result.jpg)
+
+### Example Fill Template
+![img](/images/docs/fill/listFill_file.png)
+### Example Fill Result
+![img](/images/docs/fill/listFill_result.png)
 
 #### Sample Code
 ```java
@@ -88,11 +89,12 @@ public void listFill() {
 ## **Complex Fill**
 
 ### Overview
-Fill various data types, including lists and normal variables, into a template.
-### Sample Fill Templates
-![img](/images/docs/fill/complexFill_file.jpg)
-### Sample Fill Results
-![img](/images/docs/fill/complexFill_result.jpg)
+Fill various data types in a template, including lists and regular variables.
+
+### Example Fill Template
+![img](/images/docs/fill/complexFill_file.png)
+### Example Fill Result
+![img](/images/docs/fill/complexFill_result.png)
 
 #### Sample Code
 ```java
@@ -107,7 +109,7 @@ public void complexFill() {
         FillConfig config = FillConfig.builder().forceNewRow(true).build();
         writer.fill(data(), config, writeSheet);
 
-        // Fill normal variables
+        // Fill regular variables
         Map<String, Object> map = new HashMap<>();
         map.put("date", "2024年11月20日");
         map.put("total", 1000);
@@ -121,11 +123,12 @@ public void complexFill() {
 ## **Complex Fill with Large Data**
 
 ### Overview
-Optimize performance for filling large data amounts, ensuring the template list is at the last row, and subsequent data is filled using `WriteTable`.
-### Sample Fill Templates
-![img](/images/docs/fill/complexFillWithTable_file.jpg)
-### Sample Fill Results
-![img](/images/docs/fill/complexFillWithTable_result.jpg)
+Optimize performance for filling large data, ensuring the template list is at the last row, and subsequent data is filled using `WriteTable`.
+
+### Example Fill Template
+![img](/images/docs/fill/complexFillWithTable_file.png)
+### Example Fill Result
+![img](/images/docs/fill/complexFillWithTable_result.png)
 
 #### Sample Code
 ```java
@@ -157,11 +160,12 @@ public void complexFillWithTable() {
 ## **Horizontal Fill**
 
 ### Overview
-Horizontally fill list data, suitable for scenarios with dynamic column numbers.
-### Sample Fill Templates
-![img](/images/docs/fill/horizontalFill_file.jpg)
-### Sample Fill Results
-![img](/images/docs/fill/horizontalFill_result.jpg)
+Fill list data horizontally, suitable for scenarios with dynamic column numbers.
+
+### Example Fill Template
+![img](/images/docs/fill/horizontalFill_file.png)
+### Example Fill Result
+![img](/images/docs/fill/horizontalFill_result.png)
 
 #### Sample Code
 ```java
@@ -184,14 +188,15 @@ public void horizontalFill() {
 
 ---
 
-## **Multiple List Combination Fill**
+## **Fill Multiple Lists Together**
 
 ### Overview
 Support filling multiple lists simultaneously, with prefixes to differentiate between lists.
-### Sample Fill Templates
-![img](/images/docs/fill/compositeFill_file.jpg)
-### Sample Fill Results
-![img](/images/docs/fill/compositeFill_result.jpg)
+
+### Example Fill Template
+![img](/images/docs/fill/compositeFill_file.png)
+### Example Fill Result
+![img](/images/docs/fill/compositeFill_result.png)
 
 #### Sample Code
 ```java
@@ -202,7 +207,7 @@ public void compositeFill() {
     try (ExcelWriter writer = FastExcel.write("compositeFill.xlsx").withTemplate(templateFileName).build()) {
         WriteSheet writeSheet = FastExcel.writerSheet().build();
 
-        // Use FillWrapper for multiple list filling
+        // Use FillWrapper for filling multiple lists
         writer.fill(new FillWrapper("data1", data()), writeSheet);
         writer.fill(new FillWrapper("data2", data()), writeSheet);
         writer.fill(new FillWrapper("data3", data()), writeSheet);
@@ -218,11 +223,11 @@ public void compositeFill() {
 
 ## **Summary of Fill Use Cases**
 
-| Feature           | Description                                                                             | Sample Code            |
-|-------------------|-----------------------------------------------------------------------------------------|------------------------|
-| Simple Fill       | Fill simple data using objects or Maps                                                  | [simpleFill](#1)      |
-| Fill List         | Fill list data into a template, supporting batch filling                                | [listFill](#2)        |
-| Complex Fill      | Fill various data types, including lists and normal variables in the same template       | [complexFill](#3)     |
-| Large Data Complex Fill | Optimize performance for filling large data amounts, with the template list at the last row | [complexFillWithTable](#4) |
-| Horizontal Fill   | Horizontally fill list data, suitable for dynamic column data                            | [horizontalFill](#5)  |
-| Multiple List Combination Fill | Support filling multiple lists simultaneously, with prefixes to differentiate | [compositeFill](#6)   |
+| Feature              | Description                                                                               | Sample Code            |
+|----------------------|-------------------------------------------------------------------------------------------|------------------------|
+| Simple Fill          | Fill simple data using objects or Map                                                     | [simpleFill](#1)       |
+| Fill List            | Fill list data into a template, supports batch filling                                    | [listFill](#2)         |
+| Complex Fill         | Fill various data types in the same template, including lists and regular variables       | [complexFill](#3)      |
+| Large Data Complex Fill | Optimize performance for filling large data, with the template list at the last row       | [complexFillWithTable](#4) |
+| Horizontal Fill      | Fill list data horizontally, suitable for dynamic column data                              | [horizontalFill](#5)   |
+| Fill Multiple Lists Together | Support filling multiple lists simultaneously, differentiated by prefixes                | [compositeFill](#6)    |

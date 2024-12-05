@@ -1,17 +1,18 @@
 ---
-title: Excelの埋め込み
-description: Excelの埋め込み
+title: Excelのフィル
+description: Excelのフィル
 ---
 
-## **シンプルな埋め込み**
+## **シンプルなフィル**
 
 ### 概要
-テンプレートファイルを基に、オブジェクトや Map を使用してExcelにデータを埋め込みます。
-### サンプル充填テンプレート
-![img](/images/docs/fill/simpleFill_file.jpg)
-### 記入結果サンプル
-![img](/images/docs/fill/simpleFill_result.jpg)
-#### オブジェクトの例
+テンプレートファイルを基に、オブジェクトまたは Map を使用してExcelにデータをフィルします。
+
+### サンプルフィルテンプレート
+![img](/images/docs/fill/simpleFill_file.png)
+### サンプルフィル結果
+![img](/images/docs/fill/simpleFill_result.png)
+#### サンプルオブジェクト
 ```java
 @Getter
 @Setter
@@ -29,7 +30,7 @@ public class FillData {
 public void simpleFill() {
     String templateFileName = "path/to/simple.xlsx";
 
-    // 方法1：オブジェクトを使用して埋め込み
+    // オブジェクトを使用したフィル方法
     FillData fillData = new FillData();
     fillData.setName("张三");
     fillData.setNumber(5.2);
@@ -38,7 +39,7 @@ public void simpleFill() {
         .sheet()
         .doFill(fillData);
 
-    // 方法2：Mapを使用して埋め込み
+    // Mapを使用したフィル方法
     Map<String, Object> map = new HashMap<>();
     map.put("name", "张三");
     map.put("number", 5.2);
@@ -51,27 +52,29 @@ public void simpleFill() {
 
 ---
 
-## **リストの埋め込み**
+## **リストのフィル**
 
 ### 概要
-複数のデータ項目をテンプレートリストに埋め込み、メモリバッチ処理とファイルキャッシュバッチ埋め込みをサポートします。
-### サンプル充填テンプレート
-![img](/images/docs/fill/listFill_file.jpg)
-### 記入結果サンプル
-![img](/images/docs/fill/listFill_result.jpg)
+複数のデータ項目をテンプレートリストにフィルし、メモリバッチ操作とファイルキャッシュ分割フィルをサポートします。
+
+### サンプルフィルテンプレート
+![img](/images/docs/fill/listFill_file.png)
+### サンプルフィル結果
+![img](/images/docs/fill/listFill_result.png)
+
 #### サンプルコード
 ```java
 @Test
 public void listFill() {
     String templateFileName = "path/to/list.xlsx";
 
-    // 方法1：すべてのデータを一度に埋め込む
+    // すべてのデータを一度にフィルする方法
     FastExcel.write("listFill.xlsx")
         .withTemplate(templateFileName)
         .sheet()
         .doFill(data());
 
-    // 方法2：バッチで埋め込む
+    // 分割してフィルする方法
     try (ExcelWriter writer = FastExcel.write("listFillBatch.xlsx").withTemplate(templateFileName).build()) {
         WriteSheet writeSheet = FastExcel.writerSheet().build();
         writer.fill(data(), writeSheet);
@@ -82,14 +85,15 @@ public void listFill() {
 
 ---
 
-## **複雑な埋め込み**
+## **複雑なフィル**
 
 ### 概要
-リストや通常の変数を含むさまざまなデータ型をテンプレートに埋め込みます。
-### サンプル充填テンプレート
-![img](/images/docs/fill/complexFill_file.jpg)
-### 記入結果サンプル
-![img](/images/docs/fill/complexFill_result.jpg)
+リストや通常の変数を含むさまざまなデータ型をテンプレートにフィルします。
+
+### サンプルフィルテンプレート
+![img](/images/docs/fill/complexFill_file.png)
+### サンプルフィル結果
+![img](/images/docs/fill/complexFill_result.png)
 
 #### サンプルコード
 ```java
@@ -100,11 +104,11 @@ public void complexFill() {
     try (ExcelWriter writer = FastExcel.write("complexFill.xlsx").withTemplate(templateFileName).build()) {
         WriteSheet writeSheet = FastExcel.writerSheet().build();
 
-        // リストデータを埋め込み、forceNewRow を有効にする
+        // リストデータをフィルし、forceNewRowを有効にする
         FillConfig config = FillConfig.builder().forceNewRow(true).build();
         writer.fill(data(), config, writeSheet);
 
-        // 通常の変数を埋め込む
+        // 通常の変数をフィル
         Map<String, Object> map = new HashMap<>();
         map.put("date", "2024年11月20日");
         map.put("total", 1000);
@@ -115,14 +119,15 @@ public void complexFill() {
 
 ---
 
-## **大量データの複雑な埋め込み**
+## **大容量データの複雑なフィル**
 
 ### 概要
-大量データの埋め込みパフォーマンスを最適化し、テンプレートリストが最後の行に配置され、後続データは `WriteTable` を使用して埋め込まれます。
-### サンプル充填テンプレート
-![img](/images/docs/fill/complexFillWithTable_file.jpg)
-### 記入結果サンプル
-![img](/images/docs/fill/complexFillWithTable_result.jpg)
+大容量データのフィルパフォーマンスを最適化し、テンプレートリストが最終行に配置され、後続データは `WriteTable` を使用してフィルされます。
+
+### サンプルフィルテンプレート
+![img](/images/docs/fill/complexFillWithTable_file.png)
+### サンプルフィル結果
+![img](/images/docs/fill/complexFillWithTable_result.png)
 
 #### サンプルコード
 ```java
@@ -133,15 +138,15 @@ public void complexFillWithTable() {
     try (ExcelWriter writer = FastExcel.write("complexFillWithTable.xlsx").withTemplate(templateFileName).build()) {
         WriteSheet writeSheet = FastExcel.writerSheet().build();
 
-        // リストデータを埋め込む
+        // リストデータをフィル
         writer.fill(data(), writeSheet);
 
-        // 他の変数を埋め込む
+        // 他の変数をフィル
         Map<String, Object> map = new HashMap<>();
         map.put("date", "2024年11月20日");
         writer.fill(map, writeSheet);
 
-        // 統計情報を埋め込む
+        // 統計情報をフィル
         List<List<String>> totalList = new ArrayList<>();
         totalList.add(Arrays.asList(null, null, null, "統計: 1000"));
         writer.write(totalList, writeSheet);
@@ -151,14 +156,15 @@ public void complexFillWithTable() {
 
 ---
 
-## **横方向の埋め込み**
+## **横方向のフィル**
 
 ### 概要
-リストデータを横方向に埋め込み、動的列数のシナリオに適しています。
-### サンプル充填テンプレート
-![img](/images/docs/fill/horizontalFill_file.jpg)
-### 記入結果サンプル
-![img](/images/docs/fill/horizontalFill_result.jpg)
+リストデータを横方向にフィルし、動的列数のシナリオに適しています。
+
+### サンプルフィルテンプレート
+![img](/images/docs/fill/horizontalFill_file.png)
+### サンプルフィル結果
+![img](/images/docs/fill/horizontalFill_result.png)
 
 #### サンプルコード
 ```java
@@ -181,14 +187,15 @@ public void horizontalFill() {
 
 ---
 
-## **複数リストの組み合わせ埋め込み**
+## **複数リストの組み合わせフィル**
 
 ### 概要
-複数のリストを同時に埋め込み、リスト間を接頭辞で区別します。
-### サンプル充填テンプレート
-![img](/images/docs/fill/compositeFill_file.jpg)
-### 記入結果サンプル
-![img](/images/docs/fill/compositeFill_result.jpg)
+複数のリストを同時にフィルし、リスト間を接頭辞で区別します。
+
+### サンプルフィルテンプレート
+![img](/images/docs/fill/compositeFill_file.png)
+### サンプルフィル結果
+![img](/images/docs/fill/compositeFill_result.png)
 
 #### サンプルコード
 ```java
@@ -199,7 +206,7 @@ public void compositeFill() {
     try (ExcelWriter writer = FastExcel.write("compositeFill.xlsx").withTemplate(templateFileName).build()) {
         WriteSheet writeSheet = FastExcel.writerSheet().build();
 
-        // FillWrapper を使用して複数のリストを埋め込む
+        // FillWrapperを使用して複数のリストをフィル
         writer.fill(new FillWrapper("data1", data()), writeSheet);
         writer.fill(new FillWrapper("data2", data()), writeSheet);
         writer.fill(new FillWrapper("data3", data()), writeSheet);
@@ -213,13 +220,13 @@ public void compositeFill() {
 
 ---
 
-## **埋め込みの使用シナリオのまとめ**
+## **フィル使用シナリオのまとめ**
 
 | 機能               | 説明                                                                                      | サンプルコード              |
 |--------------------|-------------------------------------------------------------------------------------------|-----------------------|
-| 最もシンプルな埋め込み        | オブジェクトや Map を使用して単純なデータを埋め込む                                                              | [simpleFill](#1)      |
-| リストの埋め込み           | リストデータをテンプレートに埋め込み、バッチ埋め込みをサポート                                                        | [listFill](#2)        |
-| 複雑な埋め込み            | リストや通常の変数など、さまざまなデータ型を同じテンプレートに埋め込む                                           | [complexFill](#3)     |
-| 大量データの複雑な埋め込み    | 大量データの埋め込みパフォーマンスを最適化し、テンプレートリストが最後の行に配置する                                               | [complexFillWithTable](#4) |
-| 横方向の埋め込み            | リストデータを横方向に埋め込み、動的列データに適しています                                                    | [horizontalFill](#5)  |
-| 複数リストの組み合わせ埋め込み      | 複数のリストを同時に埋め込み、リスト間を接頭辞で区別                                                   | [compositeFill](#6)   |
+| 最も単純なフィル        | オブジェクトまたは Map を使用して単純なデータをフィルする方法                                                              | [simpleFill](#1)      |
+| リストのフィル           | リストデータをテンプレートにフィルし、分割フィルをサポート                                                        | [listFill](#2)        |
+| 複雑なフィル            | リストや通常の変数など、さまざまなデータ型を同じテンプレートにフィルする方法                                           | [complexFill](#3)     |
+| 大容量データの複雑なフィル    | 大容量データのフィルパフォーマンスを最適化し、テンプレートリストが最終行に配置される必要がある方法                                               | [complexFillWithTable](#4) |
+| 横方向のフィル            | リストデータを横方向にフィルし、動的列データに適している方法                                                    | [horizontalFill](#5)  |
+| 複数リストの組み合わせフィル      | 複数のリストを同時にフィルし、リスト間を前置詞で区別する方法                                                   | [compositeFill](#6)   |

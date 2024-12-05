@@ -40,6 +40,11 @@ const contributors: Contributor[] = [
     avatar: "/avatars/jieyangxchen.jpeg",
     github: "https://github.com/jieyangxchen",
   },
+  {
+    name: "张国权",
+    avatar: "/avatars/zgq.jpg",
+    github: "https://github.com/openai0229",
+  },
 ];
 
 export const Contributors: React.FC = () => {

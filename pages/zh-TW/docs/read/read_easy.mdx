@@ -6,12 +6,12 @@ description: 簡單讀取一個excel文件
 
 ## 簡單讀取 Excel
 
-## 範例一：定義pojo、定義監聽器讀取一個簡單的 Excel 文件
+## 示例一：定義pojo、定義監聽器讀取一個簡單的 Excel 文件
 ### 概述
 
 FastExcel 提供了一種簡單的方式來讀取 Excel 文件。用戶只需定義一個 POJO 類來表示數據結構，然後通過 FastExcel 的監聽器機制讀取數據。
 
-### 範例對象：`DemoData`
+### 示例對象：`DemoData`
 ```java
 @Getter
 @Setter
@@ -43,7 +43,7 @@ public class DemoDataListener implements ReadListener<DemoData> {
 }
 ```
 
-### 讀取程式碼範例
+### 讀取代碼示例
 ```java
 @Test
 public void simpleRead() {
@@ -77,7 +77,7 @@ public void simpleRead() {
 }
 ```
 
-## 範例二：不定義POJO讀取一個簡單的 Excel 文件
+## 示例二：不定義POJO讀取一個簡單的 Excel 文件
 
 ### 概述
 FastExcel 還支持不定義 POJO 類直接讀取 Excel 文件，通過 `Map<Integer, String>` 直接讀取數據。
@@ -111,12 +111,12 @@ public class NoModelDataListener extends AnalysisEventListener<Map<Integer, Stri
 }
 ```
 
-## 範例三：不定義監聽器讀取一個簡單的 Excel 文件
+## 示例三：不定義監聽器讀取一個簡單的 Excel 文件
 
 ### 概述
 使用 doReadSync 方法直接將 Excel 數據讀取為內存中的列表，這種方法適用於數據量較小的場景。讀取的數據可以是 POJO 對象列表或 Map 列表。
 
-### 範例程式碼
+### 示例代碼
 #### 讀取為對象列表
 
 假設有一個與 Excel 結構對應的 POJO 類 DemoData。

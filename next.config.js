@@ -7,6 +7,7 @@ const withNextra = nextra({
 });
 
 export default withNextra({
+  basePath: "/fastexcel",
   i18n: {
     locales: ["zh-CN", "zh-TW", "en-US", "ja-JP"],
     defaultLocale: "zh-CN",

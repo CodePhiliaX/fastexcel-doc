@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import Image from "next/image";
 import styles from "./index.module.css";
 import { useTranslation } from "../../hooks/useTranslation";
+import { useRouter } from "next/router";
 
 interface Feature {
   title: string;
@@ -11,6 +12,7 @@ interface Feature {
 
 export const Features: React.FC = () => {
   const { t } = useTranslation();
+  const { basePath } = useRouter();
   const features: Feature[] = useMemo(
     () => [
       {
@@ -41,7 +43,7 @@ export const Features: React.FC = () => {
       {features.map((feature, index) => (
         <div key={index} className={styles.featureCard}>
           <Image
-            src={`/fastexcel${feature.icon}`}
+            src={`${basePath}${feature.icon}`}
             alt={feature.title}
             width={40}
             height={40}

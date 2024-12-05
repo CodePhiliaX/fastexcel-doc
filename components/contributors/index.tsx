@@ -2,6 +2,7 @@ import React from "react";
 import styles from "./index.module.css";
 import { useTranslation } from "../../hooks/useTranslation";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 interface Contributor {
   name: string;
@@ -49,6 +50,7 @@ const contributors: Contributor[] = [
 
 export const Contributors: React.FC = () => {
   const { t } = useTranslation();
+  const { basePath } = useRouter();
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>{t("contributors.title")}</h2>
@@ -58,7 +60,7 @@ export const Contributors: React.FC = () => {
         {contributors.map((contributor, index) => (
           <div key={index} className={styles.contributorItem}>
             <img
-              src={`/fastexcel${contributor.avatar}`}
+              src={`${basePath}${contributor.avatar}`}
               alt={contributor.name}
               className={styles.avatar}
             />

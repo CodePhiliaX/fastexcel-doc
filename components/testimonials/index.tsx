@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './index.module.css';
 import { useTranslation } from '../../hooks/useTranslation';
+import { useRouter } from 'next/router';
 
 interface Testimonial {
   author: string;
@@ -114,7 +115,7 @@ const extendedTestimonials = [...testimonials, ...testimonials, ...testimonials]
 
 export const Testimonials: React.FC = () => {
   const { t } = useTranslation();
-
+  const { basePath } = useRouter();
   // 提取卡片组件以提高可复用性
   const TestimonialCard = React.memo(({ testimonial, index, rowId }: {
     testimonial: Testimonial;
@@ -124,7 +125,7 @@ export const Testimonials: React.FC = () => {
     <div key={`${rowId}-${index}`} className={styles.testimonialCard}>
       <div className={styles.testimonialHeader}>
         <img 
-          src={`/fastexcel${testimonial.avatar}`} 
+          src={`${basePath}${testimonial.avatar}`} 
           alt={testimonial.author} 
           className={styles.avatar}
           loading="lazy" // 添加懒加载

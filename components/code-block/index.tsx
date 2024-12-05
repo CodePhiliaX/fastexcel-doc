@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styles from "./index.module.css";
+import { useRouter } from "next/router";
 
 interface CodeBlockProps {
   type: "maven" | "gradle";
@@ -25,6 +26,7 @@ const gradleCodeHighlight = `<span style="color: #6DFF1C">implementation</span> 
 
 export const CodeBlock: React.FC<CodeBlockProps> = ({ type }) => {
   const [copied, setCopied] = useState(false);
+  const { basePath } = useRouter();
   const highlightCode =
     type === "maven" ? mavenCodeHighlight : gradleCodeHighlight;
 
@@ -43,7 +45,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ type }) => {
     <div className={styles.wrapper}>
       <div className={styles.logo}>
         <img
-          src={`/fastexcel/images/${type}.png`}
+          src={`${basePath}/images/${type}.png`}
           alt="FastExcel"
           width={136}
           height={40}

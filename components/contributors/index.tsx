@@ -58,7 +58,7 @@ export const Contributors: React.FC = () => {
         {contributors.map((contributor, index) => (
           <div key={index} className={styles.contributorItem}>
             <img
-              src={contributor.avatar}
+              src={`/fastexcel${contributor.avatar}`}
               alt={contributor.name}
               className={styles.avatar}
             />

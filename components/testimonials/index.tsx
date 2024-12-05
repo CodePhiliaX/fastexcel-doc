@@ -124,7 +124,7 @@ export const Testimonials: React.FC = () => {
     <div key={`${rowId}-${index}`} className={styles.testimonialCard}>
       <div className={styles.testimonialHeader}>
         <img 
-          src={testimonial.avatar} 
+          src={`/fastexcel${testimonial.avatar}`} 
           alt={testimonial.author} 
           className={styles.avatar}
           loading="lazy" // 添加懒加载

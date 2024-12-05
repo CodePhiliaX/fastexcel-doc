@@ -41,7 +41,7 @@ export const Features: React.FC = () => {
       {features.map((feature, index) => (
         <div key={index} className={styles.featureCard}>
           <Image
-            src={feature.icon}
+            src={`/fastexcel${feature.icon}`}
             alt={feature.title}
             width={40}
             height={40}

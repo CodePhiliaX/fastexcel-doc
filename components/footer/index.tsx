@@ -4,16 +4,19 @@ import Link from "next/link";
 import styles from "./index.module.css";
 import { LanguageSelector } from "../language-switch";
 import { useTranslation } from '../../hooks/useTranslation';
+import { useRouter } from 'next/router';
 
 const Footer: React.FC = () => {
   const { t } = useTranslation();
+  const { basePath } = useRouter();
+
   return (
     <footer className={styles.footer}>
       <div className={styles.footerContent}>
         <div className={styles.logoSection}>
           <Link href="/">
             <Image
-              src="/images/logo.svg"
+              src={`${basePath}/images/logo.svg`}
               alt="FastExcel"
               width={136}
               height={40}

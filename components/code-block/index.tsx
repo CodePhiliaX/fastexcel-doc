@@ -43,7 +43,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ type }) => {
     <div className={styles.wrapper}>
       <div className={styles.logo}>
         <img
-          src={`/images/${type}.png`}
+          src={`/fastexcel/images/${type}.png`}
           alt="FastExcel"
           width={136}
           height={40}

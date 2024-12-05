@@ -7,7 +7,7 @@ import { useTranslation } from "../../hooks/useTranslation";
 
 const Navbar = () => {
   const router = useRouter();
-  const { locale = "zh-CN" } = router;
+  const { locale = "zh-CN", basePath } = router;
   const { t } = useTranslation();
 
   const isZhCN = locale === "zh-CN";
@@ -17,7 +17,7 @@ const Navbar = () => {
       <div className={styles.navContent}>
         <Link href="/" className={styles.logoContainer}>
           <Image
-            src="/images/logo.svg"
+            src={`${basePath}/images/logo.svg`}
             alt="FastExcel"
             width={136}
             height={40}

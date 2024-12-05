@@ -20,6 +20,12 @@ export default withNextra({
         permanent: true,
         // basePath: false
       },
+      {
+        source: "/fastexcel",
+        destination: "/fastexcel/zh-CN/",
+        permanent: true,
+        basePath: false
+      }
    
     ];
   },

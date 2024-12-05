@@ -24,13 +24,13 @@ export default withNextra({
         source: "/",
         destination: "/fastexcel/zh-CN/",
         permanent: true,
-        basePath: false
+        // basePath: false
       },
       {
         source: "/fastexcel",
         destination: "/fastexcel/zh-CN/",
         permanent: true,
-        basePath: false
+        // basePath: false
       }
     ];
   },

@@ -8,21 +8,21 @@ interface CodeBlockProps {
 
 const mavenCode = `
 <dependency>
-    <groupId>cn.hutool</groupId>
-    <artifactId>hutool-all</artifactId>
-    <version>5.8.33</version>
+    <groupId>cn.idev.excel</groupId>
+    <artifactId>fastexcel</artifactId>
+    <version>1.0.0</version>
 </dependency>
 `;
 const mavenCodeHighlight = `<span style="color: #FF00F1">&lt;</span><span style="color: #6DFF1C">dependency</span><span style="color: #FF00F1">&gt;</span>
-    <span style="color: #FF00F1">&lt;</span><span style="color: #6DFF1C">groupId</span><span style="color: #FF00F1">&gt;</span><span style="color: #E0DFFF">cn.hutool</span><span style="color: #FF00F1">&lt;/</span><span style="color: #6DFF1C">groupId</span><span style="color: #FF00F1">&gt;</span>
-    <span style="color: #FF00F1">&lt;</span><span style="color: #6DFF1C">artifactId</span><span style="color: #FF00F1">&gt;</span><span style="color: #E0DFFF">hutool-all</span><span style="color: #FF00F1">&lt;/</span><span style="color: #6DFF1C">artifactId</span><span style="color: #FF00F1">&gt;</span>
-    <span style="color: #FF00F1">&lt;</span><span style="color: #6DFF1C">version</span><span style="color: #FF00F1">&gt;</span><span style="color: #E0DFFF">5.8.33</span><span style="color: #FF00F1">&lt;/</span><span style="color: #6DFF1C">version</span><span style="color: #FF00F1">&gt;</span>
+    <span style="color: #FF00F1">&lt;</span><span style="color: #6DFF1C">groupId</span><span style="color: #FF00F1">&gt;</span><span style="color: #E0DFFF">cn.idev.excel</span><span style="color: #FF00F1">&lt;/</span><span style="color: #6DFF1C">groupId</span><span style="color: #FF00F1">&gt;</span>
+    <span style="color: #FF00F1">&lt;</span><span style="color: #6DFF1C">artifactId</span><span style="color: #FF00F1">&gt;</span><span style="color: #E0DFFF">fastexcel</span><span style="color: #FF00F1">&lt;/</span><span style="color: #6DFF1C">artifactId</span><span style="color: #FF00F1">&gt;</span>
+    <span style="color: #FF00F1">&lt;</span><span style="color: #6DFF1C">version</span><span style="color: #FF00F1">&gt;</span><span style="color: #E0DFFF">1.0.0</span><span style="color: #FF00F1">&lt;/</span><span style="color: #6DFF1C">version</span><span style="color: #FF00F1">&gt;</span>
 <span style="color: #FF00F1">&lt;/</span><span style="color: #6DFF1C">dependency</span><span style="color: #FF00F1">&gt;</span>`;
 
 const gradleCode = `
-implementation 'cn.hutool:hutool-all:5.8.33'
+implementation 'cn.idev.excel:fastexcel:1.0.0'
 `;
-const gradleCodeHighlight = `<span style="color: #6DFF1C">implementation</span> '<span style="color: #e5c07b">cn.hutool</span>:<span style="color: #61afef">hutool-all</span>:<span style="color: #ff69b4">5.8.33</span>'`;
+const gradleCodeHighlight = `<span style="color: #6DFF1C">implementation</span> '<span style="color: #e5c07b">cn.idev.excel</span>:<span style="color: #61afef">fastexcel</span>:<span style="color: #ff69b4">1.0.0</span>'`;
 
 export const CodeBlock: React.FC<CodeBlockProps> = ({ type }) => {
   const [copied, setCopied] = useState(false);

@@ -7,7 +7,7 @@ const withNextra = nextra({
 });
 
 export default withNextra({
-  basePath: '/fastexcel',
+  basePath: "/fastexcel",
   i18n: {
     locales: ["zh-CN", "zh-TW", "en-US", "ja-JP"],
     defaultLocale: "zh-CN",
@@ -18,15 +18,13 @@ export default withNextra({
         source: "/",
         destination: "/zh-CN/",
         permanent: true,
-        // basePath: false
       },
       {
         source: "/fastexcel",
         destination: "/fastexcel/zh-CN/",
         permanent: true,
-        basePath: false
-      }
-   
+        basePath: false,
+      },
     ];
   },
 });

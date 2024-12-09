@@ -9,66 +9,86 @@
 .container {
   width: 100%;
   margin: 0 auto;
+  font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", -apple-system,
+    BlinkMacSystemFont, sans-serif;
 }
 
 .hero {
-  padding-top: 4rem;
-  padding-bottom: 8rem;
+  padding: 4rem 1rem 8rem;
   text-align: center;
   background: #4039e9;
-  color: white;
+  background: linear-gradient(to bottom, #4039e9, #3632d1);
+  color: #fff;
   margin-bottom: 4rem;
+}
 
-  .title {
-    font-size: 4rem;
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #fff;
-    font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", -apple-system,
-      BlinkMacSystemFont, sans-serif;
+.hero .title {
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", 
+    BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+}
 
-    /* font-family: 'YuanYingHeiTi', sans-serif; */
-    /* -webkit-text-stroke: 12px black;
-    paint-order: stroke fill; */
-    /* text-shadow: 4px 4px 0px black; */
+.hero .subtitle {
+  font-size: max(16px, min(18px, 2vw));
+  max-width: min(800px, 90%);
+  margin: 0 auto 2rem;
+  line-height: 1.6;
+  font-weight: 700;
+}
+
+.hero .buttonGroup {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.hero .primaryButton,
+.hero .secondaryButton {
+  display: inline-flex;
+  padding: 0.75rem 2rem;
+  justify-content: center;
+  align-items: center;
+  gap: 0.625rem;
+  border-radius: 50px;
+  border: 2px solid #000;
+  background-color: #6eea29;
+  color: #000;
+  font-weight: 700;
+  font-size: 1rem;
+  -webkit-filter: drop-shadow(4px 6px 0px #000);
+  filter: drop-shadow(4px 6px 0px #000);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.hero .primaryButton:hover {
+  background-color: #62c829;
+  transform: translateY(2px);
+}
+
+@media screen and (max-width: 768px) {
+  .hero .title {
+    font-size: 32px;
   }
-  .subtitle {
-    font-size: 18px;
-    max-width: 800px;
-    margin: 0 auto 2rem;
-    line-height: 1.6;
-    font-weight: 700;
-
-    /* -webkit-text-stroke: 6px black;
-    paint-order: stroke fill;
-    text-shadow: 4px 4px 0px black; */
-  }
-  .buttonGroup {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-  }
-
-  .primaryButton,
-  .secondaryButton {
-    display: inline-flex;
-    padding: 12px 32px;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    border-radius: 50px;
-    border: 2px solid #000;
-    background: #6eea29;
-    color: #000;
-    font-weight: 700;
+  
+  .hero .subtitle {
     font-size: 16px;
-    filter: drop-shadow(4px 6px 0px #000);
   }
-
-  .primaryButton:hover {
-    background: #62c829;
+  
+  .hero .buttonGroup {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .hero .primaryButton,
+  .hero .secondaryButton {
+    width: 80%;
+    max-width: 300px;
   }
 }

@@ -4,6 +4,8 @@
   position: sticky;
   top: 0;
   z-index: 1000;
+  font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", -apple-system,
+    BlinkMacSystemFont, sans-serif;
 }
 
 .navContent {

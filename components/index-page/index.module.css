@@ -18,16 +18,18 @@
   background: #4039e9;
   color: white;
   margin-bottom: 4rem;
- 
-  
+
   .title {
-    font-size: 3rem;
+    font-size: 4rem;
     font-weight: 700;
     margin-bottom: 1.5rem;
     display: flex;
     justify-content: center;
     align-items: center;
     color: #fff;
+    font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", -apple-system,
+      BlinkMacSystemFont, sans-serif;
+
     /* font-family: 'YuanYingHeiTi', sans-serif; */
     /* -webkit-text-stroke: 12px black;
     paint-order: stroke fill; */

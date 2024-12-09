@@ -8,10 +8,10 @@
   font-size: 28px;
   font-weight: 700;
   margin-bottom: 1rem;
-  color: #fff;
-  -webkit-text-stroke: 8px black;
+  color: #333;
+  /* -webkit-text-stroke: 8px black;
   paint-order: stroke fill;
-  text-shadow: 2px 2px 0px black;
+  text-shadow: 2px 2px 0px black; */
 }
 
 .subtitle {
